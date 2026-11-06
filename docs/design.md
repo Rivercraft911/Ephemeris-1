@@ -5,8 +5,34 @@
 - J1 is an Amphenol RF 132289 end-launch SMA. C1 blocks DC into LNA1. C2 AC-couples LNAOUT to MIXIN using the MAX2769B datasheet's direct path. Select LNA1 explicitly in firmware and leave antenna bias disabled. The first spin omits the interstage SAW filter.
 - Y1 is a 16.368 MHz clipped-sine TCXO on the receiver supply, AC-coupled to XTAL. The PLL filter uses 27 pF in parallel with a series 20 kΩ / 470 pF branch. The values follow the datasheet starting point for a 1.023 MHz comparison frequency and 0.5 mA charge pump.
 - J3 takes regulated 5 V on pin 1 and ground on pin 2. U2 produces 3.0 V, with a static tolerance range of 2.955–3.045 V at ±1.5%. The MAX2769B operating range is 2.7–3.3 V. TP2 and TP3 are the receiver rail and ground. TP1 exposes the PLL lock indication.
-- The MAX2769B is the T2855+3 package, 5 × 5 mm, 0.5 mm pitch and nominal 3.25 mm exposed pad. U1 pad 29 maps to the exposed ground paddle. The footprint uses the KiCad T2855-3 land pattern. Add ground vias with the assembler's approved stencil and via process.
+- The MAX2769B is the T2855+3 package, 5 × 5 mm, 0.5 mm pitch and nominal 3.25 mm exposed pad. U1 pad 29 maps to the exposed ground paddle. The footprint uses KiCad's T2855-3 pattern and its four exposed-pad paste windows.
 - U3 translates the four CMOS sample bits to host VIO. U4 translates the three configuration lines toward the receiver and the reference clock toward the host. Use 3.3 V host VIO for initial bring-up. Verify a different host's I/O voltage, thresholds and timing before connecting it. R2–R6 are initial source damping values.
+
+## Passive parts
+
+| References | Qty | Value and package | Manufacturer part number | Function |
+| --- | ---: | --- | --- | --- |
+| C1, C2, C6 | 3 | 470 pF, C0G, 50 V, 0402 | Murata `GRM1555C1H471JA01D` | RF series DC blocks and PLL filter |
+| C3 | 1 | 10 nF, X7R, 50 V, 0402 | Murata `GRM155R71H103KA88D` | TCXO AC coupling |
+| C5 | 1 | 27 pF, C0G, 50 V, 0402 | Murata `GRM1555C1H270JA01D` | PLL shunt cap |
+| C8 | 1 | 100 pF, C0G, 50 V, 0402 | Murata `GRM1555C1H101JA01D` | VCC_RF high-frequency bypass |
+| C7, C9–C13 | 6 | 100 nF, X7R, 16 V, 0402 | Murata `GRM155R71C104KA88D` | U1 supply bypass |
+| C4, C14–C17 | 5 | 100 nF, X7R, 16 V, 0603 | Murata `GRM188R71C104KA01D` | TCXO and translator supply bypass |
+| C18, C19 | 2 | 4.7 µF, X7R, 25 V, 0805 | TDK `C2012X7R1E475K125AB` | 5 V input and 3.0 V LDO output |
+| R1 | 1 | 20 kΩ, 1%, 0603 | Yageo `RC0603FR-0720KL` | PLL loop filter |
+| R2–R6 | 5 | 22 Ω, 1%, 0603 | Yageo `RC0603FR-0722RL` | Initial source damping |
+| R7–R10 | 4 | 47 kΩ, 1%, 0603 | Yageo `RC0603FR-0747KL` | Configuration line defaults |
+
+The 0402 footprints keep the RF, reference and QFN bypass paths short. For U1, place C7/C8 at pin 4, C9 at pin 11, C10 at pin 13, C11 at pin 14, C12 at pin 19, and C13 at pin 23. Route the 3.0 V branches from the regulator output region with a nearby ground return at each pin. The 470 pF RF couplers follow ADI's typical application. Use the capacitor's RF model with the actual launch and interstage geometry before release. [ADI typical application](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX2769B.pdf) · [Murata 470 pF model](https://ds.murata.com/simsurfing/mlcc.html?partnumbers=%5B%22GRM1555C1H471JA01%22%5D)
+
+TI calls for at least 1 µF effective output capacitance. After the 4.7 µF part's ±10% tolerance and ±15% X7R allowance, the simple remaining budget is 3.60 µF before DC bias and aging. A loss of about 72% from that figure would reach 1 µF. Verify the effective value at 3.0 V against the chosen lot or vendor bias data if substituting. [TI TPS7A20](https://www.ti.com/lit/ds/symlink/tps7a20.pdf) · [TDK characterization](https://product.tdk.com/system/files/dam/doc/product/capacitor/ceramic/mlcc/charasheet/c2012x7r1e475k125ab.pdf)
+
+## Footprints and hot-plate assembly
+
+- **U1** — The symbol's numbered pins follow the Rev. 2 pin table. Pin 29 represents the exposed paddle. The T2855+3 package is 5 × 5 mm with 0.50 mm pitch and a 3.25 mm nominal paddle. The footprint has 0.975 × 0.25 mm peripheral lands and a 3.25 × 3.25 mm paddle. The datasheet lists separate land drawing 90-0023. The package outline and KiCad pattern were available for this check. Drawing 90-0023 remains to be checked before fabrication. [MAX2769B datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX2769B.pdf) · [ADI package outline](https://www.analog.com/media/en/package-pcb-resources/package/pkg_pdf/tqfn/21-0140.pdf)
+- **U2–U4 and Y1** — TPS7A20 DBV pin functions are IN 1, GND 2, EN 3, NC 4 and OUT 5. The TXU0104 and TXU0304 use TI's PW TSSOP-14 pin maps, including their different channel-4 directions. The Taitien TX footprint uses 1.00 × 0.90 mm pads on 2.40 × 1.80 mm centers. Its pin 1 is lower left in the top view, with GND on 2, OUT on 3 and VDD on 4. [TI regulator](https://www.ti.com/lit/ds/symlink/tps7a20.pdf) · [TI TXU0104](https://www.ti.com/lit/ds/symlink/txu0104.pdf) · [TI TXU0304](https://www.ti.com/lit/ds/symlink/txu0304.pdf) · [Taitien drawing](https://www.taitien.com/wp-content/uploads/2015/12/XO-0076_TX.pdf)
+- **Stencil** — Start with 0.10 mm laser-cut stainless and Type 3 or finer no-clean paste. Use the paste vendor's reflow profile and measure the PCB temperature at the QFN with a thermocouple. U1 has four rounded 1.31 mm square paste openings over the paddle, about 63% area coverage. Keep the paddle soldered to ground and use a short path into L2. Choose an approved filled and capped process for vias in the paste area, or place the ground vias outside the paste windows without creating a long return path. [ADI QFN assembly guidance](https://www.analog.com/en/resources/app-notes/smt-assembly-and-pcb-design-guidelines-for-maxims-standard-wirebonded-quad-flatpack.html)
+- **Connectors** — Hand-solder J1, J2 and J3 after SMT reflow. J1's local footprint keeps the KiCad 132289 copper and mask geometry with its paste openings removed. J2 and J3 retain the 2.54 mm pitch and use Würth's nominal 1.10 mm finished holes. Verify the fab's finished-hole tolerance. [Amphenol 132289](https://www.amphenolrf.com/en-us/part/132289/1030/) · [Würth J2](https://www.we-online.com/components/products/datasheet/61301621121.pdf) · [Würth J3](https://www.we-online.com/components/products/datasheet/61300211121.pdf)
 
 ## J2 host interface
 
@@ -52,7 +78,7 @@ Nominal PFD = 16.368 MHz ÷ 16 = 1.023 MHz. LO = 1536 × 1.023 MHz = 1571.328 MH
 
 ## Before fabrication
 
-The PCB has all schematic footprints and nets placed on a working outline. Select a four-layer stackup with a continuous L2 ground plane. Confirm finished thickness and tolerances for the 132289, which Amphenol specifies for up to 1.57 mm. Set the 50 Ω geometry from the fab stackup and review the launch with the connector drawing. Complete the RF routing, stitching, decoupling returns, remaining routing and planes. Run DRC and schematic parity on the final board. Confirm the RF capacitor impedance at L1, TCXO land pattern, effective LDO output capacitance and complete orderable BOM before release.
+The PCB has all schematic footprints and nets placed on a working outline. Select a four-layer stackup with a continuous L2 ground plane. Confirm finished thickness and tolerances for the 132289, which Amphenol specifies for up to 1.57 mm. Set the 50 Ω geometry from the fab stackup and review the launch with the connector drawing. Complete the RF routing, stitching, decoupling returns, remaining routing and planes. Run DRC and schematic parity on the final board. Confirm RF capacitor impedance at L1 and review the five launch edge-clearance flags with the fab before release.
 
 ## References
 
@@ -64,3 +90,5 @@ The PCB has all schematic footprints and nets placed on a working outline. Selec
 - [Taitien TX oscillator drawing](https://www.taitien.com/wp-content/uploads/2015/12/XO-0076_TX.pdf)
 - [Amphenol RF 132289](https://www.amphenolrf.com/en-us/part/132289/1030/)
 - [Raspberry Pi RP2350 datasheet](https://pip-assets.raspberrypi.com/categories/1214-rp2350/documents/RP-008373-DS-2-rp2350-datasheet.pdf?disposition=inline)
+
+The three local connector footprints are adapted from the [KiCad footprint libraries](https://www.kicad.org/libraries/license/). Their copper geometry follows the corresponding stock footprints.
