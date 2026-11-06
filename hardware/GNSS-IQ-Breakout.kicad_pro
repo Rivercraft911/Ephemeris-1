@@ -4,7 +4,9 @@
       "defaults": {},
       "diff_pair_dimensions": [],
       "drc_exclusions": [],
-      "rules": {},
+      "rules": {
+        "min_copper_edge_clearance": 0.3
+      },
       "track_widths": [],
       "via_dimensions": []
     }
@@ -29,7 +31,8 @@
       {
         "name": "SE_50",
         "priority": 0,
-        "clearance": 0.2
+        "clearance": 0.2,
+        "track_width": 0.2
       }
     ],
     "meta": {

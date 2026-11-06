@@ -2,7 +2,7 @@
 (symbol "MAX2769B" (pin_names (offset 0.9)) (in_bom yes) (on_board yes)
 (property "Reference" "U" (at -27.94 -36.83 0) (effects (font (size 1 1)) (justify left)))
 (property "Value" "MAX2769B" (at -27.94 -34.29 0) (effects (font (size 1 1)) (justify left)))
-(property "Footprint" "Package_DFN_QFN:TQFN-28-1EP_5x5mm_P0.5mm_EP3.25x3.25mm" (at 0 0 0) (effects (font (size 1 1)) (hide yes)))
+(property "Footprint" "GNSS_IQ:TQFN-28-1EP_ADI_90-0023" (at 0 0 0) (effects (font (size 1 1)) (hide yes)))
 (property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/MAX2769B.pdf" (at 0 0 0) (effects (font (size 1 1)) (hide yes)))
 (property "Description" "GNSS low-IF RF receiver with ADC" (at 0 0 0) (effects (font (size 1 1)) (hide yes)))
 (symbol "MAX2769B_0_1" (rectangle (start -27.94 31.75) (end 27.94 -31.75) (stroke (width 0.254) (type default)) (fill (type background))))

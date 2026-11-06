@@ -5,7 +5,7 @@
 - J1 is an Amphenol RF 132289 end-launch SMA. C1 blocks DC into LNA1. C2 AC-couples LNAOUT to MIXIN using the MAX2769B datasheet's direct path. Select LNA1 explicitly in firmware and leave antenna bias disabled. The first spin omits the interstage SAW filter.
 - Y1 is a 16.368 MHz clipped-sine TCXO on the receiver supply, AC-coupled to XTAL. The PLL filter uses 27 pF in parallel with a series 20 kΩ / 470 pF branch. The values follow the datasheet starting point for a 1.023 MHz comparison frequency and 0.5 mA charge pump.
 - J3 takes regulated 5 V on pin 1 and ground on pin 2. U2 produces 3.0 V, with a static tolerance range of 2.955–3.045 V at ±1.5%. The MAX2769B operating range is 2.7–3.3 V. TP2 and TP3 are the receiver rail and ground. TP1 exposes the PLL lock indication.
-- The MAX2769B is the T2855+3 package, 5 × 5 mm, 0.5 mm pitch and nominal 3.25 mm exposed pad. U1 pad 29 maps to the exposed ground paddle. The footprint uses KiCad's T2855-3 pattern and its four exposed-pad paste windows.
+- The MAX2769B is the T2855+3 package, 5 × 5 mm, 0.5 mm pitch and nominal 3.25 mm exposed pad. U1 pad 29 maps to the exposed ground paddle. The project-local footprint follows ADI land drawing 90-0023 and uses four exposed-pad paste windows.
 - U3 translates the four CMOS sample bits to host VIO. U4 translates the three configuration lines toward the receiver and the reference clock toward the host. Use 3.3 V host VIO for initial bring-up. Verify a different host's I/O voltage, thresholds and timing before connecting it. R2–R6 are initial source damping values.
 
 ## Passive parts
@@ -29,10 +29,10 @@ TI calls for at least 1 µF effective output capacitance. After the 4.7 µF part
 
 ## Footprints and hot-plate assembly
 
-- **U1** — The symbol's numbered pins follow the Rev. 2 pin table. Pin 29 represents the exposed paddle. The T2855+3 package is 5 × 5 mm with 0.50 mm pitch and a 3.25 mm nominal paddle. The footprint has 0.975 × 0.25 mm peripheral lands and a 3.25 × 3.25 mm paddle. The datasheet lists separate land drawing 90-0023. The package outline and KiCad pattern were available for this check. Drawing 90-0023 remains to be checked before fabrication. [MAX2769B datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX2769B.pdf) · [ADI package outline](https://www.analog.com/media/en/package-pcb-resources/package/pkg_pdf/tqfn/21-0140.pdf)
+- **U1** uses ADI drawing 90-0023 Rev C for T2855+3. The 28 perimeter lands are 0.95 × 0.30 mm on 0.50 mm pitch with opposing rows 4.68 mm apart. The 3.25 × 3.25 mm ground paddle is pad 29 with 0.24 mm nominal clearance to the perimeter lands. [MAX2769B datasheet](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX2769B.pdf) · [ADI package outline](https://mds.analog.com/api/public/content/tqfn_21-0140.pdf) · [ADI land pattern](https://mds.analog.com/api/public/content/90-0023.pdf)
 - **U2–U4 and Y1** — TPS7A20 DBV pin functions are IN 1, GND 2, EN 3, NC 4 and OUT 5. The TXU0104 and TXU0304 use TI's PW TSSOP-14 pin maps, including their different channel-4 directions. The Taitien TX footprint uses 1.00 × 0.90 mm pads on 2.40 × 1.80 mm centers. Its pin 1 is lower left in the top view, with GND on 2, OUT on 3 and VDD on 4. [TI regulator](https://www.ti.com/lit/ds/symlink/tps7a20.pdf) · [TI TXU0104](https://www.ti.com/lit/ds/symlink/txu0104.pdf) · [TI TXU0304](https://www.ti.com/lit/ds/symlink/txu0304.pdf) · [Taitien drawing](https://www.taitien.com/wp-content/uploads/2015/12/XO-0076_TX.pdf)
 - **Stencil** — Start with 0.10 mm laser-cut stainless and Type 3 or finer no-clean paste. Use the paste vendor's reflow profile and measure the PCB temperature at the QFN with a thermocouple. U1 has four rounded 1.31 mm square paste openings over the paddle, about 63% area coverage. Keep the paddle soldered to ground and use a short path into L2. Choose an approved filled and capped process for vias in the paste area, or place the ground vias outside the paste windows without creating a long return path. [ADI QFN assembly guidance](https://www.analog.com/en/resources/app-notes/smt-assembly-and-pcb-design-guidelines-for-maxims-standard-wirebonded-quad-flatpack.html)
-- **Connectors** — Hand-solder J1, J2 and J3 after SMT reflow. J1's local footprint keeps the KiCad 132289 copper and mask geometry with its paste openings removed. J2 and J3 retain the 2.54 mm pitch and use Würth's nominal 1.10 mm finished holes. Verify the fab's finished-hole tolerance. [Amphenol 132289](https://www.amphenolrf.com/en-us/part/132289/1030/) · [Würth J2](https://www.we-online.com/components/products/datasheet/61301621121.pdf) · [Würth J3](https://www.we-online.com/components/products/datasheet/61300211121.pdf)
+- **Connectors** — Hand-solder J1, J2 and J3 after SMT reflow. J1's local footprint uses the Amphenol copper dimensions and omits paste. J2 and J3 retain the 2.54 mm pitch and use Würth's nominal 1.10 mm finished holes. Verify the fab's finished-hole tolerance. [Amphenol 132289](https://www.amphenolrf.com/en-us/part/132289/1030/) · [Würth J2](https://www.we-online.com/components/products/datasheet/61301621121.pdf) · [Würth J3](https://www.we-online.com/components/products/datasheet/61300211121.pdf)
 
 ## J2 host interface
 
@@ -76,9 +76,29 @@ These are candidate 28-bit values derived from MAX2769B Tables 6–16. They requ
 
 Nominal PFD = 16.368 MHz ÷ 16 = 1.023 MHz. LO = 1536 × 1.023 MHz = 1571.328 MHz. GPS L1 at 1575.420 MHz lands at 4.092 MHz IF.
 
-## Before fabrication
+## PCB layout
 
-The PCB has all schematic footprints and nets placed on a working outline. Select a four-layer stackup with a continuous L2 ground plane. Confirm finished thickness and tolerances for the 132289, which Amphenol specifies for up to 1.57 mm. Set the 50 Ω geometry from the fab stackup and review the launch with the connector drawing. Complete the RF routing, stitching, decoupling returns, remaining routing and planes. Run DRC and schematic parity on the final board. Confirm RF capacitor impedance at L1 and review the five launch edge-clearance flags with the fab before release.
+The 45 × 34 mm routed outline runs from (75, 61) to (120, 95) in KiCad. The grid origin is at the upper left and the drill/place origin marker is at the lower left. The board contains the schematic footprints and ratsnest for placement and routing.
+
+Use JLCPCB's nominal 1.20 mm, four-layer FR-4 3313 impedance stack. The stack uses 1 oz outer copper and 0.5 oz inner copper. Confirm the selected stack and finished thickness in the fabrication quote. [JLCPCB 1.2 mm JLC3313 stack table](https://cart.jlcpcb.com/client/template/placeOrder/impedance.html) · [JLCPCB calculator inputs](https://jlcpcb.com/help/article/user-guide-to-the-jlcpcb-impedance-calculator)
+
+| Layer or material | Thickness (mm) | Layout use |
+| --- | ---: | --- |
+| L1 / F.Cu | 0.035 | RF, parts and local signal routing |
+| 3313 prepreg | 0.0994 | L1 to L2, design Dk ≈ 4.1 |
+| L2 / In1.Cu | 0.0152 | Solid GND reference |
+| FR-4 core | 0.865 | L2 to L3, design Dk ≈ 4.6 |
+| L3 / In2.Cu | 0.0152 | Power distribution and low-speed routes as needed |
+| 3313 prepreg | 0.0994 | L3 to L4 |
+| L4 / B.Cu | 0.035 | Secondary signals and ground |
+
+KiCad models 0.01524 mm solder mask over copper on each face. The modeled stack totals about 1.195 mm.
+
+- **RF routing.** Start with 0.20 mm trace width and a 0.20 mm gap to top ground on the `SE_50` nets. This is a grounded coplanar estimate of about 50.5 Ω with 0.0994 mm to L2, 0.035 mm copper and Dk 4.1. The estimate uses a straight uniform line in air above the board. Confirm the final mask-covered width and gap with the fab's impedance tool. Stitch the top ground to L2 around the launch and taper into the SMA land. [Grounded coplanar model](https://scikit-rf-official.readthedocs.io/en/latest/_modules/skrf/media/cpw.html) · [JLCPCB impedance calculator](https://jlcpcb.com/impedance)
+- **J1 seating.** Align the dashed `User.Drawings` line on J1 with the left `Edge.Cuts` line. The top signal land is 5.20 × 1.50 mm. The four ground lands are 4.90 × 1.60 mm on ±4.25 mm centers. All lands end at the same inboard line. Their nominal front edges sit 0.40 mm (signal) and 0.70 mm (ground) from the routed edge. The 0.40 mm signal setback leaves 0.20 mm if a regular-tolerance routed edge moves 0.20 mm inward. KiCad checks 0.30 mm minimum copper-to-edge clearance with no launch exception. [Amphenol 132289 drawing](https://datasheet.lcsc.com/datasheet/pdf/aecd7a13550ce04adaae36681a1a5d95.pdf) · [JLCPCB edge tolerances](https://jlcpcb.com/capabilities/Capab)
+- **J1 assembly fit.** At the fab's published ±10% thickness tolerance, the board is 1.08–1.32 mm versus the connector's 1.57 mm maximum. The drawing uses 1.57 mm PCB thickness and shows a nominal 1.73 mm gap between tabs. Dry-fit on 1.2 mm stock and confirm the center pin seats on top and both underside tabs can make solid solder joints before committing to this connector on the finished PCB. [Amphenol product specifications](https://www.amphenolrf.com/en-us/part/132289/1030/) · [JLCPCB thickness tolerance](https://jlcpcb.com/resources/pcb-thickness)
+
+Before fabrication, verify the launch and capacitor impedance at GPS L1, finish the routing and planes, and rerun DRC and schematic parity on the completed board.
 
 ## References
 
@@ -91,4 +111,4 @@ The PCB has all schematic footprints and nets placed on a working outline. Selec
 - [Amphenol RF 132289](https://www.amphenolrf.com/en-us/part/132289/1030/)
 - [Raspberry Pi RP2350 datasheet](https://pip-assets.raspberrypi.com/categories/1214-rp2350/documents/RP-008373-DS-2-rp2350-datasheet.pdf?disposition=inline)
 
-The three local connector footprints are adapted from the [KiCad footprint libraries](https://www.kicad.org/libraries/license/). Their copper geometry follows the corresponding stock footprints.
+The local connector and QFN footprints are adapted from the [KiCad footprint libraries](https://www.kicad.org/libraries/license/).
