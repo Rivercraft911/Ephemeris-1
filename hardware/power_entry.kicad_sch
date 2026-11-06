@@ -1,0 +1,839 @@
+(kicad_sch (version 20260123) (generator "eeschema") (generator_version "10.0")
+(uuid "e4f931d5-0648-5427-9650-828609543a11") (paper "A4") (title_block (title "Power Entry") (date "2026-11-05") (rev "A draft") (company "Personal PCBs") (comment 1 "Engineering review"))
+(lib_symbols
+(symbol "Connector_Generic:Conn_01x02"
+		(pin_names
+			(offset 1.016)
+			(hide yes)
+		)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "J"
+			(at 0 2.54 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "Conn_01x02"
+			(at 0 -5.08 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "connector"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_fp_filters" "Connector*:*_1x??_*"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "Conn_01x02_1_1"
+			(rectangle
+				(start -1.27 1.27)
+				(end 1.27 -3.81)
+				(stroke
+					(width 0.254)
+					(type default)
+				)
+				(fill
+					(type background)
+				)
+			)
+			(rectangle
+				(start -1.27 0.127)
+				(end 0 -0.127)
+				(stroke
+					(width 0.1524)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(rectangle
+				(start -1.27 -2.413)
+				(end 0 -2.667)
+				(stroke
+					(width 0.1524)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(pin passive line
+				(at -5.08 0 0)
+				(length 3.81)
+				(name "Pin_1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at -5.08 -2.54 0)
+				(length 3.81)
+				(name "Pin_2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+(symbol "GNSS_IQ:TPS7A2030PDBV" (pin_names (offset 0.9)) (in_bom yes) (on_board yes)
+(property "Reference" "U" (at -13.97 -13.97 0) (effects (font (size 1 1)) (justify left)))
+(property "Value" "TPS7A2030PDBV" (at -13.97 -11.43 0) (effects (font (size 1 1)) (justify left)))
+(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5" (at 0 0 0) (effects (font (size 1 1)) (hide yes)))
+(property "Datasheet" "https://www.ti.com/lit/ds/symlink/tps7a20.pdf" (at 0 0 0) (effects (font (size 1 1)) (hide yes)))
+(property "Description" "3.0 V low-noise linear regulator" (at 0 0 0) (effects (font (size 1 1)) (hide yes)))
+(symbol "TPS7A2030PDBV_0_1" (rectangle (start -13.97 8.89) (end 13.97 -8.89) (stroke (width 0.254) (type default)) (fill (type background))))
+(symbol "TPS7A2030PDBV_1_1"
+(pin power_in line (at -17.78 3.81 0) (length 3.81) (name "IN" (effects (font (size 1 1)))) (number "1" (effects (font (size 0.9 0.9)))))
+(pin input line (at -17.78 -3.81 0) (length 3.81) (name "EN" (effects (font (size 1 1)))) (number "3" (effects (font (size 0.9 0.9)))))
+(pin power_out line (at 17.78 3.81 180) (length 3.81) (name "OUT" (effects (font (size 1 1)))) (number "5" (effects (font (size 0.9 0.9)))))
+(pin no_connect line (at 17.78 -3.81 180) (length 3.81) (name "NC" (effects (font (size 1 1)))) (number "4" (effects (font (size 0.9 0.9)))))
+(pin power_in line (at 0 -12.7 90) (length 3.81) (name "GND" (effects (font (size 1 1)))) (number "2" (effects (font (size 0.9 0.9)))))
+))
+(symbol "Device:C"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(offset 0.254)
+		)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "C"
+			(at 0.635 2.54 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "C"
+			(at 0.635 -2.54 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 0.9652 -3.81 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "cap capacitor"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_fp_filters" "C_*"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "C_0_1"
+			(polyline
+				(pts
+					(xy -2.032 0.762) (xy 2.032 0.762)
+				)
+				(stroke
+					(width 0.508)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+			(polyline
+				(pts
+					(xy -2.032 -0.762) (xy 2.032 -0.762)
+				)
+				(stroke
+					(width 0.508)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+		)
+		(symbol "C_1_1"
+			(pin passive line
+				(at 0 3.81 270)
+				(length 2.794)
+				(name ""
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+			(pin passive line
+				(at 0 -3.81 90)
+				(length 2.794)
+				(name ""
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "2"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+(symbol "power:GND"
+		(power global)
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(offset 0)
+			(hide yes)
+		)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "#PWR"
+			(at 0 -6.35 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 0 -3.81 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "global power"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "GND_0_1"
+			(polyline
+				(pts
+					(xy 0 0) (xy 0 -1.27) (xy 1.27 -1.27) (xy 0 -2.54) (xy -1.27 -1.27) (xy 0 -1.27)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+		)
+		(symbol "GND_1_1"
+			(pin power_in line
+				(at 0 0 270)
+				(length 0)
+				(name ""
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+(symbol "power:PWR_FLAG"
+		(power global)
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(offset 0)
+			(hide yes)
+		)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "#FLG"
+			(at 0 1.905 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 0 3.81 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "flag power"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "PWR_FLAG_0_0"
+			(pin power_out line
+				(at 0 0 90)
+				(length 0)
+				(name ""
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(symbol "PWR_FLAG_0_1"
+			(polyline
+				(pts
+					(xy 0 0) (xy 0 1.27) (xy -1.016 1.905) (xy 0 2.54) (xy 1.016 1.905) (xy 0 1.27)
+				)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+(symbol "Connector:TestPoint"
+		(pin_numbers
+			(hide yes)
+		)
+		(pin_names
+			(offset 0.762)
+			(hide yes)
+		)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(duplicate_pin_numbers_are_jumpers no)
+		(property "Reference" "TP"
+			(at 0 6.858 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 0 5.08 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 5.08 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 5.08 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "test point"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_keywords" "test point tp"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "ki_fp_filters" "Pin* Test*"
+			(at 0 0 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(symbol "TestPoint_0_1"
+			(circle
+				(center 0 3.302)
+				(radius 0.762)
+				(stroke
+					(width 0)
+					(type default)
+				)
+				(fill
+					(type none)
+				)
+			)
+		)
+		(symbol "TestPoint_1_1"
+			(pin passive line
+				(at 0 0 90)
+				(length 2.54)
+				(name "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+				(number "1"
+					(effects
+						(font
+							(size 1.27 1.27)
+						)
+					)
+				)
+			)
+		)
+		(embedded_fonts no)
+	)
+)
+(text "BENCH POWER" (at 31.75 38.1 0) (effects (font (size 1.4 1.4) (bold yes)) (justify left top)) (uuid "4892abd2-b780-55ca-9248-2c0bf4176635"))
+(text "5 V nominal at J3. Design input 4.75 to 5.25 V." (at 31.75 43.18 0) (effects (font (size 1.05 1.05)) (justify left top)) (uuid "6cb1b6b8-a3e5-5436-a4c0-e0bb7bb88707"))
+(text "RX_3V0 serves U1, the TCXO and the receiver side of both translators." (at 31.75 48.26 0) (effects (font (size 1.05 1.05)) (justify left top)) (uuid "45566aab-b3d6-52e0-ae98-0d2320bd6e65"))
+(symbol (lib_id "Connector_Generic:Conn_01x02") (at 45.72 81.28 180)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "914879bd-c35e-57b2-b9fb-f585cd8d857c")
+(property "Reference" "J3" (at 43.18 71.12 0) (effects (font (size 1 1))))
+(property "Value" "5V IN" (at 43.18 73.66 0) (effects (font (size 1 1))))
+(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" (at 45.72 81.28 0) (effects (font (size 1 1)) (hide yes)))
+(property "Datasheet" "" (at 45.72 81.28 0) (effects (font (size 1 1)) (hide yes)))
+(property "Description" "" (at 45.72 81.28 0) (effects (font (size 1 1)) (hide yes)))
+(property "MPN" "61300211121" (at 45.72 81.28 0) (effects (font (size 1 1)) (hide yes)))
+(property "Manufacturer" "Würth Elektronik" (at 45.72 81.28 0) (effects (font (size 1 1)) (hide yes)))
+(pin "1" (uuid "05aacacc-6ab6-533b-b4f0-564197c54882"))
+(pin "2" (uuid "8d216997-d6aa-5cdf-9b22-09d3dca3cc64"))
+(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/31f468c1-fab8-54fd-abbb-bd936e3b81cb" (reference "J3") (unit 1)))))
+(symbol (lib_id "GNSS_IQ:TPS7A2030PDBV") (at 129.54 85.09 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "5790a6f0-ab1c-5b7f-86e5-ae922eb5e362")
+(property "Reference" "U2" (at 115.57 71.12 0) (effects (font (size 1 1)) (justify left)))
+(property "Value" "TPS7A2030PDBVR" (at 115.57 73.66 0) (effects (font (size 1 1)) (justify left)))
+(property "Footprint" "Package_TO_SOT_SMD:SOT-23-5" (at 129.54 85.09 0) (effects (font (size 1 1)) (hide yes)))
+(property "Datasheet" "https://www.ti.com/lit/ds/symlink/tps7a20.pdf" (at 129.54 85.09 0) (effects (font (size 1 1)) (hide yes)))
+(property "Description" "" (at 129.54 85.09 0) (effects (font (size 1 1)) (hide yes)))
+(property "MPN" "TPS7A2030PDBVR" (at 129.54 85.09 0) (effects (font (size 1 1)) (hide yes)))
+(property "Manufacturer" "Texas Instruments" (at 129.54 85.09 0) (effects (font (size 1 1)) (hide yes)))
+(pin "1" (uuid "b84ca444-adf2-53ca-8b87-7f1cbb82434d"))
+(pin "3" (uuid "1dd7c723-134e-51c2-b053-428ab3626435"))
+(pin "5" (uuid "47ae431c-cd62-5467-b5b2-d04ab15bef4e"))
+(pin "4" (uuid "30fda8ca-7aa3-572b-88a7-57ee68443244"))
+(pin "2" (uuid "ea758460-d7cc-5f17-a7d6-98b9eb24cf0d"))
+(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/31f468c1-fab8-54fd-abbb-bd936e3b81cb" (reference "U2") (unit 1)))))
+(symbol (lib_id "Device:C") (at 81.28 88.9 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "20c0d5c4-89aa-588d-ba68-3edc785b63df")
+(property "Reference" "C18" (at 85.09 87.63 0) (effects (font (size 1 1)) (justify left)))
+(property "Value" "4.7u" (at 85.09 90.17 0) (effects (font (size 1 1)) (justify left)))
+(property "Footprint" "Capacitor_SMD:C_0603_1608Metric" (at 81.28 88.9 0) (effects (font (size 1 1)) (hide yes)))
+(property "Datasheet" "" (at 81.28 88.9 0) (effects (font (size 1 1)) (hide yes)))
+(property "Description" "" (at 81.28 88.9 0) (effects (font (size 1 1)) (hide yes)))
+(property "MPN" "GRM188Z71A475KE15D" (at 81.28 88.9 0) (effects (font (size 1 1)) (hide yes)))
+(property "Manufacturer" "Murata" (at 81.28 88.9 0) (effects (font (size 1 1)) (hide yes)))
+(pin "1" (uuid "86ede588-669f-56ed-ba08-7e46d6621f16"))
+(pin "2" (uuid "e2a5b56b-aa50-568e-b8b2-cec858f52351"))
+(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/31f468c1-fab8-54fd-abbb-bd936e3b81cb" (reference "C18") (unit 1)))))
+(wire (pts (xy 81.28 85.09) (xy 81.28 81.28)) (stroke (width 0.254) (type default)) (uuid "7ddb97a3-8195-5626-940f-5b1414e6e530"))
+(wire (pts (xy 81.28 92.71) (xy 81.28 95.25)) (stroke (width 0.254) (type default)) (uuid "00c8a16a-1e50-5edb-adeb-c3f03cecf21c"))
+(symbol (lib_id "power:GND") (at 81.28 95.25 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "d4cec402-6f67-5673-a975-e3bab83c4964")
+(property "Reference" "#PWRpower_entry5" (at 81.28 95.25 0) (effects (font (size 1 1)) (hide yes)))
+(property "Value" "GND" (at 81.28 100.33 0) (effects (font (size 1 1))))
+(property "Footprint" "" (at 81.28 95.25 0) (effects (font (size 1 1)) (hide yes)))
+(property "Datasheet" "" (at 81.28 95.25 0) (effects (font (size 1 1)) (hide yes)))
+(property "Description" "" (at 81.28 95.25 0) (effects (font (size 1 1)) (hide yes)))
+(pin "1" (uuid "0e0ecba9-720e-5e5c-b61c-e023662d8111"))
+(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/31f468c1-fab8-54fd-abbb-bd936e3b81cb" (reference "#PWRpower_entry5") (unit 1)))))
+(symbol (lib_id "Device:C") (at 172.72 88.9 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "52c4eebc-ec5c-547c-aed0-f4a6c6170ee0")
+(property "Reference" "C19" (at 176.53 87.63 0) (effects (font (size 1 1)) (justify left)))
+(property "Value" "4.7u" (at 176.53 90.17 0) (effects (font (size 1 1)) (justify left)))
+(property "Footprint" "Capacitor_SMD:C_0603_1608Metric" (at 172.72 88.9 0) (effects (font (size 1 1)) (hide yes)))
+(property "Datasheet" "" (at 172.72 88.9 0) (effects (font (size 1 1)) (hide yes)))
+(property "Description" "" (at 172.72 88.9 0) (effects (font (size 1 1)) (hide yes)))
+(property "MPN" "GRM188Z71A475KE15D" (at 172.72 88.9 0) (effects (font (size 1 1)) (hide yes)))
+(property "Manufacturer" "Murata" (at 172.72 88.9 0) (effects (font (size 1 1)) (hide yes)))
+(pin "1" (uuid "93a13386-44e4-55f4-abb2-712020b6ac04"))
+(pin "2" (uuid "394399fc-4897-5402-a824-3ff829951cac"))
+(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/31f468c1-fab8-54fd-abbb-bd936e3b81cb" (reference "C19") (unit 1)))))
+(wire (pts (xy 172.72 85.09) (xy 172.72 81.28)) (stroke (width 0.254) (type default)) (uuid "27b9d73d-1252-5dad-9c87-30d556a0c012"))
+(wire (pts (xy 172.72 92.71) (xy 172.72 95.25)) (stroke (width 0.254) (type default)) (uuid "99175568-b91b-52ec-93c0-55be9cb00b28"))
+(symbol (lib_id "power:GND") (at 172.72 95.25 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "76bcc07e-0c05-50ac-9ef1-5ec5666a1752")
+(property "Reference" "#PWRpower_entry8" (at 172.72 95.25 0) (effects (font (size 1 1)) (hide yes)))
+(property "Value" "GND" (at 172.72 100.33 0) (effects (font (size 1 1))))
+(property "Footprint" "" (at 172.72 95.25 0) (effects (font (size 1 1)) (hide yes)))
+(property "Datasheet" "" (at 172.72 95.25 0) (effects (font (size 1 1)) (hide yes)))
+(property "Description" "" (at 172.72 95.25 0) (effects (font (size 1 1)) (hide yes)))
+(pin "1" (uuid "0c4ad742-9948-55f1-8f2d-95455c0350d5"))
+(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/31f468c1-fab8-54fd-abbb-bd936e3b81cb" (reference "#PWRpower_entry8") (unit 1)))))
+(wire (pts (xy 50.8 81.28) (xy 66.04 81.28)) (stroke (width 0.254) (type default)) (uuid "455968ba-3201-51c0-9874-154854c1d470"))
+(wire (pts (xy 66.04 81.28) (xy 81.28 81.28)) (stroke (width 0.254) (type default)) (uuid "563e360f-2e02-5a39-bfd4-43cd1ccfd622"))
+(wire (pts (xy 81.28 81.28) (xy 102.87 81.28)) (stroke (width 0.254) (type default)) (uuid "a5216d9a-7557-57c9-a43a-5b244e6889a7"))
+(wire (pts (xy 102.87 81.28) (xy 111.76 81.28)) (stroke (width 0.254) (type default)) (uuid "f92aceda-e6ac-5f20-829d-9d5593a8b39c"))
+(label "VIN_5V" (at 58.42 81.28 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "58b53669-0f5f-5480-8574-8fc935600063"))
+(wire (pts (xy 102.87 81.28) (xy 102.87 88.9)) (stroke (width 0.254) (type default)) (uuid "1ac51de5-1ef3-5421-816f-573e9363c5c0"))
+(wire (pts (xy 102.87 88.9) (xy 111.76 88.9)) (stroke (width 0.254) (type default)) (uuid "618e7419-a4ce-5b96-92bd-21c2e07eb257"))
+(junction (at 81.28 81.28) (diameter 0) (color 0 0 0 0) (uuid "c600aab0-9824-5533-83ca-d903bcd72d19"))
+(junction (at 102.87 81.28) (diameter 0) (color 0 0 0 0) (uuid "e2af4de6-705a-589e-948b-78424c73995a"))
+(junction (at 66.04 81.28) (diameter 0) (color 0 0 0 0) (uuid "5c57eef5-feb6-5750-b0a2-c95c3c92f030"))
+(symbol (lib_id "power:PWR_FLAG") (at 66.04 81.28 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "61737678-ffe2-590a-bb20-2d246d74af74")
+(property "Reference" "#FLGpower_entry19" (at 66.04 81.28 0) (effects (font (size 1 1)) (hide yes)))
+(property "Value" "PWR_FLAG" (at 66.04 86.36 0) (effects (font (size 1 1)) (hide yes)))
+(property "Footprint" "" (at 66.04 81.28 0) (effects (font (size 1 1)) (hide yes)))
+(property "Datasheet" "" (at 66.04 81.28 0) (effects (font (size 1 1)) (hide yes)))
+(property "Description" "" (at 66.04 81.28 0) (effects (font (size 1 1)) (hide yes)))
+(pin "1" (uuid "c481a4ec-f928-5acc-b67e-824b81774754"))
+(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/31f468c1-fab8-54fd-abbb-bd936e3b81cb" (reference "#FLGpower_entry19") (unit 1)))))
+(wire (pts (xy 50.8 78.74) (xy 55.88 78.74)) (stroke (width 0.254) (type default)) (uuid "3399299e-6897-572f-8faa-323d418a33e7"))
+(wire (pts (xy 55.88 78.74) (xy 55.88 66.04)) (stroke (width 0.254) (type default)) (uuid "aba7f995-7c43-590c-899c-9de985b75ac7"))
+(wire (pts (xy 55.88 66.04) (xy 62.23 66.04)) (stroke (width 0.254) (type default)) (uuid "fb449bbc-e60f-57f7-b0a9-304bdc571046"))
+(wire (pts (xy 62.23 66.04) (xy 62.23 69.85)) (stroke (width 0.254) (type default)) (uuid "38a19c53-d657-5a6a-bcdd-b1066437fd8d"))
+(symbol (lib_id "power:GND") (at 62.23 69.85 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "5d892d5d-df9d-5815-9578-35f24d11000d")
+(property "Reference" "#PWRpower_entry24" (at 62.23 69.85 0) (effects (font (size 1 1)) (hide yes)))
+(property "Value" "GND" (at 62.23 74.93 0) (effects (font (size 1 1))))
+(property "Footprint" "" (at 62.23 69.85 0) (effects (font (size 1 1)) (hide yes)))
+(property "Datasheet" "" (at 62.23 69.85 0) (effects (font (size 1 1)) (hide yes)))
+(property "Description" "" (at 62.23 69.85 0) (effects (font (size 1 1)) (hide yes)))
+(pin "1" (uuid "e1a5cc30-5b2c-5263-b750-18ffa689bfda"))
+(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/31f468c1-fab8-54fd-abbb-bd936e3b81cb" (reference "#PWRpower_entry24") (unit 1)))))
+(symbol (lib_id "power:PWR_FLAG") (at 55.88 66.04 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "45ef7044-8eec-5e7e-a30a-ca45bb7d7006")
+(property "Reference" "#FLGpower_entry25" (at 55.88 66.04 0) (effects (font (size 1 1)) (hide yes)))
+(property "Value" "PWR_FLAG" (at 55.88 71.12 0) (effects (font (size 1 1)) (hide yes)))
+(property "Footprint" "" (at 55.88 66.04 0) (effects (font (size 1 1)) (hide yes)))
+(property "Datasheet" "" (at 55.88 66.04 0) (effects (font (size 1 1)) (hide yes)))
+(property "Description" "" (at 55.88 66.04 0) (effects (font (size 1 1)) (hide yes)))
+(pin "1" (uuid "49d6a249-cd93-5ef8-8dbe-a3773648cd97"))
+(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/31f468c1-fab8-54fd-abbb-bd936e3b81cb" (reference "#FLGpower_entry25") (unit 1)))))
+(no_connect (at 147.32 88.9) (uuid "105655f7-2620-5b4c-bcef-dd12bfcbc0d9"))
+(wire (pts (xy 129.54 97.79) (xy 129.54 101.6)) (stroke (width 0.254) (type default)) (uuid "2ec3c837-1593-5d75-a805-8b58c82e3bf0"))
+(symbol (lib_id "power:GND") (at 129.54 101.6 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "cab0cfbd-01b6-5edf-b215-5541f7024ab8")
+(property "Reference" "#PWRpower_entry28" (at 129.54 101.6 0) (effects (font (size 1 1)) (hide yes)))
+(property "Value" "GND" (at 129.54 106.68 0) (effects (font (size 1 1))))
+(property "Footprint" "" (at 129.54 101.6 0) (effects (font (size 1 1)) (hide yes)))
+(property "Datasheet" "" (at 129.54 101.6 0) (effects (font (size 1 1)) (hide yes)))
+(property "Description" "" (at 129.54 101.6 0) (effects (font (size 1 1)) (hide yes)))
+(pin "1" (uuid "466f0d56-c8a6-5336-abe0-eb1c42f5ef57"))
+(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/31f468c1-fab8-54fd-abbb-bd936e3b81cb" (reference "#PWRpower_entry28") (unit 1)))))
+(wire (pts (xy 147.32 81.28) (xy 172.72 81.28)) (stroke (width 0.254) (type default)) (uuid "b27df4d5-5d3b-5ffc-8dca-ee3d2efd635b"))
+(wire (pts (xy 172.72 81.28) (xy 191.77 81.28)) (stroke (width 0.254) (type default)) (uuid "de96bd98-8413-5278-99d8-a969cacacca7"))
+(wire (pts (xy 191.77 81.28) (xy 218.44 81.28)) (stroke (width 0.254) (type default)) (uuid "9f6c6578-51a8-5497-bb59-4476102aac6b"))
+(junction (at 172.72 81.28) (diameter 0) (color 0 0 0 0) (uuid "274c8643-1547-5611-9e1c-97bafbbfda19"))
+(junction (at 191.77 81.28) (diameter 0) (color 0 0 0 0) (uuid "888347ff-ed37-52db-8b81-49a7a5a0c090"))
+(wire (pts (xy 191.77 81.28) (xy 191.77 73.66)) (stroke (width 0.254) (type default)) (uuid "2e45e467-8495-5162-b33c-bd220ae4b4be"))
+(symbol (lib_id "Connector:TestPoint") (at 191.77 73.66 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "8aea5ee2-5623-51bd-b632-7b775c9695b8")
+(property "Reference" "TP2" (at 195.58 67.31 0) (effects (font (size 1 1)) (justify left)))
+(property "Value" "RX_3V0" (at 195.58 69.85 0) (effects (font (size 1 1)) (justify left)))
+(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm" (at 191.77 73.66 0) (effects (font (size 1 1)) (hide yes)))
+(property "Datasheet" "" (at 191.77 73.66 0) (effects (font (size 1 1)) (hide yes)))
+(property "Description" "" (at 191.77 73.66 0) (effects (font (size 1 1)) (hide yes)))
+(pin "1" (uuid "273023e4-6b10-52a3-94c8-7cc5c26f5abd"))
+(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/31f468c1-fab8-54fd-abbb-bd936e3b81cb" (reference "TP2") (unit 1)))))
+(hierarchical_label "RX_3V0" (shape output) (at 218.44 81.28 0) (effects (font (size 1.12 1.12)) (justify left)) (uuid "1270459f-d5b7-5bf4-9f2c-a18bd83e23af"))
+(symbol (lib_id "Connector:TestPoint") (at 191.77 99.06 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "a8b33cb2-f317-5f71-a4ab-c05ede23043c")
+(property "Reference" "TP3" (at 195.58 92.71 0) (effects (font (size 1 1)) (justify left)))
+(property "Value" "GND" (at 195.58 95.25 0) (effects (font (size 1 1)) (justify left)))
+(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm" (at 191.77 99.06 0) (effects (font (size 1 1)) (hide yes)))
+(property "Datasheet" "" (at 191.77 99.06 0) (effects (font (size 1 1)) (hide yes)))
+(property "Description" "" (at 191.77 99.06 0) (effects (font (size 1 1)) (hide yes)))
+(pin "1" (uuid "8de9f413-2d6b-5609-a118-660fa4b8879f"))
+(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/31f468c1-fab8-54fd-abbb-bd936e3b81cb" (reference "TP3") (unit 1)))))
+(wire (pts (xy 191.77 99.06) (xy 191.77 104.14)) (stroke (width 0.254) (type default)) (uuid "4ad2b694-dfe9-5342-86e8-ec9a3f31711e"))
+(symbol (lib_id "power:GND") (at 191.77 104.14 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "3c36250a-e525-52dc-bcfe-fe32df1242fc")
+(property "Reference" "#PWRpower_entry37" (at 191.77 104.14 0) (effects (font (size 1 1)) (hide yes)))
+(property "Value" "GND" (at 191.77 109.22 0) (effects (font (size 1 1))))
+(property "Footprint" "" (at 191.77 104.14 0) (effects (font (size 1 1)) (hide yes)))
+(property "Datasheet" "" (at 191.77 104.14 0) (effects (font (size 1 1)) (hide yes)))
+(property "Description" "" (at 191.77 104.14 0) (effects (font (size 1 1)) (hide yes)))
+(pin "1" (uuid "026e9c1d-47eb-57f6-b8ba-3bd86de9400a"))
+(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/31f468c1-fab8-54fd-abbb-bd936e3b81cb" (reference "#PWRpower_entry37") (unit 1)))))
+(text "U2 output tolerance ±1.5% gives 2.955 to 3.045 V before transient effects." (at 33.02 121.92 0) (effects (font (size 1.05 1.05)) (justify left top)) (uuid "f0e3ebfb-cf07-5bb6-ab4b-acdafe34d03c"))
+(text "Check C19 retains at least 1 µF effective capacitance at bias." (at 33.02 127 0) (effects (font (size 1.05 1.05)) (justify left top)) (uuid "2a7263cd-6d3d-5f66-870c-396236a5a12e"))
+(text "Host VIO is a separate input on J2. Tie the host and board grounds together." (at 33.02 132.08 0) (effects (font (size 1.05 1.05)) (justify left top)) (uuid "b25f1762-53f9-57e6-8a1e-dfd89328c602"))
+
+)
