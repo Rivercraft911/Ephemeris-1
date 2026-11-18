@@ -1,6 +1,6 @@
 # Ephemeris 1
 
-Tired of $10,000 spacecraft GNSS quotes? About $33 in parts buys the front end of our own GPS L1 receiver. Some soldering required.
+Tired of $10,000 spacecraft GNSS quotes? About $33 in parts buys the front end of our own GPS L1 receiver.
 
 ![Angled views of Ephemeris 1 in black with white silkscreen. The front has the SMA antenna input and I/Q header. The back shows four navigation satellites above Earth.](https://github.com/Rivercraft911/Ephemeris-1/releases/download/first-boards/ephemeris-1.png)
 
