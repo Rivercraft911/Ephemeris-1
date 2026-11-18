@@ -1,9 +1,9 @@
-# GNSS I/Q Breakout
+# Ephemeris 1
 
-Rev A is a GPS L1 bench front end for the MAX2769BETI/V+T. It accepts a passive antenna or an externally biased RF feed through a DC-blocked 50 Ω SMA input and exposes parallel I/Q and configuration on a ground-interleaved host header. The first capture target is an external RP2350B using PIO and DMA.
+Tired of $10,000 spacecraft GNSS quotes? About $33 in parts buys the front end of our own GPS L1 receiver. Some soldering required.
 
-Open [the KiCad 10 project](hardware/GNSS-IQ-Breakout.kicad_pro). The root sheet connects **RF and ADC**, **Host Interface**, and **Power Entry**. The `{IQ}` and `{CFG}` bus aliases break out on the child sheets. The board file has a 45 × 34 mm outline and a nominal 1.2 mm, four-layer JLC3313 stackup ready for placement and routing.
+![Angled views of Ephemeris 1 in black with white silkscreen. The front has the SMA antenna input and I/Q header. The back shows four navigation satellites above Earth.](https://github.com/Rivercraft911/Ephemeris-1/releases/download/first-boards/ephemeris-1.png)
 
-- [PCB stackup and SMA seating](docs/design.md#pcb-layout)
-- [Design sources, header and bring-up](docs/design.md)
-- [Project drawing and verification conventions](AGENTS.md)
+The MAX2769B takes GPS L1 in through the SMA and sends raw I/Q samples to the host header. The first boards are here. Next up is capture on an RP2350B, then hardware-in-the-loop testing with a Safran GNSS simulator.
+
+[Interactive assembly BOM](https://rivercraft911.github.io/Ephemeris-1/assembly/ibom.html) · [Parts and cost](docs/ordering-bom.md) · [KiCad](hardware/GNSS-IQ-Breakout.kicad_pro) · [Bring-up](docs/design.md#first-capture)
