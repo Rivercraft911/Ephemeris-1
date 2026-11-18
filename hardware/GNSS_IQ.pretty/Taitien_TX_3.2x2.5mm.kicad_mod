@@ -15,4 +15,9 @@
   (pad "2" smd roundrect (at 1.2 0.9) (size 1 0.9) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.1))
   (pad "3" smd roundrect (at 1.2 -0.9) (size 1 0.9) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.1))
   (pad "4" smd roundrect (at -1.2 -0.9) (size 1 0.9) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.1))
+	(model "${KICAD10_3DMODEL_DIR}/Crystal.3dshapes/Crystal_SMD_3225-4Pin_3.2x2.5mm.step"
+		(offset (xyz 0 0 0))
+		(scale (xyz 1 1 1.40625))
+		(rotate (xyz 0 0 0))
+	)
 )

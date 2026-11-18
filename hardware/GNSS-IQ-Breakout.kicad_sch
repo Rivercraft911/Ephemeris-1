@@ -1,41 +1,293 @@
-(kicad_sch (version 20260123) (generator "eeschema") (generator_version "10.0")
-(uuid "d871b2cd-8d2e-5392-9100-97a3051b8fc7") (paper "A4") (title_block (title "MAX2769B GNSS I/Q Breakout") (date "2026-11-05") (rev "A draft") (company "Personal PCBs") (comment 1 "Engineering review"))
-(lib_symbols
-
-)
-(text "MAX2769B GNSS I/Q Breakout" (at 142.24 35.56 0) (effects (font (size 2.6 2.6) (bold yes))) (uuid "6ea1fdee-0738-5c5d-a19d-c7e118748e5e"))
-(bus_alias "IQ" (members "I1" "I0" "Q1" "Q0" "CLKOUT"))
-(bus_alias "CFG" (members "CS_N" "SCLK" "SDATA"))
-(sheet (at 72.39 95.25) (size 58.42 27.94) (in_bom yes) (on_board yes) (dnp no)
-(stroke (width 0.254) (type default)) (fill (color 0 0 0 0))
-(uuid "cc384aa3-b908-528a-b8f0-f1576de02236")
-(property "Sheetname" "RF and ADC" (at 72.39 94.488 0) (effects (font (size 1.4 1.4)) (justify left bottom)))
-(property "Sheetfile" "rf_adc.kicad_sch" (at 72.39 123.952 0) (effects (font (size 0.95 0.95)) (justify left top)))
-(pin "RX_3V0" input (at 130.81 100.33 0) (effects (font (size 1.05 1.05)) (justify right)) (uuid "0ddc651c-855b-500f-bd9c-32a40a5767dc"))
-(pin "{IQ}" output (at 130.81 107.95 0) (effects (font (size 1.05 1.05)) (justify right)) (uuid "d70786d0-59c2-5294-8f33-90484d4c80b9"))
-(pin "{CFG}" input (at 130.81 115.57 0) (effects (font (size 1.05 1.05)) (justify right)) (uuid "521f9da9-1a15-5500-b11f-ef9829fbf4bf"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7" (page "2")))))
-(sheet (at 153.67 95.25) (size 58.42 27.94) (in_bom yes) (on_board yes) (dnp no)
-(stroke (width 0.254) (type default)) (fill (color 0 0 0 0))
-(uuid "8f59c0e9-3e99-5b0e-9f4c-4763f8220f28")
-(property "Sheetname" "Host Interface" (at 153.67 94.488 0) (effects (font (size 1.4 1.4)) (justify left bottom)))
-(property "Sheetfile" "host_interface.kicad_sch" (at 153.67 123.952 0) (effects (font (size 0.95 0.95)) (justify left top)))
-(pin "RX_3V0" input (at 153.67 100.33 180) (effects (font (size 1.05 1.05)) (justify left)) (uuid "f232a101-7ddc-524f-ae8b-00f405898397"))
-(pin "{IQ}" input (at 153.67 107.95 180) (effects (font (size 1.05 1.05)) (justify left)) (uuid "3ad58e26-70c2-5140-8f5a-a94d0fdd23f5"))
-(pin "{CFG}" output (at 153.67 115.57 180) (effects (font (size 1.05 1.05)) (justify left)) (uuid "486a7d16-9435-52aa-86f0-285bfaf7e6a4"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7" (page "3")))))
-(sheet (at 119.38 63.5) (size 45.72 17.78) (in_bom yes) (on_board yes) (dnp no)
-(stroke (width 0.254) (type default)) (fill (color 0 0 0 0))
-(uuid "31f468c1-fab8-54fd-abbb-bd936e3b81cb")
-(property "Sheetname" "Power Entry" (at 119.38 62.738 0) (effects (font (size 1.4 1.4)) (justify left bottom)))
-(property "Sheetfile" "power_entry.kicad_sch" (at 119.38 82.042 0) (effects (font (size 0.95 0.95)) (justify left top)))
-(pin "RX_3V0" output (at 142.24 81.28 270) (effects (font (size 1.05 1.05)) (justify left)) (uuid "6fdb9028-f516-5722-81b7-8928864d293c"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7" (page "4")))))
-(bus (pts (xy 130.81 107.95) (xy 153.67 107.95)) (stroke (width 0.51) (type default)) (uuid "0e18506d-c383-590a-9b96-b987059b7563"))
-(bus (pts (xy 130.81 115.57) (xy 153.67 115.57)) (stroke (width 0.51) (type default)) (uuid "9d42dde4-cdc6-536b-859b-d0c00cc10bdf"))
-(wire (pts (xy 130.81 100.33) (xy 142.24 100.33)) (stroke (width 0.254) (type default)) (uuid "50ee6f26-7595-5611-b7df-7d15ebe2cd2d"))
-(wire (pts (xy 142.24 100.33) (xy 153.67 100.33)) (stroke (width 0.254) (type default)) (uuid "fd75b8d4-0720-56ff-bc0e-1906dfb9d734"))
-(wire (pts (xy 142.24 81.28) (xy 142.24 100.33)) (stroke (width 0.254) (type default)) (uuid "3c58947c-4cf7-5bd6-8bfe-2113d1bc6c38"))
-(junction (at 142.24 100.33) (diameter 0) (color 0 0 0 0) (uuid "2ce5f106-b1b0-594a-a52f-fdba619597f8"))
-(sheet_instances (path "/" (page "1")))
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "d871b2cd-8d2e-5392-9100-97a3051b8fc7")
+	(paper "A4")
+	(title_block
+		(title "Ephemeris 1 — GNSS I/Q")
+		(date "2026-11-05")
+		(rev "1.0")
+		(company "Personal PCBs")
+		(comment 1 "Engineering review")
+	)
+	(lib_symbols)
+	(text "Ephemeris 1 — GNSS I/Q"
+		(exclude_from_sim no)
+		(at 142.24 35.56 0)
+		(effects
+			(font
+				(size 3 3)
+				(bold yes)
+			)
+		)
+		(uuid "6ea1fdee-0738-5c5d-a19d-c7e118748e5e")
+	)
+	(junction
+		(at 142.24 100.33)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2ce5f106-b1b0-594a-a52f-fdba619597f8")
+	)
+	(bus
+		(pts
+			(xy 130.81 107.95) (xy 153.67 107.95)
+		)
+		(stroke
+			(width 0.51)
+			(type default)
+		)
+		(uuid "0e18506d-c383-590a-9b96-b987059b7563")
+	)
+	(wire
+		(pts
+			(xy 142.24 81.28) (xy 142.24 100.33)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "3c58947c-4cf7-5bd6-8bfe-2113d1bc6c38")
+	)
+	(wire
+		(pts
+			(xy 130.81 100.33) (xy 142.24 100.33)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "50ee6f26-7595-5611-b7df-7d15ebe2cd2d")
+	)
+	(bus
+		(pts
+			(xy 130.81 115.57) (xy 153.67 115.57)
+		)
+		(stroke
+			(width 0.51)
+			(type default)
+		)
+		(uuid "9d42dde4-cdc6-536b-859b-d0c00cc10bdf")
+	)
+	(wire
+		(pts
+			(xy 142.24 100.33) (xy 153.67 100.33)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "fd75b8d4-0720-56ff-bc0e-1906dfb9d734")
+	)
+	(sheet
+		(at 119.38 63.5)
+		(size 45.72 17.78)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.254)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "31f468c1-fab8-54fd-abbb-bd936e3b81cb")
+		(property "Sheetname" "Power Entry"
+			(at 119.38 62.738 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.4 1.4)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "power_entry.kicad_sch"
+			(at 119.38 82.042 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.95 0.95)
+				)
+				(justify left top)
+			)
+		)
+		(pin "RX_3V0" output
+			(at 142.24 81.28 270)
+			(uuid "6fdb9028-f516-5722-81b7-8928864d293c")
+			(effects
+				(font
+					(size 1.05 1.05)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 153.67 95.25)
+		(size 58.42 27.94)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.254)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "8f59c0e9-3e99-5b0e-9f4c-4763f8220f28")
+		(property "Sheetname" "Host Interface"
+			(at 153.67 94.488 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.4 1.4)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "host_interface.kicad_sch"
+			(at 153.67 123.952 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.95 0.95)
+				)
+				(justify left top)
+			)
+		)
+		(pin "RX_3V0" input
+			(at 153.67 100.33 180)
+			(uuid "f232a101-7ddc-524f-ae8b-00f405898397")
+			(effects
+				(font
+					(size 1.05 1.05)
+				)
+				(justify left)
+			)
+		)
+		(pin "{IQ}" input
+			(at 153.67 107.95 180)
+			(uuid "3ad58e26-70c2-5140-8f5a-a94d0fdd23f5")
+			(effects
+				(font
+					(size 1.05 1.05)
+				)
+				(justify left)
+			)
+		)
+		(pin "{CFG}" output
+			(at 153.67 115.57 180)
+			(uuid "486a7d16-9435-52aa-86f0-285bfaf7e6a4")
+			(effects
+				(font
+					(size 1.05 1.05)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 72.39 95.25)
+		(size 58.42 27.94)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.254)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "cc384aa3-b908-528a-b8f0-f1576de02236")
+		(property "Sheetname" "RF and ADC"
+			(at 72.39 94.488 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.4 1.4)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "rf_adc.kicad_sch"
+			(at 72.39 123.952 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.95 0.95)
+				)
+				(justify left top)
+			)
+		)
+		(pin "RX_3V0" input
+			(at 130.81 100.33 0)
+			(uuid "0ddc651c-855b-500f-bd9c-32a40a5767dc")
+			(effects
+				(font
+					(size 1.05 1.05)
+				)
+				(justify right)
+			)
+		)
+		(pin "{IQ}" output
+			(at 130.81 107.95 0)
+			(uuid "d70786d0-59c2-5294-8f33-90484d4c80b9")
+			(effects
+				(font
+					(size 1.05 1.05)
+				)
+				(justify right)
+			)
+		)
+		(pin "{CFG}" input
+			(at 130.81 115.57 0)
+			(uuid "521f9da9-1a15-5500-b11f-ef9829fbf4bf")
+			(effects
+				(font
+					(size 1.05 1.05)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
 )

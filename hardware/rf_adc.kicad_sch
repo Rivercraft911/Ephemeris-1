@@ -1,1378 +1,5659 @@
-(kicad_sch (version 20260123) (generator "eeschema") (generator_version "10.0")
-(uuid "f43398a6-16f4-5db9-9282-ecf4cf071e1f") (paper "A4") (title_block (title "RF and ADC") (date "2026-11-05") (rev "A draft") (company "Personal PCBs") (comment 1 "Engineering review"))
-(lib_symbols
-(symbol "GNSS_IQ:MAX2769B" (pin_names (offset 0.9)) (in_bom yes) (on_board yes)
-(property "Reference" "U" (at -27.94 -36.83 0) (effects (font (size 1 1)) (justify left)))
-(property "Value" "MAX2769B" (at -27.94 -34.29 0) (effects (font (size 1 1)) (justify left)))
-(property "Footprint" "GNSS_IQ:TQFN-28-1EP_ADI_90-0023" (at 0 0 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/MAX2769B.pdf" (at 0 0 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "GNSS low-IF RF receiver with ADC" (at 0 0 0) (effects (font (size 1 1)) (hide yes)))
-(symbol "MAX2769B_0_1" (rectangle (start -27.94 31.75) (end 27.94 -31.75) (stroke (width 0.254) (type default)) (fill (type background))))
-(symbol "MAX2769B_1_1"
-(pin input line (at -31.75 25.4 0) (length 3.81) (name "LNA1" (effects (font (size 1 1)))) (number "27" (effects (font (size 0.9 0.9)))))
-(pin output line (at -31.75 20.32 0) (length 3.81) (name "LNAOUT" (effects (font (size 1 1)))) (number "2" (effects (font (size 0.9 0.9)))))
-(pin input line (at -31.75 15.24 0) (length 3.81) (name "MIXIN" (effects (font (size 1 1)))) (number "5" (effects (font (size 0.9 0.9)))))
-(pin input line (at -31.75 10.16 0) (length 3.81) (name "XTAL" (effects (font (size 1 1)))) (number "15" (effects (font (size 0.9 0.9)))))
-(pin output line (at -31.75 5.08 0) (length 3.81) (name "CPOUT" (effects (font (size 1 1)))) (number "12" (effects (font (size 0.9 0.9)))))
-(pin input line (at -31.75 0 0) (length 3.81) (name "PGM" (effects (font (size 1 1)))) (number "26" (effects (font (size 0.9 0.9)))))
-(pin input line (at -31.75 -5.08 0) (length 3.81) (name "SHDN" (effects (font (size 1 1)))) (number "7" (effects (font (size 0.9 0.9)))))
-(pin input line (at -31.75 -10.16 0) (length 3.81) (name "IDLE" (effects (font (size 1 1)))) (number "24" (effects (font (size 0.9 0.9)))))
-(pin input line (at -31.75 -15.24 0) (length 3.81) (name "LNA2" (effects (font (size 1 1)))) (number "25" (effects (font (size 0.9 0.9)))))
-(pin output line (at -31.75 -20.32 0) (length 3.81) (name "ANTBIAS" (effects (font (size 1 1)))) (number "3" (effects (font (size 0.9 0.9)))))
-(pin output line (at -31.75 -25.4 0) (length 3.81) (name "ANTFLAG" (effects (font (size 1 1)))) (number "1" (effects (font (size 0.9 0.9)))))
-(pin output line (at 31.75 25.4 180) (length 3.81) (name "I1" (effects (font (size 1 1)))) (number "21" (effects (font (size 0.9 0.9)))))
-(pin output line (at 31.75 20.32 180) (length 3.81) (name "I0" (effects (font (size 1 1)))) (number "20" (effects (font (size 0.9 0.9)))))
-(pin output line (at 31.75 15.24 180) (length 3.81) (name "Q1" (effects (font (size 1 1)))) (number "17" (effects (font (size 0.9 0.9)))))
-(pin output line (at 31.75 10.16 180) (length 3.81) (name "Q0" (effects (font (size 1 1)))) (number "18" (effects (font (size 0.9 0.9)))))
-(pin output line (at 31.75 5.08 180) (length 3.81) (name "CLKOUT" (effects (font (size 1 1)))) (number "16" (effects (font (size 0.9 0.9)))))
-(pin input line (at 31.75 0 180) (length 3.81) (name "CS" (effects (font (size 1 1)))) (number "10" (effects (font (size 0.9 0.9)))))
-(pin input line (at 31.75 -5.08 180) (length 3.81) (name "SCLK" (effects (font (size 1 1)))) (number "9" (effects (font (size 0.9 0.9)))))
-(pin input line (at 31.75 -10.16 180) (length 3.81) (name "SDATA" (effects (font (size 1 1)))) (number "8" (effects (font (size 0.9 0.9)))))
-(pin output line (at 31.75 -15.24 180) (length 3.81) (name "LD" (effects (font (size 1 1)))) (number "6" (effects (font (size 0.9 0.9)))))
-(pin no_connect line (at 31.75 -20.32 180) (length 3.81) (name "NC" (effects (font (size 1 1)))) (number "22" (effects (font (size 0.9 0.9)))))
-(pin no_connect line (at 31.75 -25.4 180) (length 3.81) (name "NC" (effects (font (size 1 1)))) (number "28" (effects (font (size 0.9 0.9)))))
-(pin power_in line (at -22.86 -35.56 90) (length 3.81) (name "VCC_RF" (effects (font (size 1 1)))) (number "4" (effects (font (size 0.9 0.9)))))
-(pin power_in line (at -13.97 -35.56 90) (length 3.81) (name "VCC_VCO" (effects (font (size 1 1)))) (number "11" (effects (font (size 0.9 0.9)))))
-(pin power_in line (at -5.08 -35.56 90) (length 3.81) (name "VCC_CP" (effects (font (size 1 1)))) (number "13" (effects (font (size 0.9 0.9)))))
-(pin power_in line (at 3.81 -35.56 90) (length 3.81) (name "VCCD" (effects (font (size 1 1)))) (number "14" (effects (font (size 0.9 0.9)))))
-(pin power_in line (at 12.7 -35.56 90) (length 3.81) (name "VCC_ADC" (effects (font (size 1 1)))) (number "19" (effects (font (size 0.9 0.9)))))
-(pin power_in line (at 21.59 -35.56 90) (length 3.81) (name "VCC_IF" (effects (font (size 1 1)))) (number "23" (effects (font (size 0.9 0.9)))))
-(pin power_in line (at -31.75 -29.21 0) (length 3.81) (name "EP" (effects (font (size 1 1)))) (number "29" (effects (font (size 0.9 0.9)))))
-))
-(symbol "Connector:Conn_Coaxial"
-		(pin_names
-			(offset 1.016)
-			(hide yes)
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "f43398a6-16f4-5db9-9282-ecf4cf071e1f")
+	(paper "A4")
+	(title_block
+		(title "RF and ADC")
+		(date "2026-11-05")
+		(rev "1.0")
+		(company "Personal PCBs")
+		(comment 1 "Engineering review")
+	)
+	(lib_symbols
+		(symbol "Connector:Conn_Coaxial"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "J"
+				(at 0.254 3.048 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "Conn_Coaxial"
+				(at 2.921 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "BNC SMA SMB SMC LEMO coaxial connector CINCH RCA MCX MMCX U.FL UMRF"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "*BNC* *SMA* *SMB* *SMC* *Cinch* *LEMO* *UMRF* *MCX* *U.FL*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "Conn_Coaxial_0_1"
+				(polyline
+					(pts
+						(xy -2.54 0) (xy -0.508 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start 1.778 0)
+					(mid 0.222 -1.8079)
+					(end -1.778 -0.508)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(arc
+					(start -1.778 0.508)
+					(mid 0.2221 1.8084)
+					(end 1.778 0)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(circle
+					(center 0 0)
+					(radius 0.508)
+					(stroke
+						(width 0.2032)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0 -2.54) (xy 0 -1.778)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Conn_Coaxial_1_1"
+				(pin passive line
+					(at -5.08 0 0)
+					(length 2.54)
+					(name "In"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -5.08 90)
+					(length 2.54)
+					(name "Ext"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
 		)
+		(symbol "Connector:TestPoint"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.762)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "TP"
+				(at 0 6.858 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "TestPoint"
+				(at 0 5.08 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 5.08 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 5.08 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "test point"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "test point tp"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "Pin* Test*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "TestPoint_0_1"
+				(circle
+					(center 0 3.302)
+					(radius 0.762)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "TestPoint_1_1"
+				(pin passive line
+					(at 0 0 90)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Device:C"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "C"
+				(at 0.635 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "C"
+				(at 0.635 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0.9652 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Unpolarized capacitor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "cap capacitor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "C_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "C_0_1"
+				(polyline
+					(pts
+						(xy -2.032 0.762) (xy 2.032 0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -2.032 -0.762) (xy 2.032 -0.762)
+					)
+					(stroke
+						(width 0.508)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "C_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 2.794)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Device:C_Small"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.254)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "C"
+				(at 0.254 1.778 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "C_Small"
+				(at 0.254 -2.032 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Unpolarized capacitor, small symbol"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "capacitor cap"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "C_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "C_Small_0_1"
+				(polyline
+					(pts
+						(xy -1.524 0.508) (xy 1.524 0.508)
+					)
+					(stroke
+						(width 0.3048)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.524 -0.508) (xy 1.524 -0.508)
+					)
+					(stroke
+						(width 0.3302)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "C_Small_1_1"
+				(pin passive line
+					(at 0 2.54 270)
+					(length 2.032)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -2.54 90)
+					(length 2.032)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Device:R"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "R"
+				(at 2.032 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R"
+				(at 0 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.778 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Resistor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "R res resistor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "R_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "R_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "GNSS_IQ:MAX2769B"
+			(pin_names
+				(offset 0.9)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at -27.94 -36.83 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1 1)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "MAX2769B"
+				(at -27.94 -34.29 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1 1)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" "GNSS_IQ:TQFN-28-1EP_ADI_90-0023"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1 1)
+					)
+				)
+			)
+			(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/MAX2769B.pdf"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1 1)
+					)
+				)
+			)
+			(property "Description" "GNSS low-IF RF receiver with ADC"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1 1)
+					)
+				)
+			)
+			(symbol "MAX2769B_0_1"
+				(rectangle
+					(start -27.94 31.75)
+					(end 27.94 -31.75)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "MAX2769B_1_1"
+				(pin output line
+					(at -31.75 -25.4 0)
+					(length 3.81)
+					(name "ANTFLAG"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at -31.75 20.32 0)
+					(length 3.81)
+					(name "LNAOUT"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at -31.75 -20.32 0)
+					(length 3.81)
+					(name "ANTBIAS"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -22.86 -35.56 90)
+					(length 3.81)
+					(name "VCC_RF"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -31.75 15.24 0)
+					(length 3.81)
+					(name "MIXIN"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 31.75 -15.24 180)
+					(length 3.81)
+					(name "LD"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -31.75 -5.08 0)
+					(length 3.81)
+					(name "SHDN"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "7"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 31.75 -10.16 180)
+					(length 3.81)
+					(name "SDATA"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "8"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 31.75 -5.08 180)
+					(length 3.81)
+					(name "SCLK"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "9"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at 31.75 0 180)
+					(length 3.81)
+					(name "CS"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "10"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -13.97 -35.56 90)
+					(length 3.81)
+					(name "VCC_VCO"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "11"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at -31.75 5.08 0)
+					(length 3.81)
+					(name "CPOUT"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "12"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -5.08 -35.56 90)
+					(length 3.81)
+					(name "VCC_CP"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "13"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 3.81 -35.56 90)
+					(length 3.81)
+					(name "VCCD"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "14"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -31.75 10.16 0)
+					(length 3.81)
+					(name "XTAL"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "15"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 31.75 5.08 180)
+					(length 3.81)
+					(name "CLKOUT"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "16"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 31.75 15.24 180)
+					(length 3.81)
+					(name "Q1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "17"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 31.75 10.16 180)
+					(length 3.81)
+					(name "Q0"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "18"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 12.7 -35.56 90)
+					(length 3.81)
+					(name "VCC_ADC"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "19"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 31.75 20.32 180)
+					(length 3.81)
+					(name "I0"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "20"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 31.75 25.4 180)
+					(length 3.81)
+					(name "I1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "21"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin no_connect line
+					(at 31.75 -20.32 180)
+					(length 3.81)
+					(name "NC"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "22"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 21.59 -35.56 90)
+					(length 3.81)
+					(name "VCC_IF"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "23"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -31.75 -10.16 0)
+					(length 3.81)
+					(name "IDLE"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "24"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -31.75 -15.24 0)
+					(length 3.81)
+					(name "LNA2"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "25"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -31.75 0 0)
+					(length 3.81)
+					(name "PGM"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "26"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin input line
+					(at -31.75 25.4 0)
+					(length 3.81)
+					(name "LNA1"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "27"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin no_connect line
+					(at 31.75 -25.4 180)
+					(length 3.81)
+					(name "NC"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "28"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at -31.75 -29.21 0)
+					(length 3.81)
+					(name "EP"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "29"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "GNSS_IQ:Taitien_TX_TCXO"
+			(pin_names
+				(offset 0.9)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "U"
+				(at -10.16 -12.7 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1 1)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "Taitien_TX_TCXO"
+				(at -10.16 -10.16 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1 1)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" "GNSS_IQ:Taitien_TX_3.2x2.5mm"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1 1)
+					)
+				)
+			)
+			(property "Datasheet" "https://www.taitien.com/wp-content/uploads/2015/12/XO-0076_TX.pdf"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1 1)
+					)
+				)
+			)
+			(property "Description" "3.2 mm by 2.5 mm clipped sine TCXO"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1 1)
+					)
+				)
+			)
+			(symbol "Taitien_TX_TCXO_0_1"
+				(rectangle
+					(start -10.16 7.62)
+					(end 10.16 -7.62)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type background)
+					)
+				)
+			)
+			(symbol "Taitien_TX_TCXO_1_1"
+				(pin no_connect line
+					(at -13.97 -2.54 0)
+					(length 3.81)
+					(name "NC"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 -11.43 90)
+					(length 3.81)
+					(name "GND"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin output line
+					(at 13.97 0 180)
+					(length 3.81)
+					(name "OUT"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+				(pin power_in line
+					(at 0 11.43 270)
+					(length 3.81)
+					(name "VDD"
+						(effects
+							(font
+								(size 1 1)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 0.9 0.9)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "power:GND"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "#PWR"
+				(at 0 -6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "GND"
+				(at 0 -3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "global power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "GND_0_1"
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 -1.27) (xy 1.27 -1.27) (xy 0 -2.54) (xy -1.27 -1.27) (xy 0 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "GND_1_1"
+				(pin power_in line
+					(at 0 0 270)
+					(length 0)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	)
+	(text "L1 INPUT"
+		(exclude_from_sim no)
+		(at 64.77 49.53 0)
+		(effects
+			(font
+				(size 1.25 1.25)
+				(bold yes)
+			)
+			(justify left top)
+		)
+		(uuid "40e76eaf-489f-5219-835a-889b66ab6b1c")
+	)
+	(junction
+		(at 106.68 127)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "1ffec6d5-775c-55fa-a514-fa3694b4f602")
+	)
+	(junction
+		(at 125.73 127)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2253060c-5389-5e4f-b7ec-e876a881b774")
+	)
+	(junction
+		(at 93.98 82.55)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "42eb40e9-d7f0-4590-a099-e803d06b6abd")
+	)
+	(junction
+		(at 152.4 127)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "45afa235-b4a4-584d-98c3-980f7edb0f6d")
+	)
+	(junction
+		(at 143.51 127)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "45b0da9a-3a3d-5e3a-921c-2698b7ae0349")
+	)
+	(junction
+		(at 116.84 127)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "559deb6d-50e3-5e91-968a-c129c5c7ca9a")
+	)
+	(junction
+		(at 134.62 127)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "566dd459-3456-513d-8a6f-f8013adb93c0")
+	)
+	(junction
+		(at 35.56 62.23)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "903a3e5a-572f-5e38-97d6-eca5772c2310")
+	)
+	(no_connect
+		(at 40.64 80.01)
+		(uuid "1f091c3f-c480-5cef-9805-5f676b9ce1b1")
+	)
+	(no_connect
+		(at 107.95 102.87)
+		(uuid "3b2d7a26-1e29-56d6-851c-21ace44c0b4f")
+	)
+	(no_connect
+		(at 107.95 107.95)
+		(uuid "4586c069-eba4-5508-98df-d7ba1492cb6c")
+	)
+	(no_connect
+		(at 107.95 113.03)
+		(uuid "6360ca7f-ac9a-5d1d-8136-08eccbd70281")
+	)
+	(no_connect
+		(at 171.45 107.95)
+		(uuid "6f845642-ff48-5f73-ab08-0fbaa8acad87")
+	)
+	(no_connect
+		(at 171.45 113.03)
+		(uuid "b551ec19-c25d-5e85-acd1-4df408d84dfc")
+	)
+	(bus_entry
+		(at 185.42 90.17)
+		(size -2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4d53332b-4102-538f-83ac-6fb5bfc16de2")
+	)
+	(bus_entry
+		(at 185.42 74.93)
+		(size -2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4e3e9575-33ab-50e6-9790-3e3a95322515")
+	)
+	(bus_entry
+		(at 185.42 80.01)
+		(size -2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "52832a17-63eb-5a52-be94-0ac09dc77e7d")
+	)
+	(bus_entry
+		(at 185.42 64.77)
+		(size -2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5693b115-f3c8-5cf8-b5d0-4b75768e7ce5")
+	)
+	(bus_entry
+		(at 185.42 85.09)
+		(size -2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7b1c3906-5c7b-5a1b-9be1-591b7d756473")
+	)
+	(bus_entry
+		(at 185.42 59.69)
+		(size -2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "87ae9c7d-a6c1-50a6-a4ab-22ba385c6945")
+	)
+	(bus_entry
+		(at 185.42 95.25)
+		(size -2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b9ab70da-73e0-522b-a28d-7bcb00d592d2")
+	)
+	(bus_entry
+		(at 185.42 69.85)
+		(size -2.54 2.54)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ddf6c675-fbc1-56f1-81d5-0ab55bb63379")
+	)
+	(wire
+		(pts
+			(xy 74.93 62.23) (xy 81.28 62.23)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "07f6da04-14be-51b1-854d-5382affbf85e")
+	)
+	(wire
+		(pts
+			(xy 134.62 137.16) (xy 134.62 140.97)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "0eeb916c-54a0-5f38-b82b-9145722f9256")
+	)
+	(wire
+		(pts
+			(xy 161.29 132.08) (xy 161.29 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "1c3a29ef-a9aa-508a-b6a3-04f1a91c02bc")
+	)
+	(wire
+		(pts
+			(xy 152.4 132.08) (xy 152.4 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "2654776a-e852-529e-af48-5a58f1c33b62")
+	)
+	(wire
+		(pts
+			(xy 101.6 64.77) (xy 91.44 64.77)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "31d727f2-f930-58db-9488-f345691a005a")
+	)
+	(wire
+		(pts
+			(xy 97.79 127) (xy 106.68 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "33f2f587-8d08-5c9e-9e6c-f4e5e288f551")
+	)
+	(wire
+		(pts
+			(xy 68.58 77.47) (xy 76.2 77.47)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "3559f650-5702-553c-a1be-a3848809a5e8")
+	)
+	(wire
+		(pts
+			(xy 171.45 87.63) (xy 182.88 87.63)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "3c831a07-97f6-5356-b1d8-3432bdc55b53")
+	)
+	(wire
+		(pts
+			(xy 106.68 97.79) (xy 107.95 97.79)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "3e50628c-1ebb-570c-8b15-3f3eb45dd70e")
+	)
+	(wire
+		(pts
+			(xy 171.45 97.79) (xy 182.88 97.79)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "402ecb84-76eb-5de4-9655-9810a2c484c1")
+	)
+	(bus
+		(pts
+			(xy 185.42 55.88) (xy 185.42 80.01)
+		)
+		(stroke
+			(width 0.51)
+			(type default)
+		)
+		(uuid "42733828-5079-5204-b0e8-c4642ae21d5c")
+	)
+	(wire
+		(pts
+			(xy 102.87 116.84) (xy 102.87 119.38)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "466728f5-c662-5696-ab6f-f1ff60474e4d")
+	)
+	(wire
+		(pts
+			(xy 116.84 132.08) (xy 116.84 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "47d08e44-2cd4-52d2-8164-99a5b9a37218")
+	)
+	(wire
+		(pts
+			(xy 143.51 123.19) (xy 143.51 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "4a294191-bff0-5d48-a10b-8b1e28d82a09")
+	)
+	(wire
+		(pts
+			(xy 116.84 123.19) (xy 116.84 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "4aafe57d-9e53-5a5e-9792-0307aa0c9146")
+	)
+	(wire
+		(pts
+			(xy 77.47 92.71) (xy 77.47 93.98)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "4ea35bd5-6887-5ac5-bca7-081bd263151b")
+	)
+	(wire
+		(pts
+			(xy 152.4 127) (xy 161.29 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "51acf3aa-38df-531e-a091-c7bc5642e381")
+	)
+	(wire
+		(pts
+			(xy 35.56 73.66) (xy 35.56 76.2)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "52564ecc-fad9-55b4-9d41-d34ed44a335d")
+	)
+	(wire
+		(pts
+			(xy 116.84 127) (xy 125.73 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "57ffa2b7-b17d-5cd5-88f9-88540888611d")
+	)
+	(wire
+		(pts
+			(xy 171.45 92.71) (xy 182.88 92.71)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "5e90d6c9-04b8-5e36-9a98-89e426733671")
+	)
+	(wire
+		(pts
+			(xy 134.62 123.19) (xy 134.62 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "650354bd-06d5-5eb1-872a-e33de2092f69")
+	)
+	(wire
+		(pts
+			(xy 171.45 67.31) (xy 182.88 67.31)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "6586cbdc-31fb-5f28-85d3-6da8cee25dba")
+	)
+	(wire
+		(pts
+			(xy 134.62 132.08) (xy 134.62 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "72870227-78ed-5df3-833a-780d041af0aa")
+	)
+	(wire
+		(pts
+			(xy 116.84 137.16) (xy 116.84 140.97)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "758bf435-7fa3-56a4-9643-d8a73f2b3fd1")
+	)
+	(wire
+		(pts
+			(xy 29.21 62.23) (xy 35.56 62.23)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "784231c3-3426-5191-8db6-d16214494e6a")
+	)
+	(wire
+		(pts
+			(xy 106.68 137.16) (xy 106.68 140.97)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "7a6d131d-719f-5cb9-802a-2f76f8856a5b")
+	)
+	(wire
+		(pts
+			(xy 125.73 132.08) (xy 125.73 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "7ac66c5b-993d-51f4-93dd-df8784a068d4")
+	)
+	(wire
+		(pts
+			(xy 177.8 102.87) (xy 177.8 107.95)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "7db08452-d722-5ef1-9662-016a4798d301")
+	)
+	(wire
+		(pts
+			(xy 93.98 92.71) (xy 93.98 93.98)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "7e4053bf-8adc-5793-a286-59a822c420f3")
+	)
+	(wire
+		(pts
+			(xy 171.45 77.47) (xy 182.88 77.47)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "7ea8708b-02f4-58f1-a018-fb72ed71a939")
+	)
+	(wire
+		(pts
+			(xy 143.51 127) (xy 152.4 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "7fa62c6d-7295-5d82-974c-e9e581271315")
+	)
+	(wire
+		(pts
+			(xy 125.73 123.19) (xy 125.73 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "7fc01114-47df-5843-b422-a834025c4fff")
+	)
+	(wire
+		(pts
+			(xy 82.55 82.55) (xy 77.47 82.55)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "835b78f3-6cc3-5a69-b410-73d1bd312479")
+	)
+	(wire
+		(pts
+			(xy 125.73 127) (xy 134.62 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "87a24b0c-67d7-545e-b9e3-819424ddc3e8")
+	)
+	(wire
+		(pts
+			(xy 161.29 123.19) (xy 161.29 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "880c56d6-1f01-5f2f-97d1-7395cf898562")
+	)
+	(wire
+		(pts
+			(xy 171.45 82.55) (xy 182.88 82.55)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "883fdb55-1154-59ae-b25d-ad44ecc3eec0")
+	)
+	(wire
+		(pts
+			(xy 54.61 88.9) (xy 54.61 91.44)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "8d154ede-5aba-58d9-be7c-9eb2c1f51546")
+	)
+	(wire
+		(pts
+			(xy 171.45 72.39) (xy 182.88 72.39)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "8e58cba5-4cab-57a0-a90d-f28909c4074c")
+	)
+	(wire
+		(pts
+			(xy 88.9 62.23) (xy 107.95 62.23)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "9d14de2c-664f-5bd1-9781-c92330298ec0")
+	)
+	(wire
+		(pts
+			(xy 152.4 137.16) (xy 152.4 140.97)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "a2d05cd6-b021-5a13-8dc9-fe031301db4e")
+	)
+	(wire
+		(pts
+			(xy 134.62 127) (xy 143.51 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "a34fe3d8-6198-55f5-b08c-e0c13200f86a")
+	)
+	(wire
+		(pts
+			(xy 77.47 82.55) (xy 77.47 85.09)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "a455ad26-ba6a-522d-9356-d63f3637b558")
+	)
+	(wire
+		(pts
+			(xy 161.29 137.16) (xy 161.29 140.97)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "a80932a8-85e5-5adf-93dd-2f2e534dec61")
+	)
+	(wire
+		(pts
+			(xy 35.56 62.23) (xy 54.61 62.23)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "aa09714b-c345-5a60-b265-bca97edd805c")
+	)
+	(wire
+		(pts
+			(xy 106.68 92.71) (xy 106.68 97.79)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "ab6fe738-a29f-5ae5-89e6-4001247a568d")
+	)
+	(wire
+		(pts
+			(xy 35.56 66.04) (xy 35.56 62.23)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "abad2dd4-7f60-5dc4-bb84-c7ad5c365482")
+	)
+	(bus
+		(pts
+			(xy 190.5 55.88) (xy 185.42 55.88)
+		)
+		(stroke
+			(width 0.51)
+			(type default)
+		)
+		(uuid "b04017b8-2cd2-5d51-ae87-5e72f7900595")
+	)
+	(bus
+		(pts
+			(xy 190.5 101.6) (xy 185.42 101.6)
+		)
+		(stroke
+			(width 0.51)
+			(type default)
+		)
+		(uuid "b2ec3f3e-c3ba-5282-a9e7-07e4f3d6f976")
+	)
+	(bus
+		(pts
+			(xy 185.42 101.6) (xy 185.42 85.09)
+		)
+		(stroke
+			(width 0.51)
+			(type default)
+		)
+		(uuid "bb306706-98c3-5e6c-a0bb-f7d116a4cdda")
+	)
+	(wire
+		(pts
+			(xy 107.95 82.55) (xy 93.98 82.55)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "bbdcfd2f-cff2-5777-81d2-f87e2dd3b607")
+	)
+	(wire
+		(pts
+			(xy 125.73 137.16) (xy 125.73 140.97)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "c2617d2b-2607-5c6f-9cda-03aa57bd3ae9")
+	)
+	(wire
+		(pts
+			(xy 171.45 102.87) (xy 177.8 102.87)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "c5453aa5-4713-5e07-a9c2-0494191bd052")
+	)
+	(wire
+		(pts
+			(xy 107.95 116.84) (xy 102.87 116.84)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "c8b79dbe-1357-5eab-952e-cf45f0b7ca3f")
+	)
+	(wire
+		(pts
+			(xy 91.44 72.39) (xy 107.95 72.39)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "cb4e8a2c-2430-50d3-b049-6a1b38269193")
+	)
+	(wire
+		(pts
+			(xy 54.61 62.23) (xy 54.61 66.04)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "ccc481a2-fa2f-5cae-ab25-25fc36e6a2ab")
+	)
+	(wire
+		(pts
+			(xy 152.4 123.19) (xy 152.4 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "d2744c53-127b-5d9a-9073-3c4903c94f83")
+	)
+	(wire
+		(pts
+			(xy 143.51 137.16) (xy 143.51 140.97)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "d68a7480-ad50-5255-8949-a962285125e8")
+	)
+	(wire
+		(pts
+			(xy 69.85 67.31) (xy 69.85 68.58)
+		)
+		(stroke
+			(width 0.2)
+			(type default)
+		)
+		(uuid "de36bb98-8923-42f7-9c05-84fb461ce121")
+	)
+	(wire
+		(pts
+			(xy 93.98 82.55) (xy 93.98 85.09)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "e07501a5-e90a-556f-992c-32f862fc8873")
+	)
+	(wire
+		(pts
+			(xy 101.6 67.31) (xy 101.6 64.77)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "e2c2f3b2-e1b7-5e29-9b01-371d763d2627")
+	)
+	(wire
+		(pts
+			(xy 143.51 132.08) (xy 143.51 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "ef77c3cf-fd94-5a31-a1e3-6b79713cad50")
+	)
+	(wire
+		(pts
+			(xy 107.95 67.31) (xy 101.6 67.31)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "f0614c1c-81e1-57f1-86e8-1c9893efb44e")
+	)
+	(wire
+		(pts
+			(xy 106.68 132.08) (xy 106.68 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "f0875301-682b-5c8a-b756-b92b828dcf91")
+	)
+	(wire
+		(pts
+			(xy 171.45 62.23) (xy 182.88 62.23)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "f29b275c-054d-58f7-b1f0-fb3acc36337b")
+	)
+	(wire
+		(pts
+			(xy 93.98 82.55) (xy 90.17 82.55)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "f49d58b9-5e27-581e-984f-ebb813afee6e")
+	)
+	(wire
+		(pts
+			(xy 106.68 127) (xy 116.84 127)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "f7f4c5ac-4a4f-56e2-aedf-d3732038c176")
+	)
+	(wire
+		(pts
+			(xy 107.95 92.71) (xy 106.68 92.71)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "fac2b364-c2db-5d5a-8715-7a902be951ae")
+	)
+	(wire
+		(pts
+			(xy 83.82 77.47) (xy 107.95 77.47)
+		)
+		(stroke
+			(width 0.254)
+			(type default)
+		)
+		(uuid "fda52815-4c8a-5be9-a083-e14a9e62eed4")
+	)
+	(label "Q0"
+		(at 172.72 77.47 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "07e856dd-a9be-51d3-aa23-429dc0d34f2f")
+	)
+	(label "REF_XTAL"
+		(at 85.09 77.47 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "0ad848f9-e916-5559-a1db-e3ace9c5ef9a")
+	)
+	(label "SDATA"
+		(at 172.72 97.79 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "4fae06c5-60bb-53cf-9b91-26d2f0d7b26e")
+	)
+	(label "RF_MIX_IN"
+		(at 95.25 72.39 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "51f95c6d-09e6-5fd9-b5af-db68ed300e29")
+	)
+	(label "Q1"
+		(at 172.72 72.39 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "77439029-82f5-50ba-91fa-198d469842e6")
+	)
+	(label "CLKOUT"
+		(at 172.72 82.55 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "79574167-93ca-578f-9137-134ab174da9e")
+	)
+	(label "CS_N"
+		(at 172.72 87.63 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "7ccf2d28-7041-591e-b8f2-018b93935d33")
+	)
+	(label "I0"
+		(at 172.72 67.31 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "81c511e0-b207-5f63-acf0-70e18fec4039")
+	)
+	(label "SCLK"
+		(at 172.72 92.71 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "85d21ae7-52ab-567e-975d-7d275b6d20b8")
+	)
+	(label "RF_SMA"
+		(at 74.93 62.23 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "8d1c6dd6-e4c8-5c17-a97d-d7347d4c0ab8")
+	)
+	(label "RX_3V0"
+		(at 29.21 62.23 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "9b43355a-e8db-5c23-9f27-6c5010d50bfc")
+	)
+	(label "PLL_CP"
+		(at 99.06 82.55 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "b202fadc-3326-5c92-a6a0-c2a1d88b34b7")
+	)
+	(label "RX_3V0"
+		(at 106.68 97.79 180)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify right bottom)
+		)
+		(uuid "b3b8c85d-25c4-535f-9018-f584b78710a2")
+	)
+	(label "RF_LNA_OUT"
+		(at 92.71 64.77 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "c49056e9-86a1-5615-b4a6-38744f432650")
+	)
+	(label "RF_LNA_IN"
+		(at 90.17 62.23 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "ef5b34d1-13d6-5fb1-883d-83a59dab8cac")
+	)
+	(label "I1"
+		(at 172.72 62.23 0)
+		(effects
+			(font
+				(size 0.95 0.95)
+			)
+			(justify left bottom)
+		)
+		(uuid "fd2bd3f7-3e32-5120-bd47-b2ad0b10b14d")
+	)
+	(hierarchical_label "{IQ}"
+		(shape output)
+		(at 190.5 55.88 0)
+		(effects
+			(font
+				(size 1.12 1.12)
+			)
+			(justify left)
+		)
+		(uuid "38767a1d-d86d-507e-b032-0f686e0ff1ed")
+	)
+	(hierarchical_label "RX_3V0"
+		(shape input)
+		(at 97.79 127 180)
+		(effects
+			(font
+				(size 1.12 1.12)
+			)
+			(justify right)
+		)
+		(uuid "3c33ec51-127b-59b3-80d6-44f80674f27d")
+	)
+	(hierarchical_label "{CFG}"
+		(shape input)
+		(at 190.5 101.6 0)
+		(effects
+			(font
+				(size 1.12 1.12)
+			)
+			(justify left)
+		)
+		(uuid "a5c15f37-a12a-52d6-ba9e-1341590ba21c")
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 177.8 107.95 180)
+		(unit 1)
+		(body_style 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "J"
-			(at 0.254 3.048 0)
+		(dnp no)
+		(uuid "065b5d91-a5f2-54a6-af2f-ec7b4d42969e")
+		(property "Reference" "TP1"
+			(at 181.61 107.95 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
+				(justify right)
 			)
 		)
-		(property "Value" "Conn_Coaxial"
-			(at 2.921 0 90)
+		(property "Value" "PLL_LOCK"
+			(at 181.61 110.49 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
+				(justify right)
 			)
 		)
-		(property "Footprint" ""
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
+		(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm"
+			(at 177.8 107.95 0)
 			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 0)
+			(at 177.8 107.95 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(property "Description" "coaxial connector (BNC, SMA, SMB, SMC, Cinch/RCA, LEMO, ...)"
-			(at 0 0 0)
+		(property "Description" ""
+			(at 177.8 107.95 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(property "ki_keywords" "BNC SMA SMB SMC LEMO coaxial connector CINCH RCA MCX MMCX U.FL UMRF"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
+		(pin "1"
+			(uuid "c3eaf237-1c1f-57a5-8427-127badf3f79d")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "TP1")
+					(unit 1)
 				)
 			)
 		)
-		(property "ki_fp_filters" "*BNC* *SMA* *SMB* *SMC* *Cinch* *LEMO* *UMRF* *MCX* *U.FL*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(symbol "Conn_Coaxial_0_1"
-			(polyline
-				(pts
-					(xy -2.54 0) (xy -0.508 0)
-				)
-				(stroke
-					(width 0)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(arc
-				(start 1.778 0)
-				(mid 0.222 -1.8079)
-				(end -1.778 -0.508)
-				(stroke
-					(width 0.254)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(arc
-				(start -1.778 0.508)
-				(mid 0.2221 1.8084)
-				(end 1.778 0)
-				(stroke
-					(width 0.254)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(circle
-				(center 0 0)
-				(radius 0.508)
-				(stroke
-					(width 0.2032)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(polyline
-				(pts
-					(xy 0 -2.54) (xy 0 -1.778)
-				)
-				(stroke
-					(width 0)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-		)
-		(symbol "Conn_Coaxial_1_1"
-			(pin passive line
-				(at -5.08 0 0)
-				(length 2.54)
-				(name "In"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at 0 -5.08 90)
-				(length 2.54)
-				(name "Ext"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(embedded_fonts no)
 	)
-(symbol "Device:C"
-		(pin_numbers
-			(hide yes)
-		)
-		(pin_names
-			(offset 0.254)
-		)
+	(symbol
+		(lib_id "power:GND")
+		(at 116.84 140.97 0)
+		(unit 1)
+		(body_style 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "C"
-			(at 0.635 2.54 0)
+		(dnp no)
+		(uuid "06c476ab-34a1-56ce-b6c7-8b4231371727")
+		(property "Reference" "#PWRrf_adc56"
+			(at 116.84 140.97 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "C"
-			(at 0.635 -2.54 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 0.9652 -3.81 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_keywords" "cap capacitor"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "ki_fp_filters" "C_*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(symbol "C_0_1"
-			(polyline
-				(pts
-					(xy -2.032 0.762) (xy 2.032 0.762)
-				)
-				(stroke
-					(width 0.508)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(polyline
-				(pts
-					(xy -2.032 -0.762) (xy 2.032 -0.762)
-				)
-				(stroke
-					(width 0.508)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-		)
-		(symbol "C_1_1"
-			(pin passive line
-				(at 0 3.81 270)
-				(length 2.794)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at 0 -3.81 90)
-				(length 2.794)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(embedded_fonts no)
-	)
-(symbol "power:GND"
-		(power global)
-		(pin_numbers
-			(hide yes)
-		)
-		(pin_names
-			(offset 0)
-			(hide yes)
-		)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "#PWR"
-			(at 0 -6.35 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
 		(property "Value" "GND"
-			(at 0 -3.81 0)
+			(at 116.84 145.034 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
 		(property "Footprint" ""
-			(at 0 0 0)
+			(at 116.84 140.97 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 0)
+			(at 116.84 140.97 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 0 0 0)
+		(property "Description" ""
+			(at 116.84 140.97 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(property "ki_keywords" "global power"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
+		(pin "1"
+			(uuid "b4f0f7f7-0678-5550-b04b-2b6929ca6006")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "#PWRrf_adc56")
+					(unit 1)
 				)
 			)
 		)
-		(symbol "GND_0_1"
-			(polyline
-				(pts
-					(xy 0 0) (xy 0 -1.27) (xy 1.27 -1.27) (xy 0 -2.54) (xy -1.27 -1.27) (xy 0 -1.27)
-				)
-				(stroke
-					(width 0)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-		)
-		(symbol "GND_1_1"
-			(pin power_in line
-				(at 0 0 270)
-				(length 0)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(embedded_fonts no)
 	)
-(symbol "GNSS_IQ:Taitien_TX_TCXO" (pin_names (offset 0.9)) (in_bom yes) (on_board yes)
-(property "Reference" "U" (at -10.16 -12.7 0) (effects (font (size 1 1)) (justify left)))
-(property "Value" "Taitien_TX_TCXO" (at -10.16 -10.16 0) (effects (font (size 1 1)) (justify left)))
-(property "Footprint" "GNSS_IQ:Taitien_TX_3.2x2.5mm" (at 0 0 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.taitien.com/wp-content/uploads/2015/12/XO-0076_TX.pdf" (at 0 0 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "3.2 mm by 2.5 mm clipped sine TCXO" (at 0 0 0) (effects (font (size 1 1)) (hide yes)))
-(symbol "Taitien_TX_TCXO_0_1" (rectangle (start -10.16 7.62) (end 10.16 -7.62) (stroke (width 0.254) (type default)) (fill (type background))))
-(symbol "Taitien_TX_TCXO_1_1"
-(pin no_connect line (at -13.97 -2.54 0) (length 3.81) (name "NC" (effects (font (size 1 1)))) (number "1" (effects (font (size 0.9 0.9)))))
-(pin power_in line (at 0 -11.43 90) (length 3.81) (name "GND" (effects (font (size 1 1)))) (number "2" (effects (font (size 0.9 0.9)))))
-(pin output line (at 13.97 0 180) (length 3.81) (name "OUT" (effects (font (size 1 1)))) (number "3" (effects (font (size 0.9 0.9)))))
-(pin power_in line (at 0 11.43 270) (length 3.81) (name "VDD" (effects (font (size 1 1)))) (number "4" (effects (font (size 0.9 0.9)))))
-))
-(symbol "Device:R"
-		(pin_numbers
-			(hide yes)
-		)
-		(pin_names
-			(offset 0)
-		)
+	(symbol
+		(lib_id "power:GND")
+		(at 125.73 140.97 0)
+		(unit 1)
+		(body_style 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "R"
-			(at 2.032 0 90)
+		(dnp no)
+		(uuid "0879718d-029e-5082-8c7e-0e80d438d0c5")
+		(property "Reference" "#PWRrf_adc59"
+			(at 125.73 140.97 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(property "Value" "R"
-			(at 0 0 90)
+		(property "Value" "GND"
+			(at 125.73 145.034 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
 		(property "Footprint" ""
-			(at -1.778 0 90)
+			(at 125.73 140.97 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
 		(property "Datasheet" ""
-			(at 0 0 0)
+			(at 125.73 140.97 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(property "Description" "Resistor"
-			(at 0 0 0)
+		(property "Description" ""
+			(at 125.73 140.97 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(property "ki_keywords" "R res resistor"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
+		(pin "1"
+			(uuid "b45ce614-159f-5c27-856f-69aceb7c5df5")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "#PWRrf_adc59")
+					(unit 1)
 				)
 			)
 		)
-		(property "ki_fp_filters" "R_*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(symbol "R_0_1"
-			(rectangle
-				(start -1.016 -2.54)
-				(end 1.016 2.54)
-				(stroke
-					(width 0.254)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-		)
-		(symbol "R_1_1"
-			(pin passive line
-				(at 0 3.81 270)
-				(length 1.27)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at 0 -3.81 90)
-				(length 1.27)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(embedded_fonts no)
 	)
-(symbol "Device:C_Small"
-		(pin_numbers
-			(hide yes)
-		)
-		(pin_names
-			(offset 0.254)
-			(hide yes)
-		)
+	(symbol
+		(lib_id "power:GND")
+		(at 106.68 140.97 0)
+		(unit 1)
+		(body_style 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "C"
-			(at 0.254 1.778 0)
+		(dnp no)
+		(uuid "0c38053d-e86c-56ff-9f5c-ede671a21174")
+		(property "Reference" "#PWRrf_adc53"
+			(at 106.68 140.97 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 106.68 145.034 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 106.68 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 106.68 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 106.68 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "db4b4bb5-ed13-52ef-9675-f9a35ec60fcd")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "#PWRrf_adc53")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 152.4 134.62 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "190a3af9-4747-5f88-a711-126aaa4d264b")
+		(property "Reference" "C12"
+			(at 154.94 133.35 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9 0.9)
 				)
 				(justify left)
 			)
 		)
-		(property "Value" "C_Small"
-			(at 0.254 -2.032 0)
+		(property "Value" "100n"
+			(at 154.94 135.89 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 0.9 0.9)
 				)
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
-			(at 0 0 0)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 152.4 134.62 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(property "Datasheet" ""
-			(at 0 0 0)
+		(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM155R71C104KA88D"
+			(at 152.4 134.62 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(property "Description" "Unpolarized capacitor, small symbol"
-			(at 0 0 0)
+		(property "Description" ""
+			(at 152.4 134.62 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(property "ki_keywords" "capacitor cap"
-			(at 0 0 0)
+		(property "MPN" "GRM155R71C104KA88D"
+			(at 152.4 134.62 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(property "ki_fp_filters" "C_*"
-			(at 0 0 0)
+		(property "Manufacturer" "Murata"
+			(at 152.4 134.62 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(symbol "C_Small_0_1"
-			(polyline
-				(pts
-					(xy -1.524 0.508) (xy 1.524 0.508)
-				)
-				(stroke
-					(width 0.3048)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-			(polyline
-				(pts
-					(xy -1.524 -0.508) (xy 1.524 -0.508)
-				)
-				(stroke
-					(width 0.3302)
-					(type default)
-				)
-				(fill
-					(type none)
+		(pin "1"
+			(uuid "3a0bdb7d-eb08-52eb-9b1b-4b6a84c470fc")
+		)
+		(pin "2"
+			(uuid "a372c698-d235-5c15-ae02-db11757aed57")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "C12")
+					(unit 1)
 				)
 			)
 		)
-		(symbol "C_Small_1_1"
-			(pin passive line
-				(at 0 2.54 270)
-				(length 2.032)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-			(pin passive line
-				(at 0 -2.54 90)
-				(length 2.032)
-				(name ""
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "2"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(embedded_fonts no)
 	)
-(symbol "Connector:TestPoint"
-		(pin_numbers
-			(hide yes)
-		)
-		(pin_names
-			(offset 0.762)
-			(hide yes)
-		)
+	(symbol
+		(lib_id "power:GND")
+		(at 143.51 140.97 0)
+		(unit 1)
+		(body_style 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(in_pos_files yes)
-		(duplicate_pin_numbers_are_jumpers no)
-		(property "Reference" "TP"
-			(at 0 6.858 0)
+		(dnp no)
+		(uuid "19e6969d-c21b-5ba1-b294-6bb17d39d6f2")
+		(property "Reference" "#PWRrf_adc65"
+			(at 143.51 140.97 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(property "Value" "TestPoint"
-			(at 0 5.08 0)
+		(property "Value" "GND"
+			(at 143.51 145.034 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
 		(property "Footprint" ""
-			(at 5.08 0 0)
+			(at 143.51 140.97 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
 		(property "Datasheet" ""
-			(at 5.08 0 0)
+			(at 143.51 140.97 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(property "Description" "test point"
-			(at 0 0 0)
+		(property "Description" ""
+			(at 143.51 140.97 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
-			(hide yes)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1 1)
 				)
 			)
 		)
-		(property "ki_keywords" "test point tp"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
+		(pin "1"
+			(uuid "bee01d07-1c1b-5f9c-9e72-df5437b95cc9")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "#PWRrf_adc65")
+					(unit 1)
 				)
 			)
 		)
-		(property "ki_fp_filters" "Pin* Test*"
-			(at 0 0 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(symbol "TestPoint_0_1"
-			(circle
-				(center 0 3.302)
-				(radius 0.762)
-				(stroke
-					(width 0)
-					(type default)
-				)
-				(fill
-					(type none)
-				)
-			)
-		)
-		(symbol "TestPoint_1_1"
-			(pin passive line
-				(at 0 0 90)
-				(length 2.54)
-				(name "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-				(number "1"
-					(effects
-						(font
-							(size 1.27 1.27)
-						)
-					)
-				)
-			)
-		)
-		(embedded_fonts no)
 	)
-)
-(text "L1 INPUT" (at 64.77 49.53 0) (effects (font (size 1.25 1.25) (bold yes)) (justify left top)) (uuid "40e76eaf-489f-5219-835a-889b66ab6b1c"))
-(symbol (lib_id "GNSS_IQ:MAX2769B") (at 139.7 87.63 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "1b3d59ce-81b4-5d5d-966c-5f8d2b3b44b4")
-(property "Reference" "U1" (at 139.7 82.55 0) (effects (font (size 1 1))))
-(property "Value" "MAX2769BETI/V+T" (at 139.7 86.36 0) (effects (font (size 1 1))))
-(property "Footprint" "GNSS_IQ:TQFN-28-1EP_ADI_90-0023" (at 139.7 87.63 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/MAX2769B.pdf" (at 139.7 87.63 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 139.7 87.63 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "MAX2769BETI/V+T" (at 139.7 87.63 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Analog Devices" (at 139.7 87.63 0) (effects (font (size 1 1)) (hide yes)))
-(pin "27" (uuid "88a35293-8ea3-53a3-a2ab-d01f06c4f9b9"))
-(pin "2" (uuid "9f3f118b-0808-5199-afdf-25e846a38a22"))
-(pin "5" (uuid "88e38811-5be8-531d-b9ee-4a9357c7bb7f"))
-(pin "15" (uuid "b614c768-6912-57e7-801e-075e584f0096"))
-(pin "12" (uuid "da8ca24d-a626-593f-8751-e5c260da75ea"))
-(pin "26" (uuid "cc81b694-2984-5593-905a-1c25824a4aa6"))
-(pin "7" (uuid "77094ad1-d988-5e68-bfe6-275369f957d8"))
-(pin "24" (uuid "31213946-1079-5d26-b496-c250a7bc2553"))
-(pin "25" (uuid "e615fac9-42ff-5613-9143-e7f7a8e223a1"))
-(pin "3" (uuid "8591434e-1d75-51e0-9866-f37bc93a68ce"))
-(pin "1" (uuid "e30fb30a-80fb-5151-8ed0-f7ccb7338de2"))
-(pin "21" (uuid "29e0573a-c9a4-5512-abcd-96bf6fbc1f3d"))
-(pin "20" (uuid "062b934a-77de-5a66-a50e-c5e3d8485705"))
-(pin "17" (uuid "bda36043-aa6b-588b-be4b-393564456a32"))
-(pin "18" (uuid "d82ff457-864c-531d-9ebf-f7d567f03f57"))
-(pin "16" (uuid "406e00a9-e37c-5245-a638-d31153e1bbcc"))
-(pin "10" (uuid "0a8c2453-aaf8-5373-a2bf-8e80eb2223ac"))
-(pin "9" (uuid "cc6bac01-78b6-5154-bfcb-8304bfad0b71"))
-(pin "8" (uuid "fac8864e-03c2-5b13-bc39-d793944de680"))
-(pin "6" (uuid "393e2727-eaa7-558c-b275-a9a548b85f75"))
-(pin "22" (uuid "9317f5d5-6e69-5363-a3a8-9befb0405d17"))
-(pin "28" (uuid "d5f5f522-f614-5669-8982-a1468a01a0ab"))
-(pin "4" (uuid "72cb5ab8-8021-5591-a3a6-2c67f7d71ee3"))
-(pin "11" (uuid "dcb18204-62fd-5b60-8ec7-35b28593f553"))
-(pin "13" (uuid "4c2fcb31-9683-591d-928b-9faba68769d8"))
-(pin "14" (uuid "56d8330b-2f21-55fa-8346-4f48446e90dd"))
-(pin "19" (uuid "6cafbe68-e132-5c7f-85ad-eac13a01e54f"))
-(pin "23" (uuid "0e204c3e-1ee2-5f12-89d5-0bbffce88a90"))
-(pin "29" (uuid "9ad797ef-1b30-5e40-bb7c-07a457f3584f"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "U1") (unit 1)))))
-(symbol (lib_id "Connector:Conn_Coaxial") (at 69.85 62.23 0) (mirror y) (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "51121a6b-1d6a-527b-a40e-b6a7044c14ca")
-(property "Reference" "J1" (at 69.85 57.15 0) (effects (font (size 1 1))))
-(property "Value" "L1 SMA" (at 69.85 59.69 0) (effects (font (size 1 1))))
-(property "Footprint" "GNSS_IQ:SMA_Amphenol_132289_HandSolder" (at 69.85 62.23 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.amphenolrf.com/en-us/part/132289/1030/" (at 69.85 62.23 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 69.85 62.23 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "132289" (at 69.85 62.23 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Amphenol RF" (at 69.85 62.23 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "6a31b76b-21be-538a-b362-e130e4c92eeb"))
-(pin "2" (uuid "3e89335b-0913-51aa-8975-fa056330f3b1"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "J1") (unit 1)))))
-(symbol (lib_id "Device:C") (at 85.09 62.23 90)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "5aff42e3-dc4d-5f34-8640-b6738548e306")
-(property "Reference" "C1" (at 85.09 57.15 90) (effects (font (size 1 1))))
-(property "Value" "470p" (at 85.09 59.69 90) (effects (font (size 1 1))))
-(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 85.09 62.23 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM1555C1H471JA01D" (at 85.09 62.23 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 85.09 62.23 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "GRM1555C1H471JA01D" (at 85.09 62.23 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Murata" (at 85.09 62.23 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "7e42a9ac-84be-58ad-80a3-cb93d46db9c3"))
-(pin "2" (uuid "70071681-a086-51fa-83d8-ac6bfef854e4"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "C1") (unit 1)))))
-(wire (pts (xy 74.93 62.23) (xy 81.28 62.23)) (stroke (width 0.254) (type default)) (uuid "07f6da04-14be-51b1-854d-5382affbf85e"))
-(label "RF_SMA" (at 74.93 62.23 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "8d1c6dd6-e4c8-5c17-a97d-d7347d4c0ab8"))
-(wire (pts (xy 88.9 62.23) (xy 107.95 62.23)) (stroke (width 0.254) (type default)) (uuid "9d14de2c-664f-5bd1-9781-c92330298ec0"))
-(label "RF_LNA_IN" (at 90.17 62.23 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "ef5b34d1-13d6-5fb1-883d-83a59dab8cac"))
-(symbol (lib_id "power:GND") (at 69.85 67.31 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "c621078b-0c19-59f9-948e-216f8a923427")
-(property "Reference" "#PWRrf_adc5" (at 69.85 67.31 0) (effects (font (size 1 1)) (hide yes)))
-(property "Value" "GND" (at 69.85 72.39 0) (effects (font (size 1 1))))
-(property "Footprint" "" (at 69.85 67.31 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 69.85 67.31 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 69.85 67.31 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "f0844e03-cefb-54d5-82fd-6cb343177d72"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "#PWRrf_adc5") (unit 1)))))
-(symbol (lib_id "Device:C") (at 91.44 68.58 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "ad7682fa-7fa5-5087-b4aa-74cba53eae0f")
-(property "Reference" "C2" (at 95.25 67.31 0) (effects (font (size 1 1)) (justify left)))
-(property "Value" "470p" (at 95.25 69.85 0) (effects (font (size 1 1)) (justify left)))
-(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 91.44 68.58 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM1555C1H471JA01D" (at 91.44 68.58 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 91.44 68.58 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "GRM1555C1H471JA01D" (at 91.44 68.58 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Murata" (at 91.44 68.58 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "153b94e9-ca0d-5024-bdb4-b6a05a648d43"))
-(pin "2" (uuid "1aae5217-7fc9-5c1e-8bb8-d2ed6cc9b901"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "C2") (unit 1)))))
-(wire (pts (xy 107.95 67.31) (xy 101.6 67.31)) (stroke (width 0.254) (type default)) (uuid "f0614c1c-81e1-57f1-86e8-1c9893efb44e"))
-(wire (pts (xy 101.6 67.31) (xy 101.6 64.77)) (stroke (width 0.254) (type default)) (uuid "e2c2f3b2-e1b7-5e29-9b01-371d763d2627"))
-(wire (pts (xy 101.6 64.77) (xy 91.44 64.77)) (stroke (width 0.254) (type default)) (uuid "31d727f2-f930-58db-9488-f345691a005a"))
-(wire (pts (xy 91.44 72.39) (xy 107.95 72.39)) (stroke (width 0.254) (type default)) (uuid "cb4e8a2c-2430-50d3-b049-6a1b38269193"))
-(label "RF_LNA_OUT" (at 92.71 64.77 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "c49056e9-86a1-5615-b4a6-38744f432650"))
-(label "RF_MIX_IN" (at 95.25 72.39 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "51f95c6d-09e6-5fd9-b5af-db68ed300e29"))
-(symbol (lib_id "GNSS_IQ:Taitien_TX_TCXO") (at 54.61 77.47 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "ce975470-db7a-5612-9696-ad48c439cd61")
-(property "Reference" "Y1" (at 54.61 74.93 0) (effects (font (size 1 1))))
-(property "Value" "16.368 MHz" (at 54.61 78.74 0) (effects (font (size 1 1))))
-(property "Footprint" "GNSS_IQ:Taitien_TX_3.2x2.5mm" (at 54.61 77.47 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.taitien.com/wp-content/uploads/2015/12/XO-0076_TX.pdf" (at 54.61 77.47 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 54.61 77.47 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "TXETCDSANF-16.368000" (at 54.61 77.47 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Taitien" (at 54.61 77.47 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "95e3a7c6-10e4-5877-b75c-db5fd3f05df6"))
-(pin "2" (uuid "b0998b3f-5f9c-533a-ab5c-51945fa37013"))
-(pin "3" (uuid "644038cc-50a4-5af4-a845-2f7d7b5cd9eb"))
-(pin "4" (uuid "7a2b78bb-c45b-506c-9649-876ce875089c"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "Y1") (unit 1)))))
-(no_connect (at 40.64 80.01) (uuid "1f091c3f-c480-5cef-9805-5f676b9ce1b1"))
-(wire (pts (xy 54.61 88.9) (xy 54.61 91.44)) (stroke (width 0.254) (type default)) (uuid "8d154ede-5aba-58d9-be7c-9eb2c1f51546"))
-(symbol (lib_id "power:GND") (at 54.61 91.44 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "b5a3299f-42e2-5b4f-9256-14ae8663d5f7")
-(property "Reference" "#PWRrf_adc14" (at 54.61 91.44 0) (effects (font (size 1 1)) (hide yes)))
-(property "Value" "GND" (at 54.61 96.52 0) (effects (font (size 1 1))))
-(property "Footprint" "" (at 54.61 91.44 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 54.61 91.44 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 54.61 91.44 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "36f4d56f-de51-5388-8d38-e36d91e55ae3"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "#PWRrf_adc14") (unit 1)))))
-(symbol (lib_id "Device:C") (at 35.56 69.85 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "787ee426-d381-5bec-adfd-e83051832556")
-(property "Reference" "C4" (at 39.37 68.58 0) (effects (font (size 1 1)) (justify left)))
-(property "Value" "100n" (at 39.37 71.12 0) (effects (font (size 1 1)) (justify left)))
-(property "Footprint" "Capacitor_SMD:C_0603_1608Metric" (at 35.56 69.85 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM188R71C104KA01D" (at 35.56 69.85 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 35.56 69.85 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "GRM188R71C104KA01D" (at 35.56 69.85 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Murata" (at 35.56 69.85 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "dc76e308-28fe-5795-b0fd-cc61a4ceb83b"))
-(pin "2" (uuid "a3985b4f-87f6-5920-8823-a65ec5f81942"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "C4") (unit 1)))))
-(wire (pts (xy 35.56 66.04) (xy 35.56 62.23)) (stroke (width 0.254) (type default)) (uuid "abad2dd4-7f60-5dc4-bb84-c7ad5c365482"))
-(wire (pts (xy 35.56 73.66) (xy 35.56 76.2)) (stroke (width 0.254) (type default)) (uuid "52564ecc-fad9-55b4-9d41-d34ed44a335d"))
-(symbol (lib_id "power:GND") (at 35.56 76.2 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "80fce448-0b06-50bc-86cd-c3375b59017f")
-(property "Reference" "#PWRrf_adc17" (at 35.56 76.2 0) (effects (font (size 1 1)) (hide yes)))
-(property "Value" "GND" (at 35.56 81.28 0) (effects (font (size 1 1))))
-(property "Footprint" "" (at 35.56 76.2 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 35.56 76.2 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 35.56 76.2 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "bc33203f-4c27-5305-b8e8-3b421130cd29"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "#PWRrf_adc17") (unit 1)))))
-(wire (pts (xy 29.21 62.23) (xy 35.56 62.23)) (stroke (width 0.254) (type default)) (uuid "784231c3-3426-5191-8db6-d16214494e6a"))
-(wire (pts (xy 35.56 62.23) (xy 54.61 62.23)) (stroke (width 0.254) (type default)) (uuid "aa09714b-c345-5a60-b265-bca97edd805c"))
-(wire (pts (xy 54.61 62.23) (xy 54.61 66.04)) (stroke (width 0.254) (type default)) (uuid "ccc481a2-fa2f-5cae-ab25-25fc36e6a2ab"))
-(label "RX_3V0" (at 29.21 62.23 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "9b43355a-e8db-5c23-9f27-6c5010d50bfc"))
-(junction (at 35.56 62.23) (diameter 0) (color 0 0 0 0) (uuid "903a3e5a-572f-5e38-97d6-eca5772c2310"))
-(symbol (lib_id "Device:C") (at 80.01 77.47 90)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "c77ee819-f0d0-5c5e-b11a-df078eee0dd8")
-(property "Reference" "C3" (at 80.01 72.39 90) (effects (font (size 1 1))))
-(property "Value" "10n" (at 80.01 74.93 90) (effects (font (size 1 1))))
-(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 80.01 77.47 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM155R71H103KA88D" (at 80.01 77.47 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 80.01 77.47 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "GRM155R71H103KA88D" (at 80.01 77.47 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Murata" (at 80.01 77.47 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "a2a68707-c08a-500e-b9c5-0ffcbfb52c07"))
-(pin "2" (uuid "d875d62e-a07b-5e36-ae09-588d570e3f58"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "C3") (unit 1)))))
-(wire (pts (xy 68.58 77.47) (xy 76.2 77.47)) (stroke (width 0.254) (type default)) (uuid "3559f650-5702-553c-a1be-a3848809a5e8"))
-(wire (pts (xy 83.82 77.47) (xy 107.95 77.47)) (stroke (width 0.254) (type default)) (uuid "fda52815-4c8a-5be9-a083-e14a9e62eed4"))
-(label "REF_XTAL" (at 85.09 77.47 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "0ad848f9-e916-5559-a1db-e3ace9c5ef9a"))
-(symbol (lib_id "Device:C") (at 93.98 91.44 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "e0ddff4f-ba26-56da-9ab6-480c8bfe702e")
-(property "Reference" "C5" (at 97.79 90.17 0) (effects (font (size 1 1)) (justify left)))
-(property "Value" "27p" (at 97.79 92.71 0) (effects (font (size 1 1)) (justify left)))
-(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 93.98 91.44 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM1555C1H270JA01D" (at 93.98 91.44 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 93.98 91.44 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "GRM1555C1H270JA01D" (at 93.98 91.44 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Murata" (at 93.98 91.44 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "14bdd220-68bf-52d2-9e2c-ab9ea94e8165"))
-(pin "2" (uuid "b42a97b7-42d4-55a7-8059-bdc6eea93f48"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "C5") (unit 1)))))
-(symbol (lib_id "Device:R") (at 86.36 82.55 270)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "a1f14153-4cd3-5e16-8685-29f47ce386d8")
-(property "Reference" "R1" (at 82.55 81.026 90) (effects (font (size 1 1))))
-(property "Value" "20k" (at 90.17 81.026 90) (effects (font (size 1 1))))
-(property "Footprint" "Resistor_SMD:R_0603_1608Metric" (at 86.36 82.55 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.yageogroup.com/component-documentation/download/specsheet/RC0603FR-0720KL" (at 86.36 82.55 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 86.36 82.55 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "RC0603FR-0720KL" (at 86.36 82.55 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Yageo" (at 86.36 82.55 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "afbee4c8-63dd-5a45-b5a7-011b4155fe95"))
-(pin "2" (uuid "98a388a5-4a4b-5165-8ad4-240a52a3b01a"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "R1") (unit 1)))))
-(symbol (lib_id "Device:C") (at 73.66 91.44 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "63f90f29-4f43-5004-88d2-73104f404b7c")
-(property "Reference" "C6" (at 77.47 90.17 0) (effects (font (size 1 1)) (justify left)))
-(property "Value" "470p" (at 77.47 92.71 0) (effects (font (size 1 1)) (justify left)))
-(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 73.66 91.44 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM1555C1H471JA01D" (at 73.66 91.44 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 73.66 91.44 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "GRM1555C1H471JA01D" (at 73.66 91.44 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Murata" (at 73.66 91.44 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "0a54452a-d22b-5eab-9e2b-7536099625e5"))
-(pin "2" (uuid "8ec7a984-d7ce-511d-be06-c916332be658"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "C6") (unit 1)))))
-(wire (pts (xy 107.95 82.55) (xy 93.98 82.55)) (stroke (width 0.254) (type default)) (uuid "bbdcfd2f-cff2-5777-81d2-f87e2dd3b607"))
-(wire (pts (xy 93.98 82.55) (xy 90.17 82.55)) (stroke (width 0.254) (type default)) (uuid "f49d58b9-5e27-581e-984f-ebb813afee6e"))
-(label "PLL_CP" (at 99.06 82.55 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "b202fadc-3326-5c92-a6a0-c2a1d88b34b7"))
-(wire (pts (xy 93.98 82.55) (xy 93.98 87.63)) (stroke (width 0.254) (type default)) (uuid "e07501a5-e90a-556f-992c-32f862fc8873"))
-(junction (at 93.98 82.55) (diameter 0) (color 0 0 0 0) (uuid "db7edfad-c97f-5f61-b1a9-293a4c691d67"))
-(wire (pts (xy 93.98 95.25) (xy 93.98 99.06)) (stroke (width 0.254) (type default)) (uuid "7e4053bf-8adc-5793-a286-59a822c420f3"))
-(symbol (lib_id "power:GND") (at 93.98 99.06 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "a529e21f-01b2-5f04-9e2e-c224d3e362d4")
-(property "Reference" "#PWRrf_adc32" (at 93.98 99.06 0) (effects (font (size 1 1)) (hide yes)))
-(property "Value" "GND" (at 93.98 104.14 0) (effects (font (size 1 1))))
-(property "Footprint" "" (at 93.98 99.06 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 93.98 99.06 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 93.98 99.06 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "88f126ff-85a9-51b8-b721-f6d93c7feb7c"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "#PWRrf_adc32") (unit 1)))))
-(wire (pts (xy 82.55 82.55) (xy 73.66 82.55)) (stroke (width 0.254) (type default)) (uuid "835b78f3-6cc3-5a69-b410-73d1bd312479"))
-(wire (pts (xy 73.66 82.55) (xy 73.66 87.63)) (stroke (width 0.254) (type default)) (uuid "a455ad26-ba6a-522d-9356-d63f3637b558"))
-(wire (pts (xy 73.66 95.25) (xy 73.66 99.06)) (stroke (width 0.254) (type default)) (uuid "4ea35bd5-6887-5ac5-bca7-081bd263151b"))
-(symbol (lib_id "power:GND") (at 73.66 99.06 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "b35f3828-f004-5b1c-9ed2-eaf85c6e77e4")
-(property "Reference" "#PWRrf_adc36" (at 73.66 99.06 0) (effects (font (size 1 1)) (hide yes)))
-(property "Value" "GND" (at 73.66 104.14 0) (effects (font (size 1 1))))
-(property "Footprint" "" (at 73.66 99.06 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 73.66 99.06 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 73.66 99.06 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "95dabf9f-065c-5934-8ea2-e2b5a0d6f8df"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "#PWRrf_adc36") (unit 1)))))
-(wire (pts (xy 107.95 92.71) (xy 106.68 92.71)) (stroke (width 0.254) (type default)) (uuid "fac2b364-c2db-5d5a-8715-7a902be951ae"))
-(wire (pts (xy 106.68 92.71) (xy 106.68 97.79)) (stroke (width 0.254) (type default)) (uuid "ab6fe738-a29f-5ae5-89e6-4001247a568d"))
-(wire (pts (xy 106.68 97.79) (xy 107.95 97.79)) (stroke (width 0.254) (type default)) (uuid "3e50628c-1ebb-570c-8b15-3f3eb45dd70e"))
-(label "RX_3V0" (at 106.68 97.79 180) (effects (font (size 0.95 0.95)) (justify right bottom)) (uuid "b3b8c85d-25c4-535f-9018-f584b78710a2"))
-(wire (pts (xy 107.95 87.63) (xy 109.22 87.63)) (stroke (width 0.254) (type default)) (uuid "306597a0-3c39-503f-8853-741767075290"))
-(symbol (lib_id "power:GND") (at 109.22 87.63 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "e90efdab-1652-5048-b402-ad008f8945c3")
-(property "Reference" "#PWRrf_adc42" (at 109.22 87.63 0) (effects (font (size 1 1)) (hide yes)))
-(property "Value" "GND" (at 105.41 90.17 0) (effects (font (size 1 1))))
-(property "Footprint" "" (at 109.22 87.63 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 109.22 87.63 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 109.22 87.63 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "e92acb77-e7d8-5863-a4ed-e5bc844b6e0e"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "#PWRrf_adc42") (unit 1)))))
-(wire (pts (xy 107.95 116.84) (xy 102.87 116.84)) (stroke (width 0.254) (type default)) (uuid "c8b79dbe-1357-5eab-952e-cf45f0b7ca3f"))
-(wire (pts (xy 102.87 116.84) (xy 102.87 119.38)) (stroke (width 0.254) (type default)) (uuid "466728f5-c662-5696-ab6f-f1ff60474e4d"))
-(symbol (lib_id "power:GND") (at 102.87 119.38 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "8e335e1c-5521-54ff-b478-00729e281892")
-(property "Reference" "#PWRrf_adc45" (at 102.87 119.38 0) (effects (font (size 1 1)) (hide yes)))
-(property "Value" "GND" (at 97.79 121.92 0) (effects (font (size 1 1))))
-(property "Footprint" "" (at 102.87 119.38 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 102.87 119.38 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 102.87 119.38 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "f5146bd4-4bee-530c-95a2-19ced8a38b67"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "#PWRrf_adc45") (unit 1)))))
-(no_connect (at 107.95 102.87) (uuid "3b2d7a26-1e29-56d6-851c-21ace44c0b4f"))
-(no_connect (at 107.95 107.95) (uuid "4586c069-eba4-5508-98df-d7ba1492cb6c"))
-(no_connect (at 107.95 113.03) (uuid "6360ca7f-ac9a-5d1d-8136-08eccbd70281"))
-(no_connect (at 171.45 107.95) (uuid "6f845642-ff48-5f73-ab08-0fbaa8acad87"))
-(no_connect (at 171.45 113.03) (uuid "b551ec19-c25d-5e85-acd1-4df408d84dfc"))
-(symbol (lib_id "Device:C_Small") (at 106.68 134.62 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "a8018273-5822-53d2-8c79-c9eaad0f2667")
-(property "Reference" "C8" (at 109.22 133.35 0) (effects (font (size 0.9 0.9)) (justify left)))
-(property "Value" "100p" (at 109.22 135.89 0) (effects (font (size 0.9 0.9)) (justify left)))
-(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 106.68 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM1555C1H101JA01D" (at 106.68 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 106.68 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "GRM1555C1H101JA01D" (at 106.68 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Murata" (at 106.68 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "ef1892fe-fc9f-5d47-99bf-dd956c655468"))
-(pin "2" (uuid "fafdd056-cfc3-55bd-93ca-7f3711f62840"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "C8") (unit 1)))))
-(wire (pts (xy 106.68 132.08) (xy 106.68 127)) (stroke (width 0.254) (type default)) (uuid "f0875301-682b-5c8a-b756-b92b828dcf91"))
-(wire (pts (xy 106.68 137.16) (xy 106.68 140.97)) (stroke (width 0.254) (type default)) (uuid "7a6d131d-719f-5cb9-802a-2f76f8856a5b"))
-(symbol (lib_id "power:GND") (at 106.68 140.97 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "0c38053d-e86c-56ff-9f5c-ede671a21174")
-(property "Reference" "#PWRrf_adc53" (at 106.68 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Value" "GND" (at 106.68 146.05 0) (effects (font (size 1 1))))
-(property "Footprint" "" (at 106.68 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 106.68 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 106.68 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "db4b4bb5-ed13-52ef-9675-f9a35ec60fcd"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "#PWRrf_adc53") (unit 1)))))
-(symbol (lib_id "Device:C_Small") (at 116.84 134.62 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "f09472a7-59f6-5387-b747-2ae2abdfd548")
-(property "Reference" "C7" (at 119.38 133.35 0) (effects (font (size 0.9 0.9)) (justify left)))
-(property "Value" "100n" (at 119.38 135.89 0) (effects (font (size 0.9 0.9)) (justify left)))
-(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 116.84 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM155R71C104KA88D" (at 116.84 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 116.84 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "GRM155R71C104KA88D" (at 116.84 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Murata" (at 116.84 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "1ea0e4fb-127e-52da-910d-c80b5d7cf1f9"))
-(pin "2" (uuid "fec170f9-cb24-5a6c-93e0-6343a4b3ef4e"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "C7") (unit 1)))))
-(wire (pts (xy 116.84 132.08) (xy 116.84 127)) (stroke (width 0.254) (type default)) (uuid "47d08e44-2cd4-52d2-8164-99a5b9a37218"))
-(wire (pts (xy 116.84 137.16) (xy 116.84 140.97)) (stroke (width 0.254) (type default)) (uuid "758bf435-7fa3-56a4-9643-d8a73f2b3fd1"))
-(symbol (lib_id "power:GND") (at 116.84 140.97 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "06c476ab-34a1-56ce-b6c7-8b4231371727")
-(property "Reference" "#PWRrf_adc56" (at 116.84 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Value" "GND" (at 116.84 146.05 0) (effects (font (size 1 1))))
-(property "Footprint" "" (at 116.84 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 116.84 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 116.84 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "b4f0f7f7-0678-5550-b04b-2b6929ca6006"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "#PWRrf_adc56") (unit 1)))))
-(symbol (lib_id "Device:C_Small") (at 125.73 134.62 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "b148d8d3-9090-5b97-ae76-4accfca9ef66")
-(property "Reference" "C9" (at 128.27 133.35 0) (effects (font (size 0.9 0.9)) (justify left)))
-(property "Value" "100n" (at 128.27 135.89 0) (effects (font (size 0.9 0.9)) (justify left)))
-(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 125.73 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM155R71C104KA88D" (at 125.73 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 125.73 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "GRM155R71C104KA88D" (at 125.73 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Murata" (at 125.73 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "71d8b809-3852-5de8-b7be-6613ba30b2a6"))
-(pin "2" (uuid "2d14a7b9-1f9e-56e5-a6e1-338f3473a1ab"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "C9") (unit 1)))))
-(wire (pts (xy 125.73 132.08) (xy 125.73 127)) (stroke (width 0.254) (type default)) (uuid "7ac66c5b-993d-51f4-93dd-df8784a068d4"))
-(wire (pts (xy 125.73 137.16) (xy 125.73 140.97)) (stroke (width 0.254) (type default)) (uuid "c2617d2b-2607-5c6f-9cda-03aa57bd3ae9"))
-(symbol (lib_id "power:GND") (at 125.73 140.97 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "0879718d-029e-5082-8c7e-0e80d438d0c5")
-(property "Reference" "#PWRrf_adc59" (at 125.73 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Value" "GND" (at 125.73 146.05 0) (effects (font (size 1 1))))
-(property "Footprint" "" (at 125.73 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 125.73 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 125.73 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "b45ce614-159f-5c27-856f-69aceb7c5df5"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "#PWRrf_adc59") (unit 1)))))
-(symbol (lib_id "Device:C_Small") (at 134.62 134.62 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "4e1e3a1a-3223-5d87-98c1-e88f56e609ec")
-(property "Reference" "C10" (at 137.16 133.35 0) (effects (font (size 0.9 0.9)) (justify left)))
-(property "Value" "100n" (at 137.16 135.89 0) (effects (font (size 0.9 0.9)) (justify left)))
-(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 134.62 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM155R71C104KA88D" (at 134.62 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 134.62 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "GRM155R71C104KA88D" (at 134.62 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Murata" (at 134.62 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "51efcf20-a27d-5b6e-8730-e6883666f861"))
-(pin "2" (uuid "6667da57-20d4-508a-bcf6-dafced52382a"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "C10") (unit 1)))))
-(wire (pts (xy 134.62 132.08) (xy 134.62 127)) (stroke (width 0.254) (type default)) (uuid "72870227-78ed-5df3-833a-780d041af0aa"))
-(wire (pts (xy 134.62 137.16) (xy 134.62 140.97)) (stroke (width 0.254) (type default)) (uuid "0eeb916c-54a0-5f38-b82b-9145722f9256"))
-(symbol (lib_id "power:GND") (at 134.62 140.97 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "4050fe8d-4c3d-5c75-8e58-40c0b6665062")
-(property "Reference" "#PWRrf_adc62" (at 134.62 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Value" "GND" (at 134.62 146.05 0) (effects (font (size 1 1))))
-(property "Footprint" "" (at 134.62 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 134.62 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 134.62 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "a7e8f230-074e-5dbf-b5ff-128a64cfedac"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "#PWRrf_adc62") (unit 1)))))
-(symbol (lib_id "Device:C_Small") (at 143.51 134.62 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "c9c801f9-c5fa-555b-82b1-1374789d4319")
-(property "Reference" "C11" (at 146.05 133.35 0) (effects (font (size 0.9 0.9)) (justify left)))
-(property "Value" "100n" (at 146.05 135.89 0) (effects (font (size 0.9 0.9)) (justify left)))
-(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 143.51 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM155R71C104KA88D" (at 143.51 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 143.51 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "GRM155R71C104KA88D" (at 143.51 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Murata" (at 143.51 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "ddc426b1-a05d-5fd3-8ebd-4f5e6ca32b6e"))
-(pin "2" (uuid "200619cb-5e97-53de-8d29-7280c8d51537"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "C11") (unit 1)))))
-(wire (pts (xy 143.51 132.08) (xy 143.51 127)) (stroke (width 0.254) (type default)) (uuid "ef77c3cf-fd94-5a31-a1e3-6b79713cad50"))
-(wire (pts (xy 143.51 137.16) (xy 143.51 140.97)) (stroke (width 0.254) (type default)) (uuid "d68a7480-ad50-5255-8949-a962285125e8"))
-(symbol (lib_id "power:GND") (at 143.51 140.97 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "19e6969d-c21b-5ba1-b294-6bb17d39d6f2")
-(property "Reference" "#PWRrf_adc65" (at 143.51 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Value" "GND" (at 143.51 146.05 0) (effects (font (size 1 1))))
-(property "Footprint" "" (at 143.51 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 143.51 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 143.51 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "bee01d07-1c1b-5f9c-9e72-df5437b95cc9"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "#PWRrf_adc65") (unit 1)))))
-(symbol (lib_id "Device:C_Small") (at 152.4 134.62 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "190a3af9-4747-5f88-a711-126aaa4d264b")
-(property "Reference" "C12" (at 154.94 133.35 0) (effects (font (size 0.9 0.9)) (justify left)))
-(property "Value" "100n" (at 154.94 135.89 0) (effects (font (size 0.9 0.9)) (justify left)))
-(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 152.4 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM155R71C104KA88D" (at 152.4 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 152.4 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "GRM155R71C104KA88D" (at 152.4 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Murata" (at 152.4 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "3a0bdb7d-eb08-52eb-9b1b-4b6a84c470fc"))
-(pin "2" (uuid "a372c698-d235-5c15-ae02-db11757aed57"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "C12") (unit 1)))))
-(wire (pts (xy 152.4 132.08) (xy 152.4 127)) (stroke (width 0.254) (type default)) (uuid "2654776a-e852-529e-af48-5a58f1c33b62"))
-(wire (pts (xy 152.4 137.16) (xy 152.4 140.97)) (stroke (width 0.254) (type default)) (uuid "a2d05cd6-b021-5a13-8dc9-fe031301db4e"))
-(symbol (lib_id "power:GND") (at 152.4 140.97 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "a7f3e6e4-a64c-5ba2-a9a9-eda34136e89c")
-(property "Reference" "#PWRrf_adc68" (at 152.4 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Value" "GND" (at 152.4 146.05 0) (effects (font (size 1 1))))
-(property "Footprint" "" (at 152.4 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 152.4 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 152.4 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "5f2b7e19-f332-514e-9e42-44da3ab223f5"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "#PWRrf_adc68") (unit 1)))))
-(symbol (lib_id "Device:C_Small") (at 161.29 134.62 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "2c096c8c-2286-55a7-9d7e-42db111a0992")
-(property "Reference" "C13" (at 163.83 133.35 0) (effects (font (size 0.9 0.9)) (justify left)))
-(property "Value" "100n" (at 163.83 135.89 0) (effects (font (size 0.9 0.9)) (justify left)))
-(property "Footprint" "Capacitor_SMD:C_0402_1005Metric" (at 161.29 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM155R71C104KA88D" (at 161.29 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 161.29 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "MPN" "GRM155R71C104KA88D" (at 161.29 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(property "Manufacturer" "Murata" (at 161.29 134.62 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "b617989b-7317-52ca-ba46-f685f60ca30d"))
-(pin "2" (uuid "953135bf-7e94-5e00-96c7-427590924a76"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "C13") (unit 1)))))
-(wire (pts (xy 161.29 132.08) (xy 161.29 127)) (stroke (width 0.254) (type default)) (uuid "1c3a29ef-a9aa-508a-b6a3-04f1a91c02bc"))
-(wire (pts (xy 161.29 137.16) (xy 161.29 140.97)) (stroke (width 0.254) (type default)) (uuid "a80932a8-85e5-5adf-93dd-2f2e534dec61"))
-(symbol (lib_id "power:GND") (at 161.29 140.97 0)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "a5baf87e-b962-5941-92e8-bfaf55d1ab33")
-(property "Reference" "#PWRrf_adc71" (at 161.29 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Value" "GND" (at 161.29 146.05 0) (effects (font (size 1 1))))
-(property "Footprint" "" (at 161.29 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 161.29 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 161.29 140.97 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "b773a35e-a52a-5f3c-9a17-fa0cb0e9be4d"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "#PWRrf_adc71") (unit 1)))))
-(hierarchical_label "RX_3V0" (shape input) (at 97.79 127 180) (effects (font (size 1.12 1.12)) (justify right)) (uuid "3c33ec51-127b-59b3-80d6-44f80674f27d"))
-(wire (pts (xy 97.79 127) (xy 106.68 127)) (stroke (width 0.254) (type default)) (uuid "33f2f587-8d08-5c9e-9e6c-f4e5e288f551"))
-(wire (pts (xy 106.68 127) (xy 116.84 127)) (stroke (width 0.254) (type default)) (uuid "f7f4c5ac-4a4f-56e2-aedf-d3732038c176"))
-(wire (pts (xy 116.84 127) (xy 125.73 127)) (stroke (width 0.254) (type default)) (uuid "57ffa2b7-b17d-5cd5-88f9-88540888611d"))
-(wire (pts (xy 125.73 127) (xy 134.62 127)) (stroke (width 0.254) (type default)) (uuid "87a24b0c-67d7-545e-b9e3-819424ddc3e8"))
-(wire (pts (xy 134.62 127) (xy 143.51 127)) (stroke (width 0.254) (type default)) (uuid "a34fe3d8-6198-55f5-b08c-e0c13200f86a"))
-(wire (pts (xy 143.51 127) (xy 152.4 127)) (stroke (width 0.254) (type default)) (uuid "7fa62c6d-7295-5d82-974c-e9e581271315"))
-(wire (pts (xy 152.4 127) (xy 161.29 127)) (stroke (width 0.254) (type default)) (uuid "51acf3aa-38df-531e-a091-c7bc5642e381"))
-(wire (pts (xy 116.84 123.19) (xy 116.84 127)) (stroke (width 0.254) (type default)) (uuid "4aafe57d-9e53-5a5e-9792-0307aa0c9146"))
-(wire (pts (xy 125.73 123.19) (xy 125.73 127)) (stroke (width 0.254) (type default)) (uuid "7fc01114-47df-5843-b422-a834025c4fff"))
-(wire (pts (xy 134.62 123.19) (xy 134.62 127)) (stroke (width 0.254) (type default)) (uuid "650354bd-06d5-5eb1-872a-e33de2092f69"))
-(wire (pts (xy 143.51 123.19) (xy 143.51 127)) (stroke (width 0.254) (type default)) (uuid "4a294191-bff0-5d48-a10b-8b1e28d82a09"))
-(wire (pts (xy 152.4 123.19) (xy 152.4 127)) (stroke (width 0.254) (type default)) (uuid "d2744c53-127b-5d9a-9073-3c4903c94f83"))
-(wire (pts (xy 161.29 123.19) (xy 161.29 127)) (stroke (width 0.254) (type default)) (uuid "880c56d6-1f01-5f2f-97d1-7395cf898562"))
-(junction (at 106.68 127) (diameter 0) (color 0 0 0 0) (uuid "1ffec6d5-775c-55fa-a514-fa3694b4f602"))
-(junction (at 116.84 127) (diameter 0) (color 0 0 0 0) (uuid "559deb6d-50e3-5e91-968a-c129c5c7ca9a"))
-(junction (at 125.73 127) (diameter 0) (color 0 0 0 0) (uuid "2253060c-5389-5e4f-b7ec-e876a881b774"))
-(junction (at 134.62 127) (diameter 0) (color 0 0 0 0) (uuid "566dd459-3456-513d-8a6f-f8013adb93c0"))
-(junction (at 143.51 127) (diameter 0) (color 0 0 0 0) (uuid "45b0da9a-3a3d-5e3a-921c-2698b7ae0349"))
-(junction (at 152.4 127) (diameter 0) (color 0 0 0 0) (uuid "45afa235-b4a4-584d-98c3-980f7edb0f6d"))
-(hierarchical_label "{IQ}" (shape output) (at 190.5 55.88 0) (effects (font (size 1.12 1.12)) (justify left)) (uuid "38767a1d-d86d-507e-b032-0f686e0ff1ed"))
-(bus (pts (xy 190.5 55.88) (xy 185.42 55.88)) (stroke (width 0.51) (type default)) (uuid "b04017b8-2cd2-5d51-ae87-5e72f7900595"))
-(bus (pts (xy 185.42 55.88) (xy 185.42 80.01)) (stroke (width 0.51) (type default)) (uuid "42733828-5079-5204-b0e8-c4642ae21d5c"))
-(bus_entry (at 185.42 59.69) (size -2.54 2.54) (stroke (width 0) (type default)) (uuid "87ae9c7d-a6c1-50a6-a4ab-22ba385c6945"))
-(wire (pts (xy 171.45 62.23) (xy 182.88 62.23)) (stroke (width 0.254) (type default)) (uuid "f29b275c-054d-58f7-b1f0-fb3acc36337b"))
-(label "I1" (at 172.72 62.23 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "fd2bd3f7-3e32-5120-bd47-b2ad0b10b14d"))
-(bus_entry (at 185.42 64.77) (size -2.54 2.54) (stroke (width 0) (type default)) (uuid "5693b115-f3c8-5cf8-b5d0-4b75768e7ce5"))
-(wire (pts (xy 171.45 67.31) (xy 182.88 67.31)) (stroke (width 0.254) (type default)) (uuid "6586cbdc-31fb-5f28-85d3-6da8cee25dba"))
-(label "I0" (at 172.72 67.31 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "81c511e0-b207-5f63-acf0-70e18fec4039"))
-(bus_entry (at 185.42 69.85) (size -2.54 2.54) (stroke (width 0) (type default)) (uuid "ddf6c675-fbc1-56f1-81d5-0ab55bb63379"))
-(wire (pts (xy 171.45 72.39) (xy 182.88 72.39)) (stroke (width 0.254) (type default)) (uuid "8e58cba5-4cab-57a0-a90d-f28909c4074c"))
-(label "Q1" (at 172.72 72.39 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "77439029-82f5-50ba-91fa-198d469842e6"))
-(bus_entry (at 185.42 74.93) (size -2.54 2.54) (stroke (width 0) (type default)) (uuid "4e3e9575-33ab-50e6-9790-3e3a95322515"))
-(wire (pts (xy 171.45 77.47) (xy 182.88 77.47)) (stroke (width 0.254) (type default)) (uuid "7ea8708b-02f4-58f1-a018-fb72ed71a939"))
-(label "Q0" (at 172.72 77.47 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "07e856dd-a9be-51d3-aa23-429dc0d34f2f"))
-(bus_entry (at 185.42 80.01) (size -2.54 2.54) (stroke (width 0) (type default)) (uuid "52832a17-63eb-5a52-be94-0ac09dc77e7d"))
-(wire (pts (xy 171.45 82.55) (xy 182.88 82.55)) (stroke (width 0.254) (type default)) (uuid "883fdb55-1154-59ae-b25d-ad44ecc3eec0"))
-(label "CLKOUT" (at 172.72 82.55 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "79574167-93ca-578f-9137-134ab174da9e"))
-(hierarchical_label "{CFG}" (shape input) (at 190.5 101.6 0) (effects (font (size 1.12 1.12)) (justify left)) (uuid "a5c15f37-a12a-52d6-ba9e-1341590ba21c"))
-(bus (pts (xy 190.5 101.6) (xy 185.42 101.6)) (stroke (width 0.51) (type default)) (uuid "b2ec3f3e-c3ba-5282-a9e7-07e4f3d6f976"))
-(bus (pts (xy 185.42 101.6) (xy 185.42 85.09)) (stroke (width 0.51) (type default)) (uuid "bb306706-98c3-5e6c-a0bb-f7d116a4cdda"))
-(bus_entry (at 185.42 85.09) (size -2.54 2.54) (stroke (width 0) (type default)) (uuid "7b1c3906-5c7b-5a1b-9be1-591b7d756473"))
-(wire (pts (xy 171.45 87.63) (xy 182.88 87.63)) (stroke (width 0.254) (type default)) (uuid "3c831a07-97f6-5356-b1d8-3432bdc55b53"))
-(label "CS_N" (at 172.72 87.63 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "7ccf2d28-7041-591e-b8f2-018b93935d33"))
-(bus_entry (at 185.42 90.17) (size -2.54 2.54) (stroke (width 0) (type default)) (uuid "4d53332b-4102-538f-83ac-6fb5bfc16de2"))
-(wire (pts (xy 171.45 92.71) (xy 182.88 92.71)) (stroke (width 0.254) (type default)) (uuid "5e90d6c9-04b8-5e36-9a98-89e426733671"))
-(label "SCLK" (at 172.72 92.71 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "85d21ae7-52ab-567e-975d-7d275b6d20b8"))
-(bus_entry (at 185.42 95.25) (size -2.54 2.54) (stroke (width 0) (type default)) (uuid "b9ab70da-73e0-522b-a28d-7bcb00d592d2"))
-(wire (pts (xy 171.45 97.79) (xy 182.88 97.79)) (stroke (width 0.254) (type default)) (uuid "402ecb84-76eb-5de4-9655-9810a2c484c1"))
-(label "SDATA" (at 172.72 97.79 0) (effects (font (size 0.95 0.95)) (justify left bottom)) (uuid "4fae06c5-60bb-53cf-9b91-26d2f0d7b26e"))
-(wire (pts (xy 171.45 102.87) (xy 177.8 102.87)) (stroke (width 0.254) (type default)) (uuid "c5453aa5-4713-5e07-a9c2-0494191bd052"))
-(wire (pts (xy 177.8 102.87) (xy 177.8 107.95)) (stroke (width 0.254) (type default)) (uuid "7db08452-d722-5ef1-9662-016a4798d301"))
-(symbol (lib_id "Connector:TestPoint") (at 177.8 107.95 180)  (unit 1) (in_bom yes) (on_board yes) (dnp no) (uuid "065b5d91-a5f2-54a6-af2f-ec7b4d42969e")
-(property "Reference" "TP1" (at 181.61 107.95 0) (effects (font (size 1 1)) (justify right)))
-(property "Value" "PLL_LOCK" (at 181.61 110.49 0) (effects (font (size 1 1)) (justify right)))
-(property "Footprint" "TestPoint:TestPoint_Pad_D1.5mm" (at 177.8 107.95 0) (effects (font (size 1 1)) (hide yes)))
-(property "Datasheet" "" (at 177.8 107.95 0) (effects (font (size 1 1)) (hide yes)))
-(property "Description" "" (at 177.8 107.95 0) (effects (font (size 1 1)) (hide yes)))
-(pin "1" (uuid "c3eaf237-1c1f-57a5-8427-127badf3f79d"))
-(instances (project "GNSS-IQ-Breakout" (path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236" (reference "TP1") (unit 1)))))
-
+	(symbol
+		(lib_id "GNSS_IQ:MAX2769B")
+		(at 139.7 87.63 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "1b3d59ce-81b4-5d5d-966c-5f8d2b3b44b4")
+		(property "Reference" "U1"
+			(at 139.7 82.55 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "MAX2769BETI/V+T"
+			(at 139.7 86.36 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" "GNSS_IQ:TQFN-28-1EP_ADI_90-0023"
+			(at 139.7 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.analog.com/media/en/technical-documentation/data-sheets/MAX2769B.pdf"
+			(at 139.7 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 139.7 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "MAX2769BETI/V+T"
+			(at 139.7 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Analog Devices"
+			(at 139.7 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "27"
+			(uuid "88a35293-8ea3-53a3-a2ab-d01f06c4f9b9")
+		)
+		(pin "2"
+			(uuid "9f3f118b-0808-5199-afdf-25e846a38a22")
+		)
+		(pin "5"
+			(uuid "88e38811-5be8-531d-b9ee-4a9357c7bb7f")
+		)
+		(pin "15"
+			(uuid "b614c768-6912-57e7-801e-075e584f0096")
+		)
+		(pin "12"
+			(uuid "da8ca24d-a626-593f-8751-e5c260da75ea")
+		)
+		(pin "26"
+			(uuid "cc81b694-2984-5593-905a-1c25824a4aa6")
+		)
+		(pin "7"
+			(uuid "77094ad1-d988-5e68-bfe6-275369f957d8")
+		)
+		(pin "24"
+			(uuid "31213946-1079-5d26-b496-c250a7bc2553")
+		)
+		(pin "25"
+			(uuid "e615fac9-42ff-5613-9143-e7f7a8e223a1")
+		)
+		(pin "3"
+			(uuid "8591434e-1d75-51e0-9866-f37bc93a68ce")
+		)
+		(pin "1"
+			(uuid "e30fb30a-80fb-5151-8ed0-f7ccb7338de2")
+		)
+		(pin "21"
+			(uuid "29e0573a-c9a4-5512-abcd-96bf6fbc1f3d")
+		)
+		(pin "20"
+			(uuid "062b934a-77de-5a66-a50e-c5e3d8485705")
+		)
+		(pin "17"
+			(uuid "bda36043-aa6b-588b-be4b-393564456a32")
+		)
+		(pin "18"
+			(uuid "d82ff457-864c-531d-9ebf-f7d567f03f57")
+		)
+		(pin "16"
+			(uuid "406e00a9-e37c-5245-a638-d31153e1bbcc")
+		)
+		(pin "10"
+			(uuid "0a8c2453-aaf8-5373-a2bf-8e80eb2223ac")
+		)
+		(pin "9"
+			(uuid "cc6bac01-78b6-5154-bfcb-8304bfad0b71")
+		)
+		(pin "8"
+			(uuid "fac8864e-03c2-5b13-bc39-d793944de680")
+		)
+		(pin "6"
+			(uuid "393e2727-eaa7-558c-b275-a9a548b85f75")
+		)
+		(pin "22"
+			(uuid "9317f5d5-6e69-5363-a3a8-9befb0405d17")
+		)
+		(pin "28"
+			(uuid "d5f5f522-f614-5669-8982-a1468a01a0ab")
+		)
+		(pin "4"
+			(uuid "72cb5ab8-8021-5591-a3a6-2c67f7d71ee3")
+		)
+		(pin "11"
+			(uuid "dcb18204-62fd-5b60-8ec7-35b28593f553")
+		)
+		(pin "13"
+			(uuid "4c2fcb31-9683-591d-928b-9faba68769d8")
+		)
+		(pin "14"
+			(uuid "56d8330b-2f21-55fa-8346-4f48446e90dd")
+		)
+		(pin "19"
+			(uuid "6cafbe68-e132-5c7f-85ad-eac13a01e54f")
+		)
+		(pin "23"
+			(uuid "0e204c3e-1ee2-5f12-89d5-0bbffce88a90")
+		)
+		(pin "29"
+			(uuid "9ad797ef-1b30-5e40-bb7c-07a457f3584f")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "U1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 161.29 134.62 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "2c096c8c-2286-55a7-9d7e-42db111a0992")
+		(property "Reference" "C13"
+			(at 163.83 133.35 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9 0.9)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100n"
+			(at 163.83 135.89 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9 0.9)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 161.29 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM155R71C104KA88D"
+			(at 161.29 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 161.29 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "GRM155R71C104KA88D"
+			(at 161.29 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 161.29 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "b617989b-7317-52ca-ba46-f685f60ca30d")
+		)
+		(pin "2"
+			(uuid "953135bf-7e94-5e00-96c7-427590924a76")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "C13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 134.62 140.97 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "4050fe8d-4c3d-5c75-8e58-40c0b6665062")
+		(property "Reference" "#PWRrf_adc62"
+			(at 134.62 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 134.62 145.034 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 134.62 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 134.62 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 134.62 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "a7e8f230-074e-5dbf-b5ff-128a64cfedac")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "#PWRrf_adc62")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 134.62 134.62 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "4e1e3a1a-3223-5d87-98c1-e88f56e609ec")
+		(property "Reference" "C10"
+			(at 137.16 133.35 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9 0.9)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100n"
+			(at 137.16 135.89 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9 0.9)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 134.62 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM155R71C104KA88D"
+			(at 134.62 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 134.62 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "GRM155R71C104KA88D"
+			(at 134.62 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 134.62 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "51efcf20-a27d-5b6e-8730-e6883666f861")
+		)
+		(pin "2"
+			(uuid "6667da57-20d4-508a-bcf6-dafced52382a")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "C10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:Conn_Coaxial")
+		(at 69.85 62.23 0)
+		(mirror y)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "51121a6b-1d6a-527b-a40e-b6a7044c14ca")
+		(property "Reference" "J1"
+			(at 69.85 57.15 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "L1 SMA"
+			(at 69.85 59.69 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" "GNSS_IQ:Samtec_SMA_J_P_H_ST_EM3_DropInEdge"
+			(at 69.85 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://suddendocs.samtec.com/prints/sma-j-p-x-st-em3-mkt.pdf"
+			(at 69.85 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 69.85 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "SMA-J-P-H-ST-EM3"
+			(at 69.85 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Samtec"
+			(at 69.85 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "6a31b76b-21be-538a-b362-e130e4c92eeb")
+		)
+		(pin "2"
+			(uuid "3e89335b-0913-51aa-8975-fa056330f3b1")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "J1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 85.09 62.23 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "5aff42e3-dc4d-5f34-8640-b6738548e306")
+		(property "Reference" "C1"
+			(at 85.09 58.166 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "470p"
+			(at 85.09 65.786 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 85.09 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM1555C1H471JA01D"
+			(at 85.09 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 85.09 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "GRM1555C1H471JA01D"
+			(at 85.09 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 85.09 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "7e42a9ac-84be-58ad-80a3-cb93d46db9c3")
+		)
+		(pin "2"
+			(uuid "70071681-a086-51fa-83d8-ac6bfef854e4")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "C1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 77.47 88.9 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "63f90f29-4f43-5004-88d2-73104f404b7c")
+		(property "Reference" "C6"
+			(at 81.28 87.63 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "470p"
+			(at 81.28 90.17 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 77.47 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM1555C1H471JA01D"
+			(at 77.47 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 77.47 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "GRM1555C1H471JA01D"
+			(at 77.47 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 77.47 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "0a54452a-d22b-5eab-9e2b-7536099625e5")
+		)
+		(pin "2"
+			(uuid "8ec7a984-d7ce-511d-be06-c916332be658")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "C6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 35.56 69.85 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "787ee426-d381-5bec-adfd-e83051832556")
+		(property "Reference" "C4"
+			(at 39.37 68.58 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100n"
+			(at 39.37 71.12 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0603_1608Metric"
+			(at 35.56 69.85 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM188R71C104KA01D"
+			(at 35.56 69.85 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 35.56 69.85 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "GRM188R71C104KA01D"
+			(at 35.56 69.85 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 35.56 69.85 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "dc76e308-28fe-5795-b0fd-cc61a4ceb83b")
+		)
+		(pin "2"
+			(uuid "a3985b4f-87f6-5920-8823-a65ec5f81942")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "C4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 35.56 76.2 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "80fce448-0b06-50bc-86cd-c3375b59017f")
+		(property "Reference" "#PWRrf_adc17"
+			(at 35.56 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 35.56 80.01 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 35.56 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 35.56 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 35.56 76.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "bc33203f-4c27-5305-b8e8-3b421130cd29")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "#PWRrf_adc17")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 102.87 119.38 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "8e335e1c-5521-54ff-b478-00729e281892")
+		(property "Reference" "#PWRrf_adc45"
+			(at 102.87 119.38 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 97.79 121.92 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 102.87 119.38 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 102.87 119.38 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 102.87 119.38 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "f5146bd4-4bee-530c-95a2-19ced8a38b67")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "#PWRrf_adc45")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 86.36 82.55 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "a1f14153-4cd3-5e16-8685-29f47ce386d8")
+		(property "Reference" "R1"
+			(at 82.55 81.026 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "20k"
+			(at 90.17 81.026 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+			(at 86.36 82.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.yageogroup.com/component-documentation/download/specsheet/RC0603FR-0720KL"
+			(at 86.36 82.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 86.36 82.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "RC0603FR-0720KL"
+			(at 86.36 82.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Yageo"
+			(at 86.36 82.55 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "afbee4c8-63dd-5a45-b5a7-011b4155fe95")
+		)
+		(pin "2"
+			(uuid "98a388a5-4a4b-5165-8ad4-240a52a3b01a")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "R1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 93.98 93.98 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "a529e21f-01b2-5f04-9e2e-c224d3e362d4")
+		(property "Reference" "#PWRrf_adc32"
+			(at 93.98 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 93.98 98.044 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 93.98 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 93.98 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 93.98 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "88f126ff-85a9-51b8-b721-f6d93c7feb7c")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "#PWRrf_adc32")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 161.29 140.97 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "a5baf87e-b962-5941-92e8-bfaf55d1ab33")
+		(property "Reference" "#PWRrf_adc71"
+			(at 161.29 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 161.29 145.034 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 161.29 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 161.29 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 161.29 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "b773a35e-a52a-5f3c-9a17-fa0cb0e9be4d")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "#PWRrf_adc71")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 152.4 140.97 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "a7f3e6e4-a64c-5ba2-a9a9-eda34136e89c")
+		(property "Reference" "#PWRrf_adc68"
+			(at 152.4 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 152.4 145.034 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 152.4 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 152.4 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 152.4 140.97 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "5f2b7e19-f332-514e-9e42-44da3ab223f5")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "#PWRrf_adc68")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 106.68 134.62 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "a8018273-5822-53d2-8c79-c9eaad0f2667")
+		(property "Reference" "C8"
+			(at 109.22 133.35 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9 0.9)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100p"
+			(at 109.22 135.89 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9 0.9)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 106.68 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM1555C1H101JA01D"
+			(at 106.68 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 106.68 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "GRM1555C1H101JA01D"
+			(at 106.68 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 106.68 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "ef1892fe-fc9f-5d47-99bf-dd956c655468")
+		)
+		(pin "2"
+			(uuid "fafdd056-cfc3-55bd-93ca-7f3711f62840")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "C8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 91.44 68.58 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "ad7682fa-7fa5-5087-b4aa-74cba53eae0f")
+		(property "Reference" "C2"
+			(at 95.25 67.31 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "470p"
+			(at 95.25 69.85 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 91.44 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM1555C1H471JA01D"
+			(at 91.44 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 91.44 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "GRM1555C1H471JA01D"
+			(at 91.44 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 91.44 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "153b94e9-ca0d-5024-bdb4-b6a05a648d43")
+		)
+		(pin "2"
+			(uuid "1aae5217-7fc9-5c1e-8bb8-d2ed6cc9b901")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "C2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 125.73 134.62 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "b148d8d3-9090-5b97-ae76-4accfca9ef66")
+		(property "Reference" "C9"
+			(at 128.27 133.35 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9 0.9)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100n"
+			(at 128.27 135.89 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9 0.9)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 125.73 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM155R71C104KA88D"
+			(at 125.73 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 125.73 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "GRM155R71C104KA88D"
+			(at 125.73 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 125.73 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "71d8b809-3852-5de8-b7be-6613ba30b2a6")
+		)
+		(pin "2"
+			(uuid "2d14a7b9-1f9e-56e5-a6e1-338f3473a1ab")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "C9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 77.47 93.98 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "b35f3828-f004-5b1c-9ed2-eaf85c6e77e4")
+		(property "Reference" "#PWRrf_adc36"
+			(at 77.47 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 77.47 98.044 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 77.47 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 77.47 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 77.47 93.98 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "95dabf9f-065c-5934-8ea2-e2b5a0d6f8df")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "#PWRrf_adc36")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 54.61 91.44 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "b5a3299f-42e2-5b4f-9256-14ae8663d5f7")
+		(property "Reference" "#PWRrf_adc14"
+			(at 54.61 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 54.61 95.25 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 54.61 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 54.61 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 54.61 91.44 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "36f4d56f-de51-5388-8d38-e36d91e55ae3")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "#PWRrf_adc14")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 69.85 68.58 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "c621078b-0c19-59f9-948e-216f8a923427")
+		(property "Reference" "#PWRrf_adc5"
+			(at 69.85 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 69.85 72.39 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 69.85 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 69.85 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 69.85 68.58 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "f0844e03-cefb-54d5-82fd-6cb343177d72")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "#PWRrf_adc5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 80.01 77.47 90)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "c77ee819-f0d0-5c5e-b11a-df078eee0dd8")
+		(property "Reference" "C3"
+			(at 80.01 72.39 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "10n"
+			(at 80.01 74.93 90)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 80.01 77.47 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM155R71H103KA88D"
+			(at 80.01 77.47 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 80.01 77.47 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "GRM155R71H103KA88D"
+			(at 80.01 77.47 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 80.01 77.47 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "a2a68707-c08a-500e-b9c5-0ffcbfb52c07")
+		)
+		(pin "2"
+			(uuid "d875d62e-a07b-5e36-ae09-588d570e3f58")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "C3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 143.51 134.62 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "c9c801f9-c5fa-555b-82b1-1374789d4319")
+		(property "Reference" "C11"
+			(at 146.05 133.35 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9 0.9)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100n"
+			(at 146.05 135.89 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9 0.9)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 143.51 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM155R71C104KA88D"
+			(at 143.51 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 143.51 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "GRM155R71C104KA88D"
+			(at 143.51 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 143.51 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "ddc426b1-a05d-5fd3-8ebd-4f5e6ca32b6e")
+		)
+		(pin "2"
+			(uuid "200619cb-5e97-53de-8d29-7280c8d51537")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "C11")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "GNSS_IQ:Taitien_TX_TCXO")
+		(at 54.61 77.47 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "ce975470-db7a-5612-9696-ad48c439cd61")
+		(property "Reference" "Y1"
+			(at 54.61 74.93 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "16.368 MHz"
+			(at 54.61 78.74 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" "GNSS_IQ:Taitien_TX_3.2x2.5mm"
+			(at 54.61 77.47 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.taitien.com/wp-content/uploads/2015/12/XO-0076_TX.pdf"
+			(at 54.61 77.47 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 54.61 77.47 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "TXETCDSANF-16.368000"
+			(at 54.61 77.47 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Taitien"
+			(at 54.61 77.47 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "95e3a7c6-10e4-5877-b75c-db5fd3f05df6")
+		)
+		(pin "2"
+			(uuid "b0998b3f-5f9c-533a-ab5c-51945fa37013")
+		)
+		(pin "3"
+			(uuid "644038cc-50a4-5af4-a845-2f7d7b5cd9eb")
+		)
+		(pin "4"
+			(uuid "7a2b78bb-c45b-506c-9649-876ce875089c")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "Y1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 93.98 88.9 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "e0ddff4f-ba26-56da-9ab6-480c8bfe702e")
+		(property "Reference" "C5"
+			(at 97.79 87.63 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "27p"
+			(at 97.79 90.17 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 93.98 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM1555C1H270JA01D"
+			(at 93.98 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 93.98 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "GRM1555C1H270JA01D"
+			(at 93.98 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 93.98 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "14bdd220-68bf-52d2-9e2c-ab9ea94e8165")
+		)
+		(pin "2"
+			(uuid "b42a97b7-42d4-55a7-8059-bdc6eea93f48")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "C5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 107.95 87.63 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "e90efdab-1652-5048-b402-ad008f8945c3")
+		(property "Reference" "#PWRrf_adc42"
+			(at 107.95 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 105.918 87.376 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 107.95 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 107.95 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 107.95 87.63 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "e92acb77-e7d8-5863-a4ed-e5bc844b6e0e")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "#PWRrf_adc42")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C_Small")
+		(at 116.84 134.62 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "f09472a7-59f6-5387-b747-2ae2abdfd548")
+		(property "Reference" "C7"
+			(at 119.38 133.35 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9 0.9)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100n"
+			(at 119.38 135.89 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 0.9 0.9)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 116.84 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Datasheet" "https://www.murata.com/en-us/products/productdetail?partno=GRM155R71C104KA88D"
+			(at 116.84 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Description" ""
+			(at 116.84 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "MPN" "GRM155R71C104KA88D"
+			(at 116.84 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(property "Manufacturer" "Murata"
+			(at 116.84 134.62 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "1ea0e4fb-127e-52da-910d-c80b5d7cf1f9")
+		)
+		(pin "2"
+			(uuid "fec170f9-cb24-5a6c-93e0-6343a4b3ef4e")
+		)
+		(instances
+			(project "GNSS-IQ-Breakout"
+				(path "/d871b2cd-8d2e-5392-9100-97a3051b8fc7/cc384aa3-b908-528a-b8f0-f1576de02236"
+					(reference "C7")
+					(unit 1)
+				)
+			)
+		)
+	)
 )

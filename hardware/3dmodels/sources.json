@@ -1,0 +1,66 @@
+{
+  "Samtec_SMA_J_P_H_ST_EM3.stp": {
+    "source": "https://samtec-embedded.customer-domain.samtec.com/3d-cad-models/sso/sma-j-p-h-st-em3-samtec?info=samtec%2Fconnectors%2Frf_interconnects%2F50_ohms%2Fsma_50_ohm%2Fsma_asmtab.prj",
+    "manufacturer_page": "https://www.samtec.com/products/sma-j-p-h-st-em3",
+    "attribution": "Samtec, SMA-J-P-H-ST-EM3; CADENAS/PARTsolutions export. Original STEP file unchanged.",
+    "license": "CC-BY-ND-4.0, explicitly declared in original STEP FILE_NAME author field; CADENAS terms8 defer to attached CreativeCommons license.",
+    "license_files": [
+      "licenses/Samtec_CADENAS_CC-BY-ND-4.0.txt"
+    ],
+    "classification": "Exact configured manufacturer CAD model, nominal geometry; not a production tolerance or RF launch certificate.",
+    "sha256": "40735221a6a73f480fe41517127f486fac7721b4a25ea61593fc38c89c0d7b23",
+    "target_from_repo": "hardware/3dmodels/Samtec_SMA_J_P_H_ST_EM3.stp",
+    "public_stage_allowed": true,
+    "original_filename": "SMA-J-P-H-ST-EM3.stp",
+    "modified": false,
+    "raw_bounds": {
+      "min": [
+        -7.5000001,
+        -8.881784197001252e-16,
+        -4.5
+      ],
+      "max": [
+        7.5000001,
+        7.000000000000001,
+        4.5
+      ],
+      "size": [
+        15.0000002,
+        7.000000000000002,
+        9.0
+      ]
+    },
+    "transform_for_project_footprint": {
+      "offset_mm": [
+        1.5,
+        0,
+        -3.02
+      ],
+      "rotate_deg": [
+        -90,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "placed_local_bounds_mm": {
+      "x": [
+        -6,
+        9
+      ],
+      "y": [
+        -4.5,
+        4.5
+      ],
+      "z_relative_top_copper": [
+        -3.02,
+        3.98
+      ]
+    },
+    "verification": "Native KiCad isolated coupon render + native STEP export read with OCCT. Mounting ledge aligns to PCBtop; signal/ground lands retained unchanged. VendorSTEP BRep valid. Fit/mating/cutout tolerance still unverified."
+  }
+}

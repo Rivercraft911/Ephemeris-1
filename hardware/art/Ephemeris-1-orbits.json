@@ -1,0 +1,96 @@
+{
+  "earth_limb_fit": {
+    "center_px": [
+      1507.72818736,
+      1238.45469965
+    ],
+    "radius_px": 776.94468063
+  },
+  "note": "Projected circular orbital planes share the illustrated Earth center. Relative scale is compressed for composition; this is artwork, not ephemeris/altitude data. All four navigation spacecraft lie on their own projected orbit. Only restrained local trail fragments are shown; straight ranging paths remain from the image and terminate at the receiver.",
+  "orbits": [
+    {
+      "satellite": "N1",
+      "source_position_px": [
+        621,
+        203
+      ],
+      "center_px": [
+        1507.72818736,
+        1238.45469965
+      ],
+      "semimajor_px": 1631.5838293230001,
+      "semiminor_px": 1189.148427187982,
+      "major_axis_deg": 5,
+      "local_trail_mm": [
+        2.5,
+        1.7
+      ],
+      "projected_circle_tilt_deg": 43.21154093040242
+    },
+    {
+      "satellite": "N2",
+      "source_position_px": [
+        277,
+        504
+      ],
+      "center_px": [
+        1507.72818736,
+        1238.45469965
+      ],
+      "semimajor_px": 1631.5838293230001,
+      "semiminor_px": 1286.0549599720039,
+      "major_axis_deg": 75,
+      "local_trail_mm": [
+        1.6,
+        2.9
+      ],
+      "projected_circle_tilt_deg": 37.98006861476016
+    },
+    {
+      "satellite": "N3",
+      "source_position_px": [
+        858,
+        332
+      ],
+      "center_px": [
+        1507.72818736,
+        1238.45469965
+      ],
+      "semimajor_px": 1631.5838293230001,
+      "semiminor_px": 1104.9363630720666,
+      "major_axis_deg": -25,
+      "local_trail_mm": [
+        2.8,
+        1.8
+      ],
+      "projected_circle_tilt_deg": 47.37344676013875
+    },
+    {
+      "satellite": "N4",
+      "source_position_px": [
+        265,
+        260
+      ],
+      "center_px": [
+        1507.72818736,
+        1238.45469965
+      ],
+      "semimajor_px": 1631.5838293230001,
+      "semiminor_px": 352.90192416306155,
+      "major_axis_deg": 35,
+      "local_trail_mm": [
+        1.9,
+        2.6
+      ],
+      "projected_circle_tilt_deg": 77.50854076277614
+    }
+  ],
+  "raster_master_px": [
+    2700,
+    2040
+  ],
+  "tone_sampling_dpi": 600,
+  "polygon_count": 17858,
+  "ink_area_fraction": 0.09629448075526507,
+  "manufacturing_mask_update": "Refit to original 45x34 mm body with Samtec notch; removed obsolete Amphenol backside pad windows. Approved engraving and seeded orbital trails unchanged."
+}

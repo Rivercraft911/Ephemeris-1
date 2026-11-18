@@ -1,0 +1,17 @@
+Ephemeris 1 fine-art source edits — built-in image_gen tool
+
+
+Make two restrained edits to this approved white-on-black astronomical engraving. Preserve the Earth with all its extraordinary cloud and geographical detail, the mirror membrane spacecraft and compact central bus with NO dish, all tiny navigation satellites, the upper-left engraved Milky Way, and every STRAIGHT GNSS ranging connection that converges on the membrane's central receiver. Preserve the exact composition, spacecraft scale, Earth placement, engraved texture and black background.
+
+First, add a delicate irregular scattering of small stars in the currently empty upper-right sky and lower-left darkness, with a lighter scattering through the center. Vary their sizes subtly and group them unevenly. Retain substantial dark breathing room, especially the gulf between Earth and the membrane. Most additions are modest etched points, not large starbursts, uniform noise or a star wallpaper pattern.
+
+Second, carefully REMOVE the existing arbitrary CURVED/DASHED orbital tracks: the long dotted almost-vertical curve running from near the upper center-left down past the membrane to the bottom edge, and the dotted shallow arc that crosses the middle sky from the left toward the upper right. Restore the underlying black sky/star texture cleanly. Keep all the fine STRAIGHT ranging lines from the distant navigation sources to the central receiver intact. Do not add replacement orbit curves in this edit: analytically calculated Earth-centered orbital curves will be overlaid afterward, so we need this clean engraving as the base.
+
+No other changes, no new satellites, no dish, no outgoing beam, no text, no border, no new Earth detail or changed geography. This is an image edit, not a new composition.
+
+
+Edit this existing approved engraving with one precise correction. Keep Earth, clouds, coastline, upper-left star field, added small stars, dark space, mirror spacecraft without a dish, and all four straight GNSS ranging connections exactly where they are. Do not change the composition or regenerate the scenery.
+
+There are four ranging sources. Two are small GNSS spacecraft with opposing rectangular solar-array wings, approximately at x43% y19% and x19% y46%. Two are currently bright star-like dots approximately at x18.5% y24% and x60% y31%. Replace those TWO star-like ranging-source dots with tiny physical GNSS navigation satellites that match the engraved detail, line weight and visual language of the existing two spacecraft. Each new satellite has a compact central bus, two opposing narrow rectangular solar-array wings and a small flat antenna face, no dish. Give them slightly different three-quarter orientations. All four sources must read as real miniature navigation spacecraft, not two satellites plus two stars, and not large generic clip-art satellites. Keep their visual scale restrained, about the size of the existing small satellites. Each existing straight ranging line must meet the central bus of its spacecraft at exactly the old source position. Preserve the two existing spacecraft unless a tiny line-weight adjustment is necessary to match all four.
+
+Do not add orbit paths; faint curved trail fragments will be incorporated separately. Do not add spotlight beams, arrows, extra trajectories, labels, borders, text, circles or parabolic dishes. Preserve the delicate white engraved marks on pure black and all original image detail. The satellite with the four-cornered mirror remains untouched and has no dish.
