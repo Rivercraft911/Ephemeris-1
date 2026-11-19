@@ -76,6 +76,10 @@ private:
 #else
     eph::signal::Epoch live_{};
 #endif
+#ifdef EPHEMERIS_FLIGHT_HEALTH
+    std::atomic<uint32_t> deferred_{0}; // capture owner writes, acquisition worker reads
+    std::array<uint16_t, 32> retry_report_{}; // capture owner only
+#endif
     std::atomic<Slot> slot_{Slot::need_epoch};
     std::atomic<uint32_t> generation_{0}, occupied_{0};
     std::atomic<bool> offer_ready_{false};

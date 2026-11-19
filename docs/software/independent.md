@@ -43,15 +43,15 @@ Both builds used `--work 1141/5706` on the same I/Q for each pair. The 400 km ru
 
 ### Full-band strong-signal survey
 
-`-DEPHEMERIS_FLIGHT_SURVEY=ON` tests each unoccupied PRN across ±70 kHz with one millisecond of data. A correlation peak at least 18 times the mean code-cell power goes to the usual independent confirmation. The next pass uses four dwells for every remaining PRN while a tracking slot is available. This option defaults to off. Cached Doppler searches and fresh searches around an old detection use four dwells in both builds.
+`-DEPHEMERIS_FLIGHT_SURVEY=ON` tests each unoccupied PRN across ±70 kHz with one millisecond of data. A correlation peak at least 18 times the mean code-cell power goes to the usual independent confirmation. The next pass uses four dwells for every remaining PRN while a tracking slot is available. This option defaults to off. Cached Doppler searches and fresh searches around an old detection use four dwells. Enabling ground-first search as well inserts a four-dwell ±12 kHz pass before each wide pass.
 
 | Orbit | Eight tracking locks, baseline → survey | First position, baseline → survey | Survey position / velocity error, p95 |
 | --- | ---: | ---: | ---: |
-| 400 km | 109.8 → 35.0 s | 99.2 → 57.2 s | 2.539 m / 0.239 m/s |
-| 550 km | 127.6 → 52.2 s | 69.2 → 69.2 s | 1.124 m / 0.121 m/s |
-| 800 km | 75.6 → 36.4 s | 69.2 → 39.2 s | 1.755 m / 0.150 m/s |
+| 400 km | 109.8 → 35.0 s | 99.2 → 57.2 s | 2.638 m / 0.231 m/s |
+| 550 km | 127.6 → 52.2 s | 69.2 → 69.2 s | 1.009 m / 0.106 m/s |
+| 800 km | 75.6 → 42.2 s | 69.2 → 39.2 s | 1.575 m / 0.148 m/s |
 
-Each pair replayed the same 165 seconds of I/Q on the host with the five-report velocity fit and `--work 1141/5706`. At 400 km the survey missed the 0.2 m/s velocity target. PRN 22 delivered 21 valid navigation subframes and broadcast health 63. The receiver correctly excluded it from position, leaving seven usable satellites in eight occupied slots. [Recordings, work counts, transmitted-PRN checks and output hashes](measurements/flight-survey.json)
+Each pair replayed the same 165 seconds of I/Q on the host with the five-report velocity fit and `--work 1141/5706`. The full-band flight survey releases a tracking slot when a parity-checked LNAV subframe 1 reports nonzero health. It can retry that satellite after 60 s. At 400 km, PRNs 22 and 28 broadcast unhealthy status. Their replacement, PRN 32, locked at 93.0 s and supplied a usable ephemeris at 123.2 s. Releasing those slots changed p95 velocity error from 0.239 to 0.231 m/s and position error from 2.539 to 2.638 m. Across the 210 reports using all eight satellites from 123.2 s, p95 velocity error was 0.198 m/s. The full-arc result still exceeds the 0.2 m/s threshold. At 550 and 800 km the eighth usable satellites were PRN 4 and PRN 29 respectively. [Recordings, work counts, transmitted-PRN checks and output hashes](measurements/flight-survey.json)
 
 The first pass favors strong signals. At 38, 40 and 45 dB-Hz it confirmed 0, 0 and 43 of 64 trials. The four-dwell search confirmed 14, 49 and 64. Run `signal_test --sweep` and `signal_test --cross-code` from a survey build to reproduce the native sensitivity and single-transmitter controls. The normal test suite also checks a weak PRN recovered on the second pass, a vanished strong signal, and two simultaneous signals 18 dB apart.
 
