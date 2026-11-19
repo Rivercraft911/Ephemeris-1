@@ -68,8 +68,17 @@ jobs:
       - run: echo "$GITHUB_WORKSPACE/build/arm/bin" >> "$GITHUB_PATH"
       - run: cmake -S firmware -B build/pico -G Ninja -DPICO_SDK_PATH="$GITHUB_WORKSPACE/build/sdk" -DCMAKE_BUILD_TYPE=Release
       - run: cmake --build build/pico --parallel 2
+      - name: Cross-build the two-core tracker
+        run: |
+          cmake -S firmware -B build/pico-dual -G Ninja -DPICO_SDK_PATH="$GITHUB_WORKSPACE/build/sdk" -DCMAKE_BUILD_TYPE=Release -DEPHEMERIS_COARSE_TRACKING=ON -DEPHEMERIS_DUAL_TRACKING=ON
+          cmake --build build/pico-dual --target ephemeris_pico ephemeris_profile --parallel 2
       - uses: actions/upload-artifact@v4
         with:
           name: pico-plus-2-development-firmware
           path: build/pico/*.uf2
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pico-plus-2-two-core-tracking
+          path: build/pico-dual/*.uf2
           if-no-files-found: error

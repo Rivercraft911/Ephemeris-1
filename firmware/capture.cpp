@@ -138,6 +138,12 @@ void Stream::select_clock(unsigned pin) {
     clock_pin_ = pin;
     restart();
 }
+void Stream::start_at(unsigned pin, uint64_t first_sample) {
+    select_clock(pin);
+    // A fresh, known bench origin. Subsequent hardware faults are unchanged.
+    base_ = first_sample;
+    discontinuity_ = false;
+}
 
 void Stream::arm_clock_watch() {
     const unsigned offset = clock_watch_offset_;

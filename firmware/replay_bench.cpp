@@ -107,6 +107,17 @@ bool receive(uint8_t* dst,size_t size) {
     }
     return true;
 }
+unsigned replay_budget(const char* command) {
+    if (std::strncmp(command,"replay ",7)) return 0;
+    const char* digits=command+7;
+    unsigned value=0;
+    for (; *digits; ++digits) {
+        if (*digits<'0' || *digits>'9') return 0;
+        value=10*value+static_cast<unsigned>(*digits-'0');
+        if (value>128) return 0;
+    }
+    return value;
+}
 void session(unsigned work) {
     // Prior frames may still be finishing after a detached host. Wait for
     // core 1 to release all receiver/slot state before a genuine cold reset.
@@ -155,10 +166,9 @@ int main() {
     multicore_launch_core1_with_stack(worker,worker_stack,sizeof(worker_stack));
     for (;;) {
         usb::poll();
-        char cmd[40], extra;
-        unsigned work=0;
+        char cmd[40];
         if (!usb::command(cmd,sizeof(cmd))) continue;
-        if (std::sscanf(cmd,"replay %u%c",&work,&extra)==1 && work>0 && work<=128) session(work);
+        if (const auto work=replay_budget(cmd)) session(work);
         else send("ERR expected replay 1..128 or bootsel\n");
     }
 }

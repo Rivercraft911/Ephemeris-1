@@ -31,6 +31,7 @@ public:
     void start();
     void stop();
     void select_clock(unsigned pin);
+    void start_at(unsigned clock_pin, uint64_t first_sample);
     bool read(uint32_t* words, uint64_t& first_sample, bool& gap);
     const Statistics& stats() const { return stats_; }
     bool clock_alive() const { return clock_alive_; }

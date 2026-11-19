@@ -208,6 +208,24 @@ void Receiver::navigate(uint64_t sample) {
     ++status_.sequence;
 }
 
+void Receiver::set_tracking_worker(WorkerHook notify, WorkerHook wait, void* context) {
+    tracking_notify_ = notify;
+    tracking_wait_ = wait;
+    tracking_context_ = context;
+}
+
+void Receiver::track_alternating(unsigned first) {
+    for (unsigned i = first; i < channels; i += 2)
+        if (prns_[i]) results_[i] = trackers_[i].update(live_);
+}
+
+bool Receiver::work_tracking() {
+    if (!tracking_pending_.load(std::memory_order_acquire)) return false;
+    track_alternating(1);
+    tracking_pending_.store(false, std::memory_order_release);
+    return true;
+}
+
 void Receiver::process(const uint8_t* packed, uint64_t first_sample, bool discontinuity) {
     const bool gap = discontinuity || (running_ && first_sample != next_sample_) || !packed;
     if (gap) {
@@ -234,10 +252,25 @@ void Receiver::process(const uint8_t* packed, uint64_t first_sample, bool discon
 #else
     sig::preprocess(block,live_);
 #endif
+    bool parallel = false;
+    if (tracking_notify_) {
+        for (unsigned i = 1; i < channels; i += 2) parallel |= prns_[i] != 0;
+    }
+    if (parallel) {
+        // The owner freezes live_ and the slot assignments until both halves
+        // finish. Workers mutate disjoint Tracker and TrackingResult objects.
+        tracking_pending_.store(true, std::memory_order_release);
+        tracking_notify_(tracking_context_);
+        track_alternating(0);
+        while (tracking_pending_.load(std::memory_order_acquire)) {
+            if (tracking_wait_) tracking_wait_(tracking_context_);
+        }
+    }
     status_.locked_mask = 0;
     for (unsigned i = 0; i < channels; ++i) {
         if (!prns_[i]) continue;
-        auto& result = results_[i] = trackers_[i].update(live_);
+        auto& result = results_[i];
+        if (!parallel) result = trackers_[i].update(live_);
         if (!result.active) {
             decoders_[i].reset();
             occupied_.fetch_and(~mask(prns_[i]), std::memory_order_release);

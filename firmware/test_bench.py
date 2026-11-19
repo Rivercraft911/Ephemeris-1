@@ -1,5 +1,6 @@
 """Host-side wire order, PRBS phase search and fault checks. SPDX-License-Identifier: Apache-2.0"""
 import io
+from contextlib import redirect_stdout
 import os
 import re
 import subprocess
@@ -77,7 +78,7 @@ int main() {
     def test_save_complete_frame(self):
         frame = io.BytesIO()
         write_capture(frame, self.raw)
-        with tempfile.TemporaryDirectory() as root:
+        with tempfile.TemporaryDirectory() as root, redirect_stdout(io.StringIO()):
             dst = Path(root) / "record.eiq"
             run(Port(frame.getvalue()), "capture", dst, False)
             self.assertEqual(dst.read_bytes(), frame.getvalue())
@@ -87,11 +88,12 @@ int main() {
 
     def test_kernel_reports(self):
         timing = b"PASS samples=163680 mismatches=0 clock=internal epochs=10\n"
-        run(Port(timing, b"selftiming\n"), "timing", None, False, internal=True)
         coarse = b"MEASURED samples=163680 errors=0 clock=external worst_margin_us=10,20,30\n"
-        run(Port(coarse, b"coarse\n"), "coarse", None, False)
-        with self.assertRaisesRegex(ValueError, "coarse"):
-            run(Port(coarse.replace(b"errors=0", b"errors=1"), b"coarse\n"), "coarse", None, False)
+        with redirect_stdout(io.StringIO()):
+            run(Port(timing, b"selftiming\n"), "timing", None, False, internal=True)
+            run(Port(coarse, b"coarse\n"), "coarse", None, False)
+            with self.assertRaisesRegex(ValueError, "coarse"):
+                run(Port(coarse.replace(b"errors=0", b"errors=1"), b"coarse\n"), "coarse", None, False)
 
     def test_axis_lookup(self):
         # Exhaust every possible eight-sample lane input in both positions,

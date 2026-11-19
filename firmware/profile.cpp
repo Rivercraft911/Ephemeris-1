@@ -5,12 +5,15 @@
 #include "capture.hpp"
 #include "usb.hpp"
 #include "receiver/app.hpp"
+#include "tests/fixtures/rollover.hpp"
+#include "tracking_irq.hpp"
 #include "pico/multicore.h"
 #include "hardware/clocks.h"
 #include "pico/stdlib.h"
 #include <algorithm>
 #include <atomic>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 namespace {
@@ -80,6 +83,67 @@ void check_clock_faults() {
                   good[0] && good[1] ? "PASS" : "FAIL", unsigned(good[0]), unsigned(good[1]));
     reply(line);
 }
+void check_fix_timing() {
+    std::array<eph::nav::Ephemeris,6> eph{};
+    std::array<eph::nav::Observation,6> obs{};
+    eph::fixture::rollover_observations(eph, obs);
+    eph::nav::Fix f;
+    constexpr unsigned repeats = 20;
+    uint32_t total = 0, worst = 0;
+    bool valid = true;
+    for (unsigned i = 0; i < repeats; ++i) {
+        const auto start = time_us_32();
+        valid &= eph::nav::solve_fix(obs.data(), obs.size(), f, .0021);
+        const auto us = time_us_32()-start;
+        total += us;
+        worst = std::max(worst,us);
+        usb::poll();
+    }
+    double dp2 = 0, dv2 = 0;
+    for (unsigned i = 0; i < 3; ++i) {
+        const auto dp = f.position_m[i]-(eph::fixture::at_zero[i]+.002*eph::fixture::velocity[i]);
+        const auto dv = f.velocity_mps[i]-eph::fixture::velocity[i];
+        dp2 += dp*dp;
+        dv2 += dv*dv;
+    }
+    valid &= f.valid && f.week_mod1024==303 && std::abs(f.tow_s-.002)<1e-9 && dp2<.04 && dv2<.000016;
+    char line[160];
+    std::snprintf(line,sizeof(line),"%s sv=6 repeats=%u mean_us=%u max_us=%u position_m=%.5f velocity_mps=%.6f\n",
+                  valid ? "PASS" : "FAIL",repeats,total/repeats,worst,std::sqrt(dp2),std::sqrt(dv2));
+    reply(line);
+}
+void check_continuity(unsigned seconds) {
+    stream.select_clock(internal_clock);
+    const auto initial = stream.stats();
+    const auto start = time_us_64();
+    const unsigned target = 1000 * seconds;
+    unsigned count = 0, unexpected_gaps = 0;
+    uint64_t previous = 0, first = 0;
+    while (count < target && usb::connected() && time_us_64() - start < (seconds + 2u)*1000000ull) {
+        uint64_t sample;
+        bool gap;
+        usb::poll();
+        if (!stream.read(input, sample, gap)) continue;
+        if (!count) first = sample;
+        else if (gap || sample != previous + board::samples_per_ms) ++unexpected_gaps;
+        previous = sample;
+        ++count;
+    }
+    const auto elapsed = time_us_64() - start;
+    stream.stop();
+    const auto final = stream.stats();
+    const auto missed = final.missed_blocks - initial.missed_blocks;
+    const auto stalls = final.fifo_stalls - initial.fifo_stalls;
+    const auto timeouts = final.clock_timeouts - initial.clock_timeouts;
+    const bool passed = count == target && !unexpected_gaps && !missed && !stalls && !timeouts;
+    char line[256];
+    std::snprintf(line, sizeof(line),
+        "%s epochs=%u samples=%llu elapsed_us=%llu first=%llu last=%llu gaps=%u missed=%llu stalls=%u clock_timeouts=%u\n",
+        passed ? "PASS" : "FAIL", count, (unsigned long long)count * board::samples_per_ms,
+        (unsigned long long)elapsed, (unsigned long long)first, (unsigned long long)previous,
+        unexpected_gaps, (unsigned long long)missed, stalls, timeouts);
+    reply(line);
+}
 bool measure_kernels(unsigned& prepare_us, unsigned& tracker_us) {
     namespace sig = eph::signal;
 #if defined(EPHEMERIS_COARSE_TRACKING)
@@ -137,45 +201,42 @@ void profile(unsigned channels, Mode mode) {
 
     constexpr unsigned hot_start = 10;  // allow the loops to establish initial lock
     const bool offline = mode == Mode::offline;
-    uint32_t work_start = 0, worst = 0, maximum_active = 0;
+    uint32_t worst = 0, maximum_active = 0;
     unsigned prepare_us = 0, tracker_us = 0, full_epochs = 0;
     bool kernel_locked = false;
     uint64_t total_us = 0;
     uint32_t expected_mask = (1u << channels) - 1, locked_at_end = 0, full_lock_epochs = 0;
-    capture::Statistics before{};
-    unsigned n = 0;
-    uint64_t first_epoch = 0;
+    constexpr uint64_t first_epoch = 0;
+    unsigned n = 1;  // Epoch zero initializes the receiver before the DMA cadence starts.
+    stream.stop();
     suspend_search.store(offline, std::memory_order_release);
     if (offline) {
         while (!search_idle.load(std::memory_order_acquire)) tight_loop_contents();
-        stream.stop();
         kernel_locked = measure_kernels(prepare_us, tracker_us);
-    } else {
-        stream.select_clock(mode == Mode::external ? board::clock_pin : internal_clock);
     }
+    receiver.process(reinterpret_cast<const uint8_t*>(replay), first_epoch, true);
+    for (unsigned i = 0; i < channels; ++i) {
+        eph::signal::Detection seed{};
+        seed.prn = i + 1;
+        seed.first_sample = first_epoch;
+        seed.code_phase_chips = i * 37;
+        seed.detected = true;
+        if (!receiver.seed_channel(seed)) {
+            suspend_search.store(false, std::memory_order_release);
+            reply("ERR seeding channel\n");
+            return;
+        }
+    }
+    const auto before = stream.stats();
+    const uint32_t work_start = work_count.load();
+    if (!offline) stream.start_at(mode == Mode::external ? board::clock_pin : internal_clock,
+                                 first_epoch + board::samples_per_ms);
     start = time_us_64();
     while (n < epoch_target && time_us_64() - start < (offline ? 120000000u : 6000000u)) {
         usb::poll();
         uint64_t first = uint64_t(n) * board::samples_per_ms;
         bool gap = false;
         if (!offline && !stream.read(input, first, gap)) continue;
-        if (!n) {
-            before = stream.stats(); first_epoch = first; work_start = work_count.load();
-            receiver.process(reinterpret_cast<const uint8_t*>(replay), first, true);
-            for (unsigned i = 0; i < channels; ++i) {
-                eph::signal::Detection seed{};
-                seed.prn = i + 1; seed.first_sample = first;
-                seed.code_phase_chips = i * 37;
-                seed.detected = true;
-                if (!receiver.seed_channel(seed)) {
-                    suspend_search.store(false, std::memory_order_release);
-                    reply("ERR seeding channel\n");
-                    return;
-                }
-            }
-            ++n;
-            continue;
-        }
         uint64_t tick = time_us_64();
         receiver.process(reinterpret_cast<const uint8_t*>(replay), first, gap);
         uint32_t us = time_us_64() - tick;
@@ -209,12 +270,14 @@ void profile(unsigned channels, Mode mode) {
     std::snprintf(line, sizeof(line),
         "%s clock=%s channels=%u epochs=%u first=%llu max_us=%u p95_us=%u steady_mean_us=%u missed=%llu "
         "stalls=%u clock_timeouts=%u max_active=%u locked_mask=%u full_lock_epochs=%u work_steps=%u "
-        "isolated_prepare_mean_us=%u isolated_tracker_mean_us=%u isolated_locked=%u sys_hz=%u\n",
+        "isolated_prepare_mean_us=%u isolated_tracker_mean_us=%u isolated_locked=%u sys_hz=%u "
+        "tracking_cores=%u core0_stack_untouched_bytes=%d\n",
         passed ? "PASS" : "FAIL", offline ? "offline" : mode == Mode::external ? "external" : "internal",
         channels, n, (unsigned long long)first_epoch, unsigned(worst), p95,
         full_epochs ? unsigned(total_us/full_epochs) : 0, (unsigned long long)lost, unsigned(stalls),
         unsigned(timeouts), unsigned(maximum_active), unsigned(locked_at_end), unsigned(full_lock_epochs),
-        unsigned(work), prepare_us, tracker_us, unsigned(kernel_locked), unsigned(clock_get_hz(clk_sys)));
+        unsigned(work), prepare_us, tracker_us, unsigned(kernel_locked), unsigned(clock_get_hz(clk_sys)),
+        board::tracking_cores, board::core0_stack_untouched());
     reply(line);
     for (unsigned i = 0; i < receiver.channels; ++i) {
         const auto& result = receiver.channel(i);
@@ -236,8 +299,16 @@ void bench_worker() {
         usb::poll();
         char cmd[24];
         if (!usb::command(cmd, sizeof(cmd))) continue;
+        if (!std::strcmp(cmd, "pvt")) { check_fix_timing(); continue; }
         if (!std::strcmp(cmd, "clocktest")) { check_clock_faults(); continue; }
-        for (unsigned channels : {1u, 4u, 8u}) {
+        if (!std::strncmp(cmd, "continuity ", 11)) {
+            char* end;
+            const unsigned long seconds = std::strtoul(cmd + 11, &end, 10);
+            if (!*end && seconds >= 1 && seconds <= 600) check_continuity(unsigned(seconds));
+            else reply("ERR expected a duration of 1 to 600 seconds\n");
+            continue;
+        }
+        for (unsigned channels : {1u, 4u, 6u, 8u}) {
             char expected[24];
             std::snprintf(expected, sizeof(expected), "profile %u", channels);
             if (!std::strcmp(cmd, expected)) { profile(channels, Mode::internal); break; }
@@ -245,12 +316,13 @@ void bench_worker() {
             if (!std::strcmp(cmd, expected)) { profile(channels, Mode::external); break; }
             std::snprintf(expected, sizeof(expected), "offline %u", channels);
             if (!std::strcmp(cmd, expected)) { profile(channels, Mode::offline); break; }
-            if (channels == 8) reply("ERR expected profile, external or offline, followed by 1, 4 or 8\n");
+            if (channels == 8) reply("ERR expected profile, external or offline, followed by 1, 4, 6 or 8\n");
         }
     }
 }
 }
 int main() {
+    board::install_tracking_irq(receiver);
     multicore_launch_core1_with_stack(bench_worker, tracking_stack, sizeof(tracking_stack));
     for (;;) {
         if (suspend_search.load(std::memory_order_acquire)) {

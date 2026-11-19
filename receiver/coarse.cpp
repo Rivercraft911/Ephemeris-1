@@ -88,6 +88,28 @@ constexpr auto rotations() {
 }
 constexpr auto rotation = rotations();
 
+// Sample one sine/cosine cycle by complex recurrence at compile time. Linear
+// interpolation across a 1/256-turn interval keeps amplitude error below 8e-5.
+constexpr auto oscillator_table() {
+    std::array<IQf,257> table{};
+    double c=1,s=0;
+    constexpr double dc=.9996988186962042201, ds=.024541228522912288;
+    for(unsigned n=0;n<256;++n) {
+        table[n]={float(c),float(s)};
+        const double next=c*dc-s*ds;
+        s=s*dc+c*ds; c=next;
+    }
+    table[256]=table[0];
+    return table;
+}
+constexpr auto oscillator=oscillator_table();
+IQf phasor(std::uint32_t phase) {
+    const unsigned j=phase>>24;
+    const float f=float((phase>>8)&65535u)*(1.f/65536);
+    const auto a=oscillator[j], b=oscillator[j+1];
+    return {a.i+f*(b.i-a.i), a.q+f*(b.q-a.q)};
+}
+
 inline int ones(std::uint32_t x) {
 #if defined(__ARM_ARCH_8M_MAIN__)
     // Cortex-M33 has no scalar POPCNT. Keep the SWAR reduction inline.
@@ -131,7 +153,8 @@ bool preprocess(const PackedBlock& block, Epoch& out) {
     return true;
 }
 
-Sums track_interval(const Epoch& epoch, const Replica& code, unsigned first, unsigned count,
+template<bool smooth_carrier>
+static Sums interval(const Epoch& epoch, const Replica& code, unsigned first, unsigned count,
                     double cp, double chips_per_half, double fd, double turns) {
     if (!count || first>=half_chips || count>half_chips-first ||
         !std::isfinite(cp) || !std::isfinite(turns) || !std::isfinite(fd) ||
@@ -139,20 +162,35 @@ Sums track_interval(const Epoch& epoch, const Replica& code, unsigned first, uns
         return {};
     const unsigned skip=first%32, end=first+count;
     constexpr double one_turn = 4294967296.;
-    const double carrier = std::remainder(turns,1.) - fd*skip/baseband_hz;
+    const double input_turns=std::abs(turns)<=1.1 ? turns : std::remainder(turns,1.);
+    const double carrier=input_turns-fd*skip/baseband_hz;
+    const auto first_phase=static_cast<std::uint32_t>(std::llround(input_turns*one_turn));
     auto phase = static_cast<std::uint32_t>(std::llround(carrier*one_turn)) + (1u<<25);
     const auto step = static_cast<std::uint32_t>(std::llround(8*fd/baseband_hz*one_turn));
+    const auto half_step=static_cast<std::uint32_t>(std::llround(fd*(one_turn/(2*baseband_hz))));
     const auto& rotate = rotation[max_slope + int(std::lround(fd/baseband_hz*1024))];
 
     // Track the first late half-chip index in Q16.16. Dither the aperture
     // within each half chip; early and late use exactly the same choice.
-    const double phase0 = std::remainder(cp-skip*chips_per_half,double(code_length))*2
+    const double input_code=std::abs(cp)<=2.*code_length ? cp : std::remainder(cp,double(code_length));
+    const double phase0 = (input_code-skip*chips_per_half)*2
                         + 15.5*(2*chips_per_half-1) - 1.5;
     int index = static_cast<int>(std::llround(phase0*frac))%period;
     if (index<0) index+=period;
     const int advance = static_cast<int>(std::lround(32*frac*(2*chips_per_half)));
     auto dither=(std::uint32_t(epoch.first_sample/8)+first/32)*0x9e3779b9u;
     Counts e{}, p{}, l{};
+    Sums output{};
+    // Accumulate integer E/P/L across complete words until 1/32 turn
+    // elapses. With <= 31.25 Hz over 1 ms, one rotation covers the epoch.
+    unsigned bucket_start=first, bucket_words=words_per_epoch, close_word=0;
+    if constexpr (smooth_carrier) {
+        if (std::abs(fd)>baseband_hz/(32.*count)) {
+            const auto n=static_cast<unsigned>(baseband_hz/(32.*std::abs(fd)))+1;
+            bucket_words=std::max(1u,n/32);
+        }
+        close_word=first/32+bucket_words;
+    }
     for (unsigned w=first/32; 32*w<end; ++w) {
         unsigned bit=unsigned(index + int(dither>>16))>>16;
         if (bit>=half_chips) bit-=half_chips;
@@ -166,6 +204,28 @@ Sums track_interval(const Epoch& epoch, const Replica& code, unsigned first, uns
         const auto next=static_cast<std::uint32_t>(((std::uint64_t(ca[2])<<32)|ca[1])>>s);
         const auto prompt=(late>>1)|(next<<31);
         const auto early=(late>>2)|(next<<30);
+        const auto lo=w==first/32 ? skip : 0;
+        const auto hi=std::min(32u,end-32*w);
+        const auto valid=(~0u<<lo)&(~0u>>(32-hi));
+        if constexpr (smooth_carrier) {
+            const auto i=epoch.i[w], q=epoch.q[w];
+            add_mismatches(e,i,q,early,valid);
+            add_mismatches(p,i,q,prompt,valid);
+            add_mismatches(l,i,q,late,valid);
+            const unsigned stop=32*w+hi;
+            if (w+1==close_word || stop==end) {
+                const unsigned n=stop-bucket_start;
+                const unsigned half_samples=(bucket_start-first)+(stop-first)-1;
+                const auto lo=phasor(first_phase+half_step*half_samples);
+                auto rotate_sum=[&](IQf& out,Counts v) {
+                    const auto x=signed_sum(v,n);
+                    out.i+=lo.i*x.i+lo.q*x.q; out.q+=lo.i*x.q-lo.q*x.i;
+                };
+                rotate_sum(output.early,e); rotate_sum(output.prompt,p); rotate_sum(output.late,l);
+                e={}; p={}; l={}; bucket_start=stop; close_word+=bucket_words;
+            }
+            continue;
+        }
         std::uint32_t swap=0, inv=0;
         for (unsigned k=0; k<32; k+=8) {
             const Rotation r=rotate[phase>>26];
@@ -176,18 +236,23 @@ Sums track_interval(const Epoch& epoch, const Replica& code, unsigned first, uns
         const auto select = (epoch.i[w]^epoch.q[w])&swap;
         const auto i=(epoch.i[w]^select)^inv;
         const auto q=(epoch.q[w]^select)^(inv^swap);
-        const auto lo=w==first/32 ? skip : 0;
-        const auto hi=std::min(32u,end-32*w);
-        const auto valid=(~0u<<lo)&(~0u>>(32-hi));
         add_mismatches(l,i,q,late,valid);
         add_mismatches(p,i,q,prompt,valid);
         add_mismatches(e,i,q,early,valid);
     }
+    if constexpr (smooth_carrier) return output;
     return {signed_sum(e,count),signed_sum(p,count),signed_sum(l,count)};
+}
+
+Sums track_interval(const Epoch& epoch,const Replica& code,unsigned first,unsigned count,
+                    double cp,double chips_per_half,double fd,double turns) {
+    if (std::abs(fd)<=2000.)
+        return interval<true>(epoch,code,first,count,cp,chips_per_half,fd,turns);
+    return interval<false>(epoch,code,first,count,cp,chips_per_half,fd,turns);
 }
 
 Sums correlate(const Epoch& epoch,const Replica& code,double cp,double fd,double turns) {
     const double rate=.5*(1+fd/l1_hz);
-    return track_interval(epoch,code,0,half_chips,cp+3.5*rate/8,rate,fd,turns+3.5*fd/raw_hz);
+    return interval<false>(epoch,code,0,half_chips,cp+3.5*rate/8,rate,fd,turns+3.5*fd/raw_hz);
 }
 }

@@ -419,6 +419,348 @@
         68210,
         136498
       ]
+    },
+    "coarse_serial_offline": [
+      {
+        "result": "PASS",
+        "clock": "offline",
+        "channels": 1,
+        "epochs": 1000,
+        "first": 0,
+        "max_us": 382,
+        "p95_us": 373,
+        "steady_mean_us": 371,
+        "missed": 0,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 1,
+        "locked_mask": 1,
+        "full_lock_epochs": 990,
+        "work_steps": 0,
+        "isolated_prepare_mean_us": 158,
+        "isolated_tracker_mean_us": 210,
+        "isolated_locked": 1,
+        "sys_hz": 150000000,
+        "tracking_cores": 1
+      },
+      {
+        "result": "PASS",
+        "clock": "offline",
+        "channels": 4,
+        "epochs": 1000,
+        "first": 0,
+        "max_us": 1155,
+        "p95_us": 1136,
+        "steady_mean_us": 1129,
+        "missed": 0,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 4,
+        "locked_mask": 15,
+        "full_lock_epochs": 990,
+        "work_steps": 0,
+        "isolated_prepare_mean_us": 160,
+        "isolated_tracker_mean_us": 214,
+        "isolated_locked": 1,
+        "sys_hz": 150000000,
+        "tracking_cores": 1
+      },
+      {
+        "result": "PASS",
+        "clock": "offline",
+        "channels": 8,
+        "epochs": 1000,
+        "first": 0,
+        "max_us": 2193,
+        "p95_us": 2155,
+        "steady_mean_us": 2144,
+        "missed": 0,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 8,
+        "locked_mask": 255,
+        "full_lock_epochs": 990,
+        "work_steps": 0,
+        "isolated_prepare_mean_us": 160,
+        "isolated_tracker_mean_us": 214,
+        "isolated_locked": 1,
+        "sys_hz": 150000000,
+        "tracking_cores": 1
+      }
+    ],
+    "coarse_serial_live": [
+      {
+        "result": "PASS",
+        "clock": "internal",
+        "channels": 1,
+        "epochs": 1000,
+        "first": 0,
+        "max_us": 441,
+        "p95_us": 381,
+        "steady_mean_us": 377,
+        "missed": 0,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 1,
+        "locked_mask": 1,
+        "full_lock_epochs": 990,
+        "work_steps": 105,
+        "isolated_prepare_mean_us": 0,
+        "isolated_tracker_mean_us": 0,
+        "isolated_locked": 0,
+        "sys_hz": 150000000,
+        "tracking_cores": 1
+      },
+      {
+        "result": "FAIL",
+        "clock": "internal",
+        "channels": 4,
+        "epochs": 1000,
+        "first": 16384368,
+        "max_us": 1158,
+        "p95_us": 2,
+        "steady_mean_us": 3,
+        "missed": 1,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 4,
+        "locked_mask": 0,
+        "full_lock_epochs": 1,
+        "work_steps": 104,
+        "isolated_prepare_mean_us": 0,
+        "isolated_tracker_mean_us": 0,
+        "isolated_locked": 0,
+        "sys_hz": 150000000,
+        "tracking_cores": 1
+      },
+      {
+        "result": "FAIL",
+        "clock": "internal",
+        "channels": 8,
+        "epochs": 1000,
+        "first": 32785104,
+        "max_us": 78,
+        "p95_us": 2,
+        "steady_mean_us": 2,
+        "missed": 3,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 0,
+        "locked_mask": 0,
+        "full_lock_epochs": 0,
+        "work_steps": 105,
+        "isolated_prepare_mean_us": 0,
+        "isolated_tracker_mean_us": 0,
+        "isolated_locked": 0,
+        "sys_hz": 150000000,
+        "tracking_cores": 1
+      }
+    ],
+    "coarse_dual_offline": [
+      {
+        "result": "PASS",
+        "clock": "offline",
+        "channels": 1,
+        "epochs": 1000,
+        "first": 0,
+        "max_us": 387,
+        "p95_us": 377,
+        "steady_mean_us": 375,
+        "missed": 0,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 1,
+        "locked_mask": 1,
+        "full_lock_epochs": 990,
+        "work_steps": 0,
+        "isolated_prepare_mean_us": 160,
+        "isolated_tracker_mean_us": 210,
+        "isolated_locked": 1,
+        "sys_hz": 150000000,
+        "tracking_cores": 2,
+        "core0_stack_untouched_bytes": 1892
+      },
+      {
+        "result": "PASS",
+        "clock": "offline",
+        "channels": 4,
+        "epochs": 1000,
+        "first": 0,
+        "max_us": 693,
+        "p95_us": 667,
+        "steady_mean_us": 663,
+        "missed": 0,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 4,
+        "locked_mask": 15,
+        "full_lock_epochs": 990,
+        "work_steps": 0,
+        "isolated_prepare_mean_us": 156,
+        "isolated_tracker_mean_us": 215,
+        "isolated_locked": 1,
+        "sys_hz": 150000000,
+        "tracking_cores": 2,
+        "core0_stack_untouched_bytes": 1892
+      },
+      {
+        "result": "PASS",
+        "clock": "offline",
+        "channels": 8,
+        "epochs": 1000,
+        "first": 0,
+        "max_us": 1214,
+        "p95_us": 1184,
+        "steady_mean_us": 1177,
+        "missed": 0,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 8,
+        "locked_mask": 255,
+        "full_lock_epochs": 990,
+        "work_steps": 0,
+        "isolated_prepare_mean_us": 156,
+        "isolated_tracker_mean_us": 215,
+        "isolated_locked": 1,
+        "sys_hz": 150000000,
+        "tracking_cores": 2,
+        "core0_stack_untouched_bytes": 1892
+      }
+    ],
+    "coarse_dual_live": [
+      {
+        "result": "PASS",
+        "clock": "internal",
+        "channels": 1,
+        "epochs": 1000,
+        "first": 0,
+        "max_us": 444,
+        "p95_us": 382,
+        "steady_mean_us": 379,
+        "missed": 0,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 1,
+        "locked_mask": 1,
+        "full_lock_epochs": 990,
+        "work_steps": 105,
+        "isolated_prepare_mean_us": 0,
+        "isolated_tracker_mean_us": 0,
+        "isolated_locked": 0,
+        "sys_hz": 150000000,
+        "tracking_cores": 2,
+        "core0_stack_untouched_bytes": 2616
+      },
+      {
+        "result": "PASS",
+        "clock": "internal",
+        "channels": 4,
+        "epochs": 1000,
+        "first": 16384368,
+        "max_us": 744,
+        "p95_us": 673,
+        "steady_mean_us": 669,
+        "missed": 0,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 4,
+        "locked_mask": 15,
+        "full_lock_epochs": 990,
+        "work_steps": 52,
+        "isolated_prepare_mean_us": 0,
+        "isolated_tracker_mean_us": 0,
+        "isolated_locked": 0,
+        "sys_hz": 150000000,
+        "tracking_cores": 2,
+        "core0_stack_untouched_bytes": 1892
+      },
+      {
+        "result": "FAIL",
+        "clock": "internal",
+        "channels": 8,
+        "epochs": 1000,
+        "first": 32768736,
+        "max_us": 79,
+        "p95_us": 2,
+        "steady_mean_us": 2,
+        "missed": 3,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 0,
+        "locked_mask": 0,
+        "full_lock_epochs": 0,
+        "work_steps": 106,
+        "isolated_prepare_mean_us": 0,
+        "isolated_tracker_mean_us": 0,
+        "isolated_locked": 0,
+        "sys_hz": 150000000,
+        "tracking_cores": 2,
+        "core0_stack_untouched_bytes": 1892
+      }
+    ],
+    "coarse_lut128": {
+      "result": "MEASURED",
+      "samples": 163680,
+      "errors": 0,
+      "clock": "internal",
+      "layout": "planes",
+      "sys_hz": 150000000,
+      "epochs": 10,
+      "prep_total_us": 1473,
+      "pio_prep_total_us": 3694,
+      "corr_1_4_8_total_us": [
+        1112,
+        4452,
+        8909
+      ],
+      "worst_prep_corr_us": [
+        259,
+        594,
+        1039
+      ],
+      "worst_margin_us": [
+        741,
+        406,
+        -39
+      ],
+      "worst_pio_margin_us": [
+        512,
+        178,
+        -268
+      ],
+      "checksum": "3376.000"
+    },
+    "pairs_lut128": {
+      "result": "MEASURED",
+      "samples": 163680,
+      "errors": 0,
+      "clock": "internal",
+      "layout": "pairs",
+      "sys_hz": 150000000,
+      "epochs": 10,
+      "prep_total_us": 1474,
+      "pio_prep_total_us": 2127,
+      "corr_1_4_8_total_us": [
+        1114,
+        4452,
+        8910
+      ],
+      "worst_prep_corr_us": [
+        260,
+        594,
+        1039
+      ],
+      "worst_margin_us": [
+        740,
+        406,
+        -39
+      ],
+      "worst_pio_margin_us": [
+        675,
+        342,
+        -104
+      ],
+      "checksum": "1318.000"
     }
   },
   "example": {
@@ -656,5 +998,317 @@
       ],
       "faults": []
     }
+  },
+  "coarse_replay": [
+    {
+      "scenario": "leo-400-1",
+      "receiver_sha256": "c689865fbc11fba2334bad398efb33d707e726b657b58aed013ba8f785ce0a10",
+      "truth_sha256": "3283fa5e258954d99565307537dbb2a7087f7a3354decf34f47b5ca1a578f6c9",
+      "output_sha256": "de59437120ef4108300e017c7e77003bf18921d4395a5319f2160608c1e8d224",
+      "result": {
+        "passed": true,
+        "ttff_s": 32.6,
+        "eligible_epochs": 588,
+        "valid_epochs": 588,
+        "availability": 1.0,
+        "p95_position_m": 2.4718403888264935,
+        "p95_velocity_mps": 0.08628481669638624,
+        "p95_abs_rtn_m": [
+          2.3132530613123907,
+          1.3143426785930474,
+          1.0453296053551417
+        ],
+        "faults": []
+      }
+    },
+    {
+      "scenario": "leo-400-2",
+      "receiver_sha256": "c689865fbc11fba2334bad398efb33d707e726b657b58aed013ba8f785ce0a10",
+      "truth_sha256": "2abb93b2c4dfe6d04606e4717a4ff2fd678130de6ff4e77fe74a420098cbdeaa",
+      "output_sha256": "4752ae5b4cfc02a1032bedb833749af67bf83d78831c71fd3a0ceb0eee8cf8b2",
+      "result": {
+        "passed": true,
+        "ttff_s": 31.0,
+        "eligible_epochs": 596,
+        "valid_epochs": 596,
+        "availability": 1.0,
+        "p95_position_m": 4.024650552613023,
+        "p95_velocity_mps": 0.13083363127917552,
+        "p95_abs_rtn_m": [
+          3.743328427127872,
+          1.6414585850214496,
+          1.0798039760746971
+        ],
+        "faults": []
+      }
+    },
+    {
+      "scenario": "leo-400-3",
+      "receiver_sha256": "c689865fbc11fba2334bad398efb33d707e726b657b58aed013ba8f785ce0a10",
+      "truth_sha256": "f20703dbf592d021d8aefd9f8879cfc4a2ba5227a016ec25fc38017826bba8f9",
+      "output_sha256": "880a2ebace94d5bbd50dbc878587ce903741b7bca872b562a996970264b8cffb",
+      "result": {
+        "passed": true,
+        "ttff_s": 36.4,
+        "eligible_epochs": 569,
+        "valid_epochs": 569,
+        "availability": 1.0,
+        "p95_position_m": 2.555935188695223,
+        "p95_velocity_mps": 0.08701728628238188,
+        "p95_abs_rtn_m": [
+          2.3998131057982692,
+          1.2195418538520222,
+          1.4392869862382742
+        ],
+        "faults": []
+      }
+    },
+    {
+      "scenario": "leo-400-4",
+      "receiver_sha256": "c689865fbc11fba2334bad398efb33d707e726b657b58aed013ba8f785ce0a10",
+      "truth_sha256": "893feb528195bb48dfeca0fac11d3bef2802eaefec830d9a41a48cb74f632638",
+      "output_sha256": "1402b1adcd63a39e55c2818943615b898fcfb456b210d78dbbf9dfae74f06132",
+      "result": {
+        "passed": true,
+        "ttff_s": 23.8,
+        "eligible_epochs": 632,
+        "valid_epochs": 632,
+        "availability": 1.0,
+        "p95_position_m": 2.3060412164766153,
+        "p95_velocity_mps": 0.07880736940695829,
+        "p95_abs_rtn_m": [
+          2.0289813257228473,
+          1.2600343228302358,
+          0.9701121641528554
+        ],
+        "faults": []
+      }
+    },
+    {
+      "scenario": "leo-550-1",
+      "receiver_sha256": "c689865fbc11fba2334bad398efb33d707e726b657b58aed013ba8f785ce0a10",
+      "truth_sha256": "0d2086ca62557bddfe2132a76f3fdec649e2dc5f3bdc29bf00efa0eed559fe63",
+      "output_sha256": "76f66d5f6aba775eddbfe5130d2c53847b67c560c13aa2aadd55aff6c485be09",
+      "result": {
+        "passed": true,
+        "ttff_s": 32.6,
+        "eligible_epochs": 588,
+        "valid_epochs": 588,
+        "availability": 1.0,
+        "p95_position_m": 2.8625863617037233,
+        "p95_velocity_mps": 0.08348656637004062,
+        "p95_abs_rtn_m": [
+          2.730475005162389,
+          1.2578736163175968,
+          0.8533954541008241
+        ],
+        "faults": []
+      }
+    },
+    {
+      "scenario": "leo-550-2",
+      "receiver_sha256": "c689865fbc11fba2334bad398efb33d707e726b657b58aed013ba8f785ce0a10",
+      "truth_sha256": "6b47808f80ead3615ed5221d930cfd67b959bc02d5f259695518e2daa7047096",
+      "output_sha256": "7939d74899906b95895a3d9f39ad573071133f87c57417a33259bd1f2f247274",
+      "result": {
+        "passed": true,
+        "ttff_s": 31.6,
+        "eligible_epochs": 593,
+        "valid_epochs": 593,
+        "availability": 1.0,
+        "p95_position_m": 4.161241265141516,
+        "p95_velocity_mps": 0.1250761098400322,
+        "p95_abs_rtn_m": [
+          4.022713376625319,
+          1.2451363528163242,
+          1.0082816835596384
+        ],
+        "faults": []
+      }
+    },
+    {
+      "scenario": "leo-550-3",
+      "receiver_sha256": "c689865fbc11fba2334bad398efb33d707e726b657b58aed013ba8f785ce0a10",
+      "truth_sha256": "5a32828e803599b97c06cfe8d2eaf0d88d15d82435ae046ee2fc0ffecf6a36be",
+      "output_sha256": "1584887814c6a7bfd63204bff8972d911dc78627dc2d9ee4a5f44abe0cda25d7",
+      "result": {
+        "passed": true,
+        "ttff_s": 36.4,
+        "eligible_epochs": 569,
+        "valid_epochs": 569,
+        "availability": 1.0,
+        "p95_position_m": 3.555073999191101,
+        "p95_velocity_mps": 0.08504647118557744,
+        "p95_abs_rtn_m": [
+          3.255554077112043,
+          1.3333686654392438,
+          0.9646852451198311
+        ],
+        "faults": []
+      }
+    },
+    {
+      "scenario": "leo-550-4",
+      "receiver_sha256": "c689865fbc11fba2334bad398efb33d707e726b657b58aed013ba8f785ce0a10",
+      "truth_sha256": "a0ff4d23fa95d4296f3c4367d53723772b6c5008e4809fd2e11ff2502f80e901",
+      "output_sha256": "2110fffdd28154253c9da716b409f7a26391f0f53ef513c858b7f1d0fada95d5",
+      "result": {
+        "passed": true,
+        "ttff_s": 23.8,
+        "eligible_epochs": 632,
+        "valid_epochs": 632,
+        "availability": 1.0,
+        "p95_position_m": 2.4439493282686704,
+        "p95_velocity_mps": 0.0837215222622956,
+        "p95_abs_rtn_m": [
+          1.9590879980705767,
+          1.7248636159421924,
+          1.4018336098743969
+        ],
+        "faults": []
+      }
+    },
+    {
+      "scenario": "leo-800-1",
+      "receiver_sha256": "c689865fbc11fba2334bad398efb33d707e726b657b58aed013ba8f785ce0a10",
+      "truth_sha256": "efda9d5926d7f76ce2735a5043f8190d4b5cd0e1e2ab9af86b317f97c7a4ba58",
+      "output_sha256": "65625a224fca04a745cead692e25d8eb09405ac4862dfaad830d354116d77fc6",
+      "result": {
+        "passed": true,
+        "ttff_s": 32.6,
+        "eligible_epochs": 588,
+        "valid_epochs": 588,
+        "availability": 1.0,
+        "p95_position_m": 2.593228161080673,
+        "p95_velocity_mps": 0.08688508631377981,
+        "p95_abs_rtn_m": [
+          2.4672287996306865,
+          1.2209980930125504,
+          0.985745333573713
+        ],
+        "faults": []
+      }
+    },
+    {
+      "scenario": "leo-800-2",
+      "receiver_sha256": "c689865fbc11fba2334bad398efb33d707e726b657b58aed013ba8f785ce0a10",
+      "truth_sha256": "939a5eb96da6808354351bc9230c5724aca34fae2b36fff921c9f5c44f3233b5",
+      "output_sha256": "6d947f2f75ad3a36c0cc93ee3000da69c6d7f0aebd027de71c0314896508f6fb",
+      "result": {
+        "passed": true,
+        "ttff_s": 31.0,
+        "eligible_epochs": 596,
+        "valid_epochs": 596,
+        "availability": 1.0,
+        "p95_position_m": 3.353717902166659,
+        "p95_velocity_mps": 0.12707659620187028,
+        "p95_abs_rtn_m": [
+          3.206411081541339,
+          1.1980705793505901,
+          1.0396502627326756
+        ],
+        "faults": []
+      }
+    },
+    {
+      "scenario": "leo-800-3",
+      "receiver_sha256": "c689865fbc11fba2334bad398efb33d707e726b657b58aed013ba8f785ce0a10",
+      "truth_sha256": "b1688e25560674b29a3ca6ae59d7abaad46677e8178ec3f5089f1c64483ec6b5",
+      "output_sha256": "3f1b8615654726df15e8ce6d400a0cae247068cf9db0b66abba35543a3f4cf93",
+      "result": {
+        "passed": true,
+        "ttff_s": 36.4,
+        "eligible_epochs": 569,
+        "valid_epochs": 569,
+        "availability": 1.0,
+        "p95_position_m": 2.896165441555687,
+        "p95_velocity_mps": 0.09724269957011315,
+        "p95_abs_rtn_m": [
+          2.685123942021144,
+          1.1228930387030684,
+          1.4224204893151076
+        ],
+        "faults": []
+      }
+    },
+    {
+      "scenario": "leo-800-4",
+      "receiver_sha256": "c689865fbc11fba2334bad398efb33d707e726b657b58aed013ba8f785ce0a10",
+      "truth_sha256": "729aecc39f5c71694f11b63ca1fb9ce05f453f09cb354600c743bf5c641f28dc",
+      "output_sha256": "939ab822c9d907478a9e3aacf69e60cea0afeceb9f095d324c79a634ba3a33ac",
+      "result": {
+        "passed": true,
+        "ttff_s": 23.8,
+        "eligible_epochs": 632,
+        "valid_epochs": 632,
+        "availability": 1.0,
+        "p95_position_m": 3.1388776162692644,
+        "p95_velocity_mps": 0.07767114022851569,
+        "p95_abs_rtn_m": [
+          2.9776644950753006,
+          1.261372831205064,
+          0.9770974437696823
+        ],
+        "faults": []
+      }
+    }
+  ],
+  "target_replay": {
+    "truth": {
+      "passed": true,
+      "ttff_s": 44.6,
+      "eligible_epochs": 5,
+      "valid_epochs": 5,
+      "availability": 1.0,
+      "p95_position_m": 1.0225944839385275,
+      "p95_velocity_mps": 0.036563154936664545,
+      "p95_abs_rtn_m": [
+        0.8642082123702602,
+        0.5692654938694283,
+        0.1627153340316435
+      ],
+      "faults": []
+    },
+    "target_only": {
+      "mode": "host-paced-cold-replay",
+      "first_sample": 0,
+      "sample_rate_hz": 16368000,
+      "capture_ms": 65000,
+      "processed_ms": 45404,
+      "frames": 11351,
+      "committed_raw_sha256": "e811341971498adadac8f5b10179d932648b40cdea6df4ad209854dc35b6f4c2",
+      "work_per_ms": 2,
+      "search_steps": 55965,
+      "tracking_us": 322868650,
+      "acquisition_us": 514967134,
+      "status_rows": 227,
+      "first_valid_ms": 44600,
+      "final_consecutive_valid": 5,
+      "elapsed_s": 926.7737178329844
+    },
+    "image": {
+      "firmware_sha256": "c5e6a794bb8ec46ab8f38d135c539e2719204174476b18590dfea2b07573960a",
+      "capture_sha256": "f38e1f5d69d3a92546e24c4d35ea0ed7678f8b74423710500f885a7526f5bf6f",
+      "sys_hz": 150000000,
+      "tracking": "prefix",
+      "execution": "SRAM"
+    },
+    "valid_fixes_timed": 5,
+    "valid_wall_span_s": 20.717466000001878,
+    "valid_wall_hz": 0.19307380545476158,
+    "valid_sample_timestamps": [
+      730012800,
+      733286400,
+      736560000,
+      739833600,
+      743107200
+    ],
+    "valid_wall_intervals_s": [
+      5.166703000024427,
+      5.191999999980908,
+      5.187758999993093,
+      5.17100400000345
+    ],
+    "max_difference_from_native_position_m": 0.014071247103944456
   }
 }

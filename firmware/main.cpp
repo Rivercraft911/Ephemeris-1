@@ -3,6 +3,7 @@
 #include "capture.hpp"
 #include "usb.hpp"
 #include "receiver/app.hpp"
+#include "tracking_irq.hpp"
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "hardware/watchdog.h"
@@ -156,11 +157,11 @@ void tracking_worker() {
                 line.finish(std::snprintf(text, line.capacity,
                     "#stats blocks=%llu missed=%llu fifo_stalls=%u clock_timeouts=%u "
                     "peak_backlog_bytes=%u process_max_us=%u process_p95_bin50us=%u "
-                    "dropped_usb_lines=%u clock_alive=%u warm_restored=%u",
+                    "dropped_usb_lines=%u clock_alive=%u warm_restored=%u tracking_cores=%u",
                     (unsigned long long)s.blocks, (unsigned long long)s.missed_blocks,
                     unsigned(s.fifo_stalls), unsigned(s.clock_timeouts), unsigned(s.peak_backlog_bytes),
                     unsigned(timing.longest_us), timing.percentile95_bin(), unsigned(timing.dropped_lines),
-                    unsigned(stream.clock_alive()), unsigned(warm_restored)));
+                    unsigned(stream.clock_alive()), unsigned(warm_restored), board::tracking_cores));
             }
         }
         uint64_t now = time_us_64();
@@ -193,6 +194,7 @@ int main() {
     const bool warm_request = watchdog_caused_reboot() && watchdog_hw->scratch[0] == warm_cookie;
     watchdog_hw->scratch[0] = 0;
     if (warm_request) warm_restored = receiver.restore_warm(retained);
+    board::install_tracking_irq(receiver);
     multicore_launch_core1_with_stack(tracking_worker, tracking_stack, sizeof(tracking_stack));
     for (;;) if (!receiver.work_acquisition()) tight_loop_contents();
 }

@@ -37,6 +37,11 @@ public:
     // One acquisition worker, one capture/processing thread. No shared mutable DSP buffers.
     void process(const uint8_t* packed, uint64_t first_sample, bool discontinuity);
     bool work_acquisition(); // perform one bounded search step, or return false if waiting
+    // Install before processing begins. The notification must arrange exactly
+    // one worker to run work_tracking(); wait may sleep until it completes.
+    using WorkerHook = void (*)(void*);
+    void set_tracking_worker(WorkerHook notify, WorkerHook wait, void* context);
+    bool work_tracking();
     void save_warm(WarmState& out) const; // capture owner only
     bool restore_warm(const WarmState& saved); // boot only, before the worker is started
     const Status& status() const { return status_; }
@@ -50,6 +55,10 @@ public:
 
 private:
     using Detection = eph::signal::Detection;
+    WorkerHook tracking_notify_{}, tracking_wait_{};
+    void* tracking_context_{};
+    std::atomic<bool> tracking_pending_{false};
+    void track_alternating(unsigned first);
     enum class Slot : unsigned { need_epoch, ready, idle };
     enum class Search : unsigned { select, collect, scanning, confirm };
     std::array<eph::signal::Tracker, channels> trackers_{};

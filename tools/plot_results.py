@@ -184,6 +184,35 @@ def make_figures(data, destination):
     fig.savefig(destination / "pico-timing.png", dpi=180)
     plt.close(fig)
 
+    if "coarse_dual_offline" in data["pico"]:
+        fig, ax = plt.subplots(figsize=(6.6, 3.3), layout="constrained")
+        for key, label, color, marker in (
+            ("offline", "Scalar", "#dedede", "o"),
+            ("prefix_offline", "Shared prefixes", PALETTE[1], "s"),
+            ("coarse_serial_offline", "Half-chip, one core", PALETTE[0], "^"),
+            ("coarse_dual_offline", "Half-chip, two cores", PALETTE[2], "D"),
+        ):
+            records = data["pico"][key]
+            ax.plot(
+                [r["channels"] for r in records],
+                [r["steady_mean_us"] / 1000 for r in records],
+                label=label,
+                color=color,
+                marker=marker,
+                markersize=4,
+            )
+        ax.axhline(1, ls=":", color="#dedede", label="1 ms budget")
+        ax.set(
+            yscale="log",
+            xticks=(1, 4, 8),
+            xlabel="Seeded GPS channels",
+            ylabel="Mean processing time (ms)",
+            title="Post-lock processing on the 150 MHz RP2350B",
+        )
+        ax.grid(axis="y", which="both", linewidth=0.4, alpha=0.5)
+        ax.legend(frameon=False, fontsize=8, loc="upper left", ncol=2)
+        fig.savefig(destination / "tracking-cost.png", dpi=180)
+        plt.close(fig)
     if data.get("orbits"):
         fig, axes = plt.subplots(
             2, 1, figsize=(7.4, 4.4), sharex=True, layout="constrained"

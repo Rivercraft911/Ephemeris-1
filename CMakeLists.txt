@@ -20,6 +20,9 @@ if(EPHEMERIS_BITPLANE_TRACKING)
 endif()
 target_compile_options(ephemeris PRIVATE -Wall -Wextra -Wpedantic)
 if(CMAKE_CROSSCOMPILING)
+  # Match the Pico SDK section layout so the linker can drop unused receiver
+  # kernels and their tables from each individual firmware image.
+  target_compile_options(ephemeris PRIVATE -ffunction-sections -fdata-sections)
   return()
 endif()
 
@@ -49,6 +52,7 @@ endforeach()
 find_package(Threads REQUIRED)
 target_link_libraries(thread_test PRIVATE Threads::Threads)
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
+add_test(NAME import_baseband COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tests/test_import_baseband.py)
 add_test(NAME independent_replay COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tests/test_replay.py $<TARGET_FILE:eph-replay>)
 add_test(NAME sky_mixer_reference COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tests/test_sky_mixer.py $<TARGET_FILE:eph_sky_mixer>)
 add_test(NAME campaign_scoring COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tests/test_campaign.py)

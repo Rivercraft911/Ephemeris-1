@@ -142,13 +142,15 @@ void detection(bool report) {
     assert(loss_db > -7 && loss_db < -.5);
 }
 #ifdef EPHEMERIS_COARSE_TRACKING
-void closed_loop() {
+void closed_loop(double fd) {
     Model model;
-    constexpr double fd=-41234., initial=1022.72, rate=sig::chip_hz+fd/1540.;
+    constexpr double initial=1022.72;
+    const double rate=sig::chip_hz+fd/1540.;
     sig::Tracker tracker;
     assert(tracker.start({15,0,initial-.10,float(fd-80),20,true}));
     low::Epoch data;
     unsigned locked=0, prompts=0;
+    double worst_stable_error=0;
     double last_time=0, final_frequency=0;
     for(unsigned ms=0;ms<560;++ms) {
         const auto origin=std::uint64_t(ms)*sig::raw_per_ms;
@@ -162,6 +164,7 @@ void closed_loop() {
         assert(out.active);
         locked+=out.locked;
         final_frequency=out.doppler_hz;
+        if (ms>=485) worst_stable_error=std::max(worst_stable_error,std::abs(fd-final_frequency));
         for(unsigned k=0;k<out.count;++k) {
             const auto& p=out.prompts[k];
             assert(p.start_sample>=last_time && p.end_sample>p.start_sample);
@@ -174,6 +177,7 @@ void closed_loop() {
         }
     }
     assert(locked>545 && prompts>550 && std::abs(final_frequency-fd)<3.);
+    if (std::abs(fd)<10) assert(worst_stable_error<1.);
     data.first_sample+=sig::raw_per_ms;
     data.discontinuity=true;
     assert(!tracker.update(data).active);
@@ -203,7 +207,8 @@ int main(int argc,char** argv) {
     const bool bench=argc==2 && std::strcmp(argv[1],"--bench")==0;
     packing(); detection(bench);
 #ifdef EPHEMERIS_COARSE_TRACKING
-    closed_loop();
+    closed_loop(-41234.);
+    closed_loop(-4.583);
 #endif
     if(bench) benchmark();
     std::puts("Half-chip correlation, ADC ordering, Doppler, DLL direction and SNR passed");

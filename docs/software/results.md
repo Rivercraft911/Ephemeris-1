@@ -18,6 +18,8 @@ On the same 550 km start, imposing a 10 TECU mean slant electron content with a 
 
 The 260-second fault replays also exercised signal loss. The receiver invalidated its fix during the 10-second total outage and recovered 12.6 s after signal returned. With only three visible satellites it stayed invalid and recovered 26.4 s after visibility returned. A software warm reset at 180 s cleared the fix. A fresh truth-checked fix returned 32.6 s after reset. The archived results include clock offsets of ±2 ppm, a 24 dB fade on one signal and the rotating antenna case. [Fault results](measurements/baseline.json)
 
+An independent static capture using archived broadcast ephemerides provides a second waveform source. [Independent baseband replay](independent.md)
+
 ## Bare Pico Plus 2
 
 The RP2350B ran at 150 MHz from SRAM. A PIO pattern generator supplied a nominal 16.368 MHz clock and a known sequence. The digital capture matched all 163,680 samples. A second check compared four parallel one-bit PIO inputs with the packed four-pin input on the same edges and found zero differences. The clock monitor detected 10 µs interruptions at both high and low levels. These measurements use the unwired Pico.
@@ -26,7 +28,15 @@ The RP2350B ran at 150 MHz from SRAM. A PIO pattern generator supplied a nominal
 
 The live scalar receiver missed 4, 11 and 23 input blocks on the respective 1,000-epoch runs. It dropped lock after the overrun. Its 95th-percentile timing then mostly describes the empty receiver. The plot gives the worst measured time in each run. A separate paced-by-computation test retained all requested locks and matched the native reference on the final epoch at every channel count. Eight channels took 20.91 ms per 1 ms of input in that test. An experimental shared-prefix correlator reduced the eight-channel mean to 8.23 ms. [Firmware and bench commands](../../firmware/README.md)
 
+## Cold replay on the physical RP2350B
+
+The host fed four-bit I/Q over USB and waited for the target to finish each buffer. The Pico started with no time, PRNs, Doppler, position or ephemerides. It acquired seven satellites, decoded their LNAV messages and returned its first fix at 44.6 s of signal time. The first five valid fixes had 95th-percentile errors of 1.02 m and 0.0366 m/s. The 227 status rows agreed with native replay on lock masks, decoded-navigation masks and validity. The largest target-to-native position difference among the five fixes was 1.41 cm.
+
+Each fix represented 200 ms of signal. The four host arrival intervals were 5.167, 5.192, 5.188 and 5.171 s, or **0.193 fixes per wall-clock second** across that interval. The prefix-sum firmware processed 45.404 seconds of recording in 926.77 seconds. USB pacing, tracking, navigation and continued acquisition all contribute. [Firmware and capture hashes](measurements/baseline.json) · [Reproduce the target replay](../../firmware/README.md)
+
 ## Accuracy target
+
+At 16.368 MS/s an ADC sample spans 61.1 ns, or 18.3 m of light travel. The early and late correlations estimate a fraction of that interval across many chips. A 1 m range error corresponds to 3.34 ns.
 
 The first conducted acceptance target is 10 m at the 95th percentile in three dimensions over a complete orbit. A longer-term engineering target is about 1 m 3D RMS after convergence. In flight-data studies, a single-frequency receiver combining code and carrier with a dynamics filter reached roughly 0.6–1 m 3D RMS using broadcast ephemerides. The next accuracy experiment would retain carrier-phase arcs, detect cycle slips and measure an orbital filter against independent truth. Pico timing and end-to-end Safran tests remain open. [DLR flight-data study](https://doi.org/10.1007/s10291-007-0080-x) · [Single-frequency SJ-9A study](https://doi.org/10.1007/s10291-016-0586-1) · [Conducted test procedure](conducted.md)
 

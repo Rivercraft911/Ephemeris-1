@@ -166,19 +166,39 @@ if __name__ == "__main__":
     pairs = sub.add_parser("pairs", help="time a two-axis PIO capture and half-chip lookup table")
     pairs.add_argument("--internal", action="store_true", help="use the on-chip PRBS source")
     prof = sub.add_parser("profile")
-    prof.add_argument("channels", type=int, choices=(1, 4, 8))
+    prof.add_argument("channels", type=int, choices=(1, 4, 6, 8))
     cadence = prof.add_mutually_exclusive_group()
     cadence.add_argument("--external", action="store_true", help="use an independently clocked fixture on GP6")
     cadence.add_argument("--offline", action="store_true", help="measure lossless compute cost without real-time pacing")
     prof.add_argument("--reference", type=Path, help="native eph-replay executable for numerical comparison")
+    sub.add_parser("pvt", help="time the six-satellite navigation solver against an independent reference")
     sub.add_parser("clocktest", help="use the profile image to verify recovered high/low clock pauses")
+    cont = sub.add_parser("continuity", help="measure continuous digital input on the profile image")
+    cont.add_argument("--seconds", type=int, default=70)
     args = cli.parse_args()
+    if args.action == "continuity" and not 1 <= args.seconds <= 600:
+        cli.error("use a continuity duration between 1 and 600 seconds")
     import serial  # pyserial is only required for the physical bench
     try:
         with serial.Serial(args.port, 115200, timeout=130 if getattr(args, "offline", False) else 9,
                            write_timeout=2) as device:
             if args.action == "profile":
                 profile(device, args.channels, args.external, args.reference, args.offline)
+            elif args.action == "pvt":
+                device.reset_input_buffer()
+                device.write(b"pvt\n")
+                line = device.readline().decode("ascii", errors="replace").strip()
+                print(line)
+                if not line.startswith("PASS sv=6 "):
+                    raise ValueError("navigation reference check failed")
+            elif args.action == "continuity":
+                device.timeout = args.seconds + 8
+                device.reset_input_buffer()
+                device.write(f"continuity {args.seconds}\n".encode("ascii"))
+                line = device.readline().decode("ascii", errors="replace").strip()
+                print(line)
+                if not line.startswith(f"PASS epochs={args.seconds * 1000} "):
+                    raise ValueError("capture continuity check failed")
             elif args.action == "clocktest":
                 device.reset_input_buffer()
                 device.write(b"clocktest\n")
