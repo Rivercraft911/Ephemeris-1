@@ -67,6 +67,44 @@ void pack_epoch(const std::uint8_t* src, Epoch& out) {
         out.i[w]=i; out.q[w]=q;
     }
 }
+#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+inline unsigned aligned_half_chip_sum(const std::uint8_t* src) {
+    std::uint16_t first, second;
+    std::memcpy(&first, src, sizeof(first));
+    std::memcpy(&second, src + 2, sizeof(second));
+    return sums.lut[first] + sums.lut[second];
+}
+
+template<unsigned count>
+inline unsigned aligned_sign_bytes(const std::uint8_t* src) {
+    static_assert(count == 8 || count == 6);
+    unsigned bits = 0;
+    for (unsigned k = 0; k < count; k += 2) {
+        const unsigned first = aligned_half_chip_sum(src + 4*k);
+        const unsigned second = aligned_half_chip_sum(src + 4*k + 4);
+        // Bit 7 of each byte is set for a nonnegative sum. Insert two
+        // half-chips together and complement after the complete byte.
+        bits = (bits >> 2) | ((first >> 1) & 0x4040u) | (second & 0x8080u);
+    }
+    return (~bits >> (8 - count)) & (((1u << count) - 1) * 0x101u);
+}
+
+void pack_aligned(const std::uint8_t* src, Epoch& out) {
+    static_assert(half_chips % 8 == 6);
+    auto* i = reinterpret_cast<std::uint8_t*>(out.i.data());
+    auto* q = reinterpret_cast<std::uint8_t*>(out.q.data());
+    for (unsigned k = 0; k < half_chips / 8; ++k, src += 32) {
+        const unsigned bits = aligned_sign_bytes<8>(src);
+        *i++ = std::uint8_t(bits);
+        *q++ = std::uint8_t(bits >> 8);
+    }
+    // The last six half-chips share the last byte. Its high two bits stay zero.
+    const unsigned bits = aligned_sign_bytes<6>(src);
+    *i = std::uint8_t(bits);
+    *q = std::uint8_t(bits >> 8);
+}
+#endif
+
 // Only the intra-group carrier slope is quantized (1/1024 turn/sample).
 // Re-evaluate each group origin from the 32-bit phase accumulator. The
 // two masks implement a complex conjugate quarter-turn without a multiply.
@@ -147,7 +185,13 @@ bool preprocess(const PackedBlock& block, Epoch& out) {
     out.first_sample=block.first_sample;
     out.discontinuity=block.discontinuity;
     switch (block.first_sample&3) {
-        case 0: pack_epoch<0>(block.bytes,out); break;
+        case 0:
+#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+            pack_aligned(block.bytes,out);
+#else
+            pack_epoch<0>(block.bytes,out);
+#endif
+            break;
         case 1: pack_epoch<1>(block.bytes,out); break;
         case 2: pack_epoch<2>(block.bytes,out); break;
         default: pack_epoch<3>(block.bytes,out); break;
