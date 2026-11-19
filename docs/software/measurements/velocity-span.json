@@ -1,0 +1,284 @@
+{
+  "revision": "6938dc5753578d0b3aaf1741253bf5423e03d54e",
+  "method": "Paired native C++ release replays of complete 165 s EIQ files. The 5- and 7-report fits run after the PVT solver at the current 5 Hz epoch. Compare all 16 nonvelocity fields on every status row. The 7-report span was chosen before generating the two new geometries, and no weights were selected on them.",
+  "acquisition_work_per_ms": "1141/5706",
+  "clock": "signal time",
+  "output_hz": 5,
+  "common_options": [
+    "EPHEMERIS_COARSE_TRACKING=ON",
+    "EPHEMERIS_VELOCITY_FIT=ON",
+    "EPHEMERIS_DOPPLER_POSITION=OFF",
+    "EPHEMERIS_GROUND_TROPOSPHERE=OFF"
+  ],
+  "profiles": {
+    "flight": "EPHEMERIS_FLIGHT_SURVEY=ON; EPHEMERIS_GROUND_SEARCH=OFF",
+    "ground": "EPHEMERIS_GROUND_SEARCH=ON; EPHEMERIS_FLIGHT_SURVEY=OFF"
+  },
+  "compiler_sizes": {
+    "toolchain": "Arm GCC 14.2 with -O3, Cortex-M33 hard-float. Function symbol and sizeof(VelocityFit). Device cycles unmeasured.",
+    "function_text_bytes_5_7": [
+      416,
+      760
+    ],
+    "state_bytes_5_7": [
+      112,
+      160
+    ]
+  },
+  "filters": {
+    "5": {
+      "weights_oldest_first": [
+        -1,
+        0,
+        1,
+        2,
+        3
+      ],
+      "denominator": 5,
+      "span_s": 0.8,
+      "raw_startup_reports": 4,
+      "constant_jerk_bias_s2": -0.04,
+      "white_input_variance_gain": 0.6,
+      "unit_step_overshoot": 0.2
+    },
+    "7": {
+      "weights_oldest_first": [
+        -5,
+        -2,
+        1,
+        4,
+        7,
+        10,
+        13
+      ],
+      "denominator": 28,
+      "span_s": 1.2,
+      "raw_startup_reports": 6,
+      "constant_jerk_bias_s2": -0.1,
+      "white_input_variance_gain": 0.4642857142857143,
+      "unit_step_overshoot": 0.25
+    }
+  },
+  "reference": "Computes a separate dot product of the released single-epoch velocities printed to five decimal places. An invalid fix or a noncontiguous 0.2 s sample interval clears its history. Absolute disagreement is bounded to 1.5e-5 m/s per component.",
+  "binaries": {
+    "flight5": "537e30a21d1f71cb0bc3be2d210824abc0357076c3d45801a3542a9a46c00b4f",
+    "flight7": "6251471f5c05a7b2cb0cfbad6b5bd9c1b852e4c7f12d4cb3db657c8d4498bcde",
+    "flightraw": "1baa7617b5027988bd40f842c555035cf7895e83d4b9e8a3cc88a68735252db1",
+    "ground5": "cab1e30ca3affb74e7bbf562e4aeabd74073f897dcb5df6087c88c867cebc623",
+    "ground7": "2b263716bc7adee45ad627f57d7e3692e06b45f91e9faf57b64eee8d70222bdb",
+    "groundraw": "fd4e69fd5c3059bfda5856151d0c6ad178727fa07a52ba24bc8f27bd8a2172a0"
+  },
+  "candidate_patch_sha256": "a9f96f497c22c646af104b0ec3824f84ff397024fc73ab27f2f37a6b4d4a199f",
+  "cases": [
+    {
+      "label": "ground",
+      "altitude_km": null,
+      "phase_deg": null,
+      "seed": 10209,
+      "new_holdout": false,
+      "input_sha256": "81ac5404c39ac5c4410bab20ce096f6ebda777089d843176cd9f08d3e4e904b5",
+      "raw_csv_sha256": "1b8d5d7c4b5258dc1496faa8ecd1c2b7e06782ed4d763a499286dc92edf13fdf",
+      "identical_nonvelocity_fields": 16,
+      "identical_status_rows": 825,
+      "5": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 39.2,
+        "p95_position_m": 1.0951610391282565,
+        "p95_velocity_mps": 0.14120624418624783,
+        "gaps": 0,
+        "csv_sha256": "8555d3673674c5b179b6c8a293dee01661af291570efcc4db505b8ba4767f97f",
+        "max_reference_difference_mps": 1e-05
+      },
+      "7": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 40.2,
+        "p95_position_m": 1.0951610391282565,
+        "p95_velocity_mps": 0.10099548490323638,
+        "gaps": 0,
+        "csv_sha256": "89684020689ca9e68d6357ebc53e6b34dabadb8aac0dc0f397f3a7fa0d89fa8c",
+        "max_reference_difference_mps": 1e-05
+      }
+    },
+    {
+      "label": "400",
+      "altitude_km": 400,
+      "phase_deg": 103,
+      "seed": 7411,
+      "new_holdout": false,
+      "input_sha256": "e0a4cd27957f37fa7e4bd2568b423d40edc08494f03d7455cbcc84de00c359c0",
+      "raw_csv_sha256": "b8c46876c0b30da143a6e83cea695c2708dd33f7b44d6ec5257dd7e9fc25cf38",
+      "identical_nonvelocity_fields": 16,
+      "identical_status_rows": 825,
+      "5": {
+        "passed": false,
+        "status_epochs": 825,
+        "valid_epochs": 540,
+        "first_valid_s": 57.2,
+        "first_five_truth_checked_s": 57.6,
+        "p95_position_m": 2.637614547518453,
+        "p95_velocity_mps": 0.2314578602890653,
+        "gaps": 0,
+        "csv_sha256": "188ba401b3f1bdaf09f729e65b2fe20d70b45b464ca0c685e39ca7f52a5281c4",
+        "max_reference_difference_mps": 1e-05
+      },
+      "7": {
+        "passed": false,
+        "status_epochs": 825,
+        "valid_epochs": 540,
+        "first_valid_s": 57.2,
+        "first_five_truth_checked_s": 57.6,
+        "p95_position_m": 2.637614547518453,
+        "p95_velocity_mps": 0.20829611743340337,
+        "gaps": 0,
+        "csv_sha256": "183d12ba29f765002083bbfd83c0ca15427a8cb4cbf1d01c87032d784f7c8ec5",
+        "max_reference_difference_mps": 8.929e-06
+      }
+    },
+    {
+      "label": "550",
+      "altitude_km": 550,
+      "phase_deg": 12,
+      "seed": 10209,
+      "new_holdout": false,
+      "input_sha256": "f783daaa975a8e9b3c348addaf9f3570ed5a9b1f4ab73c8084f0c14e31e23eae",
+      "raw_csv_sha256": "741bf7b34da66123186676d450c28ab1860bff8be9b71ab332938d4b2f286f37",
+      "identical_nonvelocity_fields": 16,
+      "identical_status_rows": 825,
+      "5": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 480,
+        "first_valid_s": 69.2,
+        "first_five_truth_checked_s": 69.2,
+        "p95_position_m": 1.0089315397665122,
+        "p95_velocity_mps": 0.10606372494560579,
+        "gaps": 0,
+        "csv_sha256": "c770049e5078f8cc4ee650a540275942f30479876f7f14aee1721df1833ca775",
+        "max_reference_difference_mps": 1e-05
+      },
+      "7": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 480,
+        "first_valid_s": 69.2,
+        "first_five_truth_checked_s": 69.2,
+        "p95_position_m": 1.0089315397665122,
+        "p95_velocity_mps": 0.08765845994089476,
+        "gaps": 0,
+        "csv_sha256": "9627ba56f73863bedf133361ad7778d8fad322c1b3a3853da65aba97a46e0cf4",
+        "max_reference_difference_mps": 1e-05
+      }
+    },
+    {
+      "label": "800",
+      "altitude_km": 800,
+      "phase_deg": 211,
+      "seed": 9203,
+      "new_holdout": false,
+      "input_sha256": "bf64df944288abc3bfdf6c702055f60419d75510d3398c5c787c3102a247ced5",
+      "raw_csv_sha256": "17f6d8a8a26c64bf5aca4dbbe12600bd28926d526b7eb11a72210023fbcff3b5",
+      "identical_nonvelocity_fields": 16,
+      "identical_status_rows": 825,
+      "5": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 39.8,
+        "p95_position_m": 1.5749268558249951,
+        "p95_velocity_mps": 0.14776542121759487,
+        "gaps": 0,
+        "csv_sha256": "d9d00eeba63e4504949aa93ff50343c71c140a5c1045643f1a3dc4166c7d98ef",
+        "max_reference_difference_mps": 1e-05
+      },
+      "7": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 40.4,
+        "p95_position_m": 1.5749268558249951,
+        "p95_velocity_mps": 0.12834753435823792,
+        "gaps": 0,
+        "csv_sha256": "dcc01e8e08e0f60a6d76e03b7c2a85baa618ad4251e29cd2bda5c4b1fd42c643",
+        "max_reference_difference_mps": 1e-05
+      }
+    },
+    {
+      "label": "475-151",
+      "altitude_km": 475,
+      "phase_deg": 151,
+      "seed": 62031,
+      "new_holdout": true,
+      "input_sha256": "2a36d58bdffde31e3e4109012c5c0fa58876970e2c4af659eab1b6e9963163aa",
+      "raw_csv_sha256": "92aff70f775a2debb03103bb485372207caca50f092467ca4f895666cf5de364",
+      "identical_nonvelocity_fields": 16,
+      "identical_status_rows": 825,
+      "5": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 40.4,
+        "p95_position_m": 2.1163338643753904,
+        "p95_velocity_mps": 0.1378506427546385,
+        "gaps": 0,
+        "csv_sha256": "60962c222966a26b2415b7760bdb102880f6a49db137fb555f855c3aa7ee2bfe",
+        "max_reference_difference_mps": 1e-05
+      },
+      "7": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 39.6,
+        "p95_position_m": 2.1163338643753904,
+        "p95_velocity_mps": 0.12100609813561608,
+        "gaps": 0,
+        "csv_sha256": "3225a1d4d8123cdfb02ebff4049449cb4d684b52a5753cbca8d549654a9e8011",
+        "max_reference_difference_mps": 9.643e-06
+      }
+    },
+    {
+      "label": "400-281",
+      "altitude_km": 400,
+      "phase_deg": 281,
+      "seed": 73919,
+      "new_holdout": true,
+      "input_sha256": "516f375789b621506a460126ce5268b80acb395d6c22c9e16a96f579ada277d8",
+      "raw_csv_sha256": "0f645f8e33984b26070d58b6dd88a645b0156dc2867694826291ba0892ad23f0",
+      "identical_nonvelocity_fields": 16,
+      "identical_status_rows": 825,
+      "5": {
+        "passed": false,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 43.4,
+        "p95_position_m": 3.065888891629248,
+        "p95_velocity_mps": 0.21244618022072126,
+        "gaps": 0,
+        "csv_sha256": "0a4e7f52e265cdb2d1c71dae2742cdf74432d56d6c34b0e63b1380e197bb9fd4",
+        "max_reference_difference_mps": 1e-05
+      },
+      "7": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 40.4,
+        "p95_position_m": 3.065888891629248,
+        "p95_velocity_mps": 0.18075042915763923,
+        "gaps": 0,
+        "csv_sha256": "e383c60311cd8edcb91f543c3142f99931391299a9f0926a3998f663b0d8102c",
+        "max_reference_difference_mps": 8.929e-06
+      }
+    }
+  ]
+}

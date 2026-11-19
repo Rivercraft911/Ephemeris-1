@@ -318,6 +318,30 @@ def acquisition_figure(pico, replay, destination):
     plt.close(fig)
 
 
+def position_error_figure(budget, controls, destination):
+    orbits = budget["orbits"]
+    paired = {r["input_sha256"]: r for r in controls["orbits"]}
+    y = np.arange(len(orbits))
+    fig, (ranges, positions) = plt.subplots(1, 2, sharey=True, figsize=(8.5, 3.7), layout="constrained")
+    for idx, (key, label) in enumerate((("code_timing", "Code timing"), ("range_model", "Range model"))):
+        values = [r["pooled_clock_removed_range_rms_m"][key] for r in orbits]
+        ranges.scatter(values, y + (idx - 0.5) * 0.16, marker=("o", "s")[idx], color=PALETTE[idx], label=label)
+    for idx, (key, label) in enumerate((("raw_half_chip", "Half-chip"), ("scalar", "Full-rate scalar"),
+                                        ("smoothed_half_chip", "Doppler-aided half-chip"))):
+        values = [paired[r["input_sha256"]][key + "_p95_m"] for r in orbits]
+        positions.scatter(values, y + (idx - 1) * 0.15, marker=("o", "s", "^")[idx], color=PALETTE[idx], label=label)
+    ranges.set(title="Differential range error", xlabel="RMS across satellite observations (m)",
+               yticks=y, yticklabels=[f"{r['altitude_km']} km · {r['phase_deg']:.0f}°" for r in orbits])
+    ranges.invert_yaxis()
+    positions.set(title="Position on the same fixes", xlabel="95th-percentile 3D position error (m)")
+    for ax in (ranges, positions):
+        ax.set_xlim(left=0)
+        ax.grid(axis="x", linewidth=0.45, alpha=0.55)
+        ax.legend(frameon=False, loc="upper center", bbox_to_anchor=(0.5, -0.24), fontsize=8)
+    fig.savefig(destination / "position-error.png", dpi=180)
+    plt.close(fig)
+
+
 def flight_search_figure(data, destination):
     orbits = sorted(data["orbits"], key=lambda run: run["altitude_km"])
     metrics = (("four_locks_s", "Four channels locked"), ("eight_locks_s", "Eight channels locked"),
@@ -367,3 +391,7 @@ if __name__ == "__main__":
     survey = a.results.with_name("flight-survey.json")
     if survey.exists():
         flight_search_figure(json.loads(survey.read_text()), a.out)
+    budget = a.results.with_name("position-budget.json")
+    controls = a.results.with_name("position-controls.json")
+    if budget.exists() and controls.exists():
+        position_error_figure(json.loads(budget.read_text()), json.loads(controls.read_text()), a.out)

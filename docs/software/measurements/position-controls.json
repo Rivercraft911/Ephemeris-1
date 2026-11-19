@@ -1,0 +1,100 @@
+{
+  "receiver_revision": "6938dc5753578d0b3aaf1741253bf5423e03d54e",
+  "work": "1141/5706",
+  "seconds": 165,
+  "method": "Each pair uses the same EIQ file. The complete status grid, every valid fix epoch, and the PRNs used at every fix match. Reported errors are 95th percentiles of ECEF distance from the analytic circular trajectory, including startup. The scalar control changes the tracker. The position-smoothing control keeps the half-chip tracker and enables EPHEMERIS_DOPPLER_POSITION.",
+  "orbits": [
+    {
+      "altitude_km": 400,
+      "phase_deg": 103,
+      "held_out": false,
+      "input_sha256": "e0a4cd27957f37fa7e4bd2568b423d40edc08494f03d7455cbcc84de00c359c0",
+      "reference_csv_sha256": "188ba401b3f1bdaf09f729e65b2fe20d70b45b464ca0c685e39ca7f52a5281c4",
+      "paired_fixes": 540,
+      "first_fix_s": 57.2,
+      "raw_half_chip_p95_m": 2.63761,
+      "scalar_p95_m": 1.16853,
+      "scalar_csv_sha256": "c0b185b5fb87f7145c656e8422a75761d4d904bb22db24e963fdca98f1349ed0",
+      "smoothed_half_chip_p95_m": 1.45351,
+      "smoothed_half_chip_csv_sha256": "4c2ff61a5e79069d746687d464e101d967200396fa6f73d777951ea1d572615c"
+    },
+    {
+      "altitude_km": 550,
+      "phase_deg": 12,
+      "held_out": false,
+      "input_sha256": "f783daaa975a8e9b3c348addaf9f3570ed5a9b1f4ab73c8084f0c14e31e23eae",
+      "reference_csv_sha256": "c770049e5078f8cc4ee650a540275942f30479876f7f14aee1721df1833ca775",
+      "paired_fixes": 480,
+      "first_fix_s": 69.2,
+      "raw_half_chip_p95_m": 1.00893,
+      "scalar_p95_m": 0.75041,
+      "scalar_csv_sha256": "2d3d4d89f22a8fe7f3a0c47c40fbce2563eac41a90c27d547ff630ac4658110e",
+      "smoothed_half_chip_p95_m": 0.50389,
+      "smoothed_half_chip_csv_sha256": "d9faf6db397bc796ba454ad13d32be8dc4d402361aeea5e8cd4493eebb3a018a"
+    },
+    {
+      "altitude_km": 800,
+      "phase_deg": 211,
+      "held_out": false,
+      "input_sha256": "bf64df944288abc3bfdf6c702055f60419d75510d3398c5c787c3102a247ced5",
+      "reference_csv_sha256": "d9d00eeba63e4504949aa93ff50343c71c140a5c1045643f1a3dc4166c7d98ef",
+      "paired_fixes": 630,
+      "first_fix_s": 39.2,
+      "raw_half_chip_p95_m": 1.57493,
+      "scalar_p95_m": 1.02251,
+      "scalar_csv_sha256": "27cd1c468b91b7053a477d1476f8ab79b16ecb01ccc114506632ddaf5880cc0b",
+      "smoothed_half_chip_p95_m": 0.84806,
+      "smoothed_half_chip_csv_sha256": "ac49385cb911f7488a1b81afa823bf1d5a1d77eee1ad02432345586ee1308075"
+    },
+    {
+      "altitude_km": 475,
+      "phase_deg": 151,
+      "held_out": true,
+      "input_sha256": "2a36d58bdffde31e3e4109012c5c0fa58876970e2c4af659eab1b6e9963163aa",
+      "reference_csv_sha256": "60962c222966a26b2415b7760bdb102880f6a49db137fb555f855c3aa7ee2bfe",
+      "paired_fixes": 630,
+      "first_fix_s": 39.2,
+      "raw_half_chip_p95_m": 2.11633,
+      "scalar_p95_m": 1.15821,
+      "scalar_csv_sha256": "0b694d421105a6ba4ec82e9dbcc7f4a75f36b6cad5bc1de005a4ff1269053b64",
+      "smoothed_half_chip_p95_m": 1.89977,
+      "smoothed_half_chip_csv_sha256": "53a2b7b02c8d1ad0a21686d1e5f7961d875740f3d8a3cd983ef28c6cb6a10cc5"
+    },
+    {
+      "altitude_km": 400,
+      "phase_deg": 281,
+      "held_out": true,
+      "input_sha256": "516f375789b621506a460126ce5268b80acb395d6c22c9e16a96f579ada277d8",
+      "reference_csv_sha256": "0a4e7f52e265cdb2d1c71dae2742cdf74432d56d6c34b0e63b1380e197bb9fd4",
+      "paired_fixes": 630,
+      "first_fix_s": 39.2,
+      "raw_half_chip_p95_m": 3.06589,
+      "scalar_p95_m": 2.57949,
+      "scalar_csv_sha256": "011ac008ad94f6c8cefc76a12b61271c181d20795ef484d204d385c74eca4f6a",
+      "smoothed_half_chip_p95_m": 2.63926,
+      "smoothed_half_chip_csv_sha256": "395aaad9e881a12cab7c356936ec6e3853ae890925d9c1d251f31af432fe0532"
+    }
+  ],
+  "fixed_prn_noise_control": {
+    "altitude_km": 400,
+    "phase_deg": 103,
+    "prns": [
+      1,
+      10,
+      14,
+      17,
+      19,
+      21,
+      24,
+      32
+    ],
+    "method": "A host-only acquisition allowlist restricts both runs to these eight PRNs. The phase, carrier, clocks, ephemerides and PVT are estimated from I/Q. Same generation and quantizer, import noise sigma 0.8 vs 0 ADC threshold units per axis.",
+    "paired_fixes": 630,
+    "first_fix_s": 39.2,
+    "reference_p95_m": 1.8285917510642704,
+    "candidate_p95_m": 1.9435801147883283,
+    "no_noise_input_sha256": "a2b6b93c18780ddb09b5f280fd9a44b41e7570d9b2140765e43418a25f309304",
+    "noisy_csv_sha256": "1de170b4ecfa0b43eb3263d72ea6cbc040d9c72857e68fb748518e4fbbaebf2e",
+    "no_noise_csv_sha256": "801534cc37db5b5df129fd2692b1cce18e7ad411f57277f1632af03f968d7ac0"
+  }
+}
