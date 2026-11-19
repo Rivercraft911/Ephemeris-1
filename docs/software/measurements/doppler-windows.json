@@ -1,0 +1,368 @@
+{
+  "method": "Previous Doppler estimation averages started at acquisition on each channel. Aligned estimates use common 200 ms windows ending 20 ms before each navigation report. Both use the existing five-report velocity fit.",
+  "input": "Same compact recordings, 1 kHz clocked two-core Pico Plus 2 at 150 MHz. CTTC speed is measured against the stationary antenna. Its position is compared to GNSS-SDR. Orbital truth is the independent GPS-SDR-SIM input trajectory.",
+  "old_reference": "cttc/report.json and pico-clocked.json",
+  "aligned_receiver_commit": "595966f0e78195e13ed09e246b4feb4309d9d865",
+  "cttc_pico": {
+    "previous": {
+      "status_file": "cttc/pico.csv.gz",
+      "median_apparent_speed_mps": 0.5032950969361812,
+      "p95_apparent_speed_mps": 1.5256939693527134,
+      "comparison": {
+        "receiver_rows": 500,
+        "valid_fixes": 225,
+        "first_fix": {
+          "elapsed_s": 55.2,
+          "week_mod1024": 710,
+          "tow_s": 368658.231221993,
+          "lat_deg": 41.27484575900575,
+          "lon_deg": 1.9876840236243667,
+          "ellipsoid_height_m": 81.69353651162237
+        },
+        "llh_of_componentwise_median_ecef": {
+          "lat_deg": 41.27482482133166,
+          "lon_deg": 1.9876875486875485,
+          "ellipsoid_height_m": 78.57172094285488
+        },
+        "reference_rows": 566,
+        "reference_max_interpolation_interval_s": 0.15,
+        "matched_fixes": 223,
+        "separation": {
+          "horizontal_m": {
+            "median": 2.5615369165602635,
+            "p95": 5.798100228006424
+          },
+          "abs_vertical_m": {
+            "median": 5.3539182691859875,
+            "p95": 13.751123451894774
+          },
+          "distance_3d_m": {
+            "median": 6.114695477161946,
+            "p95": 13.941841711107696
+          }
+        }
+      }
+    },
+    "aligned": {
+      "status_file": "cttc/pico-aligned.csv.gz",
+      "median_apparent_speed_mps": 0.016367776269243173,
+      "p95_apparent_speed_mps": 0.037885370090269994,
+      "comparison": {
+        "receiver_rows": 500,
+        "valid_fixes": 225,
+        "first_fix": {
+          "elapsed_s": 55.2,
+          "week_mod1024": 710,
+          "tow_s": 368658.231221993,
+          "lat_deg": 41.27484484830544,
+          "lon_deg": 1.9876830610265837,
+          "ellipsoid_height_m": 81.66627202089876
+        },
+        "llh_of_componentwise_median_ecef": {
+          "lat_deg": 41.274825962929704,
+          "lon_deg": 1.9876868670004202,
+          "ellipsoid_height_m": 78.34086824394763
+        },
+        "reference_rows": 566,
+        "reference_max_interpolation_interval_s": 0.15,
+        "matched_fixes": 223,
+        "separation": {
+          "horizontal_m": {
+            "median": 2.5783943844868453,
+            "p95": 5.738708871870978
+          },
+          "abs_vertical_m": {
+            "median": 5.291510355567485,
+            "p95": 13.807141728830288
+          },
+          "distance_3d_m": {
+            "median": 5.944859962985377,
+            "p95": 14.122196845614106
+          }
+        }
+      },
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 100000,
+        "compact_sha256": "fe3bca4ae5834a7168424f232f9ff7220ef7800d72ac9de62ed0aab8e9d27569",
+        "compact_crc32": "b9f8ec56",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 1.4,
+            "device_s": 1.400414,
+            "host_s": 1.4375342919956893
+          },
+          "four_locks": {
+            "sample_s": 26.2,
+            "device_s": 26.20064,
+            "host_s": 26.23720387503272
+          },
+          "first_valid": {
+            "sample_s": 55.2,
+            "device_s": 55.202797,
+            "host_s": 55.2398130420479
+          }
+        },
+        "status_rows": 500,
+        "valid_rows": 225,
+        "gaps": 0,
+        "device_elapsed_s": 100.003156,
+        "host_elapsed_s": 100.04128270904766,
+        "min_device_status_interval_us": 199935,
+        "max_device_status_interval_us": 201962,
+        "late_us": 3116,
+        "starved": 0,
+        "peak_backlog": 3,
+        "first_valid_host_offset_s": 55.2398130420479,
+        "last_valid_host_offset_s": 100.03923704201588,
+        "longest_valid_streak_reports": 225,
+        "longest_valid_streak_wall_s": 44.799423999967985,
+        "longest_valid_streak_wall_hz": 5.0000642865444
+      },
+      "sram_uf2_sha256": "dee7c4b760fe0c33a51539b465c2b8a62c2d7d18f407cd881c48a4074cff4188",
+      "uncompressed_csv_sha256": "bc456353ed6a0a5a94c0d88fe01de7906eab0d1eb0366e865f5064e0d22f89b2"
+    },
+    "comparison_epochs": {
+      "total_rows": 500,
+      "matched_valid_fixes": 225
+    }
+  },
+  "orbit_pico": {
+    "previous": {
+      "passed": true,
+      "status_epochs": 825,
+      "valid_epochs": 390,
+      "first_valid_s": 87.2,
+      "first_five_truth_checked_s": 89.0,
+      "availability_after_streak": 1.0,
+      "p95_position_m": 1.301317827958219,
+      "p95_velocity_mps": 0.16103416097227144,
+      "max_time_error_s": 4.051258883919218e-09,
+      "gaps": 0
+    },
+    "aligned": {
+      "status_file": "clocked/orbit_165_aligned.csv.gz",
+      "passed": true,
+      "status_epochs": 825,
+      "valid_epochs": 390,
+      "first_valid_s": 87.2,
+      "first_five_truth_checked_s": 88.8,
+      "availability_after_streak": 1.0,
+      "p95_position_m": 1.2208871953879783,
+      "p95_velocity_mps": 0.11141846815531023,
+      "max_time_error_s": 4.051258883919218e-09,
+      "gaps": 0,
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 165000,
+        "compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+        "compact_crc32": "87a51e97",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 5.0,
+            "device_s": 5.000416,
+            "host_s": 5.039027416030876
+          },
+          "four_locks": {
+            "sample_s": 40.6,
+            "device_s": 40.600653,
+            "host_s": 40.63840633298969
+          },
+          "first_valid": {
+            "sample_s": 87.2,
+            "device_s": 87.202426,
+            "host_s": 87.23998583300272
+          }
+        },
+        "status_rows": 825,
+        "valid_rows": 390,
+        "gaps": 0,
+        "device_elapsed_s": 165.003124,
+        "host_elapsed_s": 165.04272912500892,
+        "min_device_status_interval_us": 199941,
+        "max_device_status_interval_us": 201470,
+        "late_us": 3076,
+        "starved": 0,
+        "peak_backlog": 3,
+        "first_valid_host_offset_s": 87.23998583300272,
+        "last_valid_host_offset_s": 165.0395488750073,
+        "longest_valid_streak_reports": 390,
+        "longest_valid_streak_wall_s": 77.79956304200459,
+        "longest_valid_streak_wall_hz": 5.000028082291103
+      },
+      "sram_uf2_sha256": "92c1068034e4cc0ecef311b9578f86c1bee3d2718f2c24b68e0dc44ce4d5f06d",
+      "uncompressed_csv_sha256": "11a756eb2bd848885c84daaf7fb1ef8620e1f04e4f7853f62c2d8968b1235b24"
+    },
+    "comparison_epochs": {
+      "total_rows": 825,
+      "matched_valid_fixes": 60,
+      "previous_p95_velocity_mps": 0.35987767856335773,
+      "aligned_p95_velocity_mps": 0.2535215532192556
+    }
+  },
+  "native_method": "165 s of uncompressed four-bit EIQ per case. Ground search off, flight survey and five-report velocity fit on, 1141 acquisition steps per 5706 ms. The reference and candidate process the same samples from an empty receiver.",
+  "native_orbits": [
+    {
+      "altitude_km": 400,
+      "phase_deg": 103,
+      "eiq_sha256": "e0a4cd27957f37fa7e4bd2568b423d40edc08494f03d7455cbcc84de00c359c0",
+      "previous": {
+        "csv_sha256": "188ba401b3f1bdaf09f729e65b2fe20d70b45b464ca0c685e39ca7f52a5281c4",
+        "passed": false,
+        "status_epochs": 825,
+        "valid_epochs": 540,
+        "first_valid_s": 57.2,
+        "first_five_truth_checked_s": 57.6,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 2.637614547518453,
+        "p95_velocity_mps": 0.2314578602890653,
+        "max_time_error_s": 6.0303193549771095e-09,
+        "gaps": 0
+      },
+      "aligned": {
+        "csv_sha256": "e12e5fb9ad5ad00a9bab7c1e356932bc9042d6cfe76294ae29595ad927311c5a",
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 540,
+        "first_valid_s": 57.2,
+        "first_five_truth_checked_s": 57.8,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 2.6386244453980465,
+        "p95_velocity_mps": 0.168869436660379,
+        "max_time_error_s": 6.0303193549771095e-09,
+        "gaps": 0
+      },
+      "matching_status_and_satellites": 825
+    },
+    {
+      "altitude_km": 550,
+      "phase_deg": 12,
+      "eiq_sha256": "f783daaa975a8e9b3c348addaf9f3570ed5a9b1f4ab73c8084f0c14e31e23eae",
+      "previous": {
+        "csv_sha256": "c770049e5078f8cc4ee650a540275942f30479876f7f14aee1721df1833ca775",
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 480,
+        "first_valid_s": 69.2,
+        "first_five_truth_checked_s": 69.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.0089315397665122,
+        "p95_velocity_mps": 0.10606372494560579,
+        "max_time_error_s": 3.050075747523806e-09,
+        "gaps": 0
+      },
+      "aligned": {
+        "csv_sha256": "58db6f3a4615758d04e188c75dbc596674a4c832b35fc918e68c4ed60587c900",
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 480,
+        "first_valid_s": 69.2,
+        "first_five_truth_checked_s": 69.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.030500045853734,
+        "p95_velocity_mps": 0.06986848884594023,
+        "max_time_error_s": 3.050075747523806e-09,
+        "gaps": 0
+      },
+      "matching_status_and_satellites": 825
+    },
+    {
+      "altitude_km": 800,
+      "phase_deg": 211,
+      "eiq_sha256": "bf64df944288abc3bfdf6c702055f60419d75510d3398c5c787c3102a247ced5",
+      "previous": {
+        "csv_sha256": "d9d00eeba63e4504949aa93ff50343c71c140a5c1045643f1a3dc4166c7d98ef",
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 39.8,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.5749268558249951,
+        "p95_velocity_mps": 0.14776542121759487,
+        "max_time_error_s": 9.057117722477415e-09,
+        "gaps": 0
+      },
+      "aligned": {
+        "csv_sha256": "f241759a27da723f8d621cd54a8e65cd5dcba1f13ba2cd71d7cc3bb75d5e27cb",
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.574735567596977,
+        "p95_velocity_mps": 0.11347313668376852,
+        "max_time_error_s": 9.057117722477415e-09,
+        "gaps": 0
+      },
+      "matching_status_and_satellites": 825
+    },
+    {
+      "altitude_km": 475,
+      "phase_deg": 151,
+      "eiq_sha256": "2a36d58bdffde31e3e4109012c5c0fa58876970e2c4af659eab1b6e9963163aa",
+      "previous": {
+        "csv_sha256": "60962c222966a26b2415b7760bdb102880f6a49db137fb555f855c3aa7ee2bfe",
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 40.4,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 2.1163338643753904,
+        "p95_velocity_mps": 0.1378506427546385,
+        "max_time_error_s": 6.96163482416523e-09,
+        "gaps": 0
+      },
+      "aligned": {
+        "csv_sha256": "9a58de40e8666682fdd817b1996ccb636b518e4f79160f7d5b34058164f575d2",
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 2.1322981871356017,
+        "p95_velocity_mps": 0.1025943308897077,
+        "max_time_error_s": 6.96163482416523e-09,
+        "gaps": 0
+      },
+      "matching_status_and_satellites": 825
+    },
+    {
+      "altitude_km": 400,
+      "phase_deg": 281,
+      "eiq_sha256": "516f375789b621506a460126ce5268b80acb395d6c22c9e16a96f579ada277d8",
+      "previous": {
+        "csv_sha256": "0a4e7f52e265cdb2d1c71dae2742cdf74432d56d6c34b0e63b1380e197bb9fd4",
+        "passed": false,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 43.4,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 3.065888891629248,
+        "p95_velocity_mps": 0.21244618022072126,
+        "max_time_error_s": 8.05594169150936e-09,
+        "gaps": 0
+      },
+      "aligned": {
+        "csv_sha256": "b5113108e593671d0993e4797ce0a937cad2fdb6800ed348e759c02d69d9be28",
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 40.0,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 3.0189897146720597,
+        "p95_velocity_mps": 0.14545806978969233,
+        "max_time_error_s": 8.05594169150936e-09,
+        "gaps": 0
+      },
+      "matching_status_and_satellites": 825
+    }
+  ]
+}
