@@ -1,5 +1,7 @@
 # Receiver measurements
 
+The Pico kept 5 Hz while correcting the height of two real rooftop antennas. [Height against antenna references](height.md)
+
 [Real antenna recording on the Pico](real-sky.md) · [3D position error budget](position-error.md) · [Cold-search timing and accuracy](accuracy.md#time-from-cold-start) · [Independent ground and orbital replay](independent.md#cold-search-at-a-fixed-work-rate)
 
 ## Device-clocked replay on the Pico

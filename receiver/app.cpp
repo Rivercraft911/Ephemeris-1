@@ -245,9 +245,19 @@ void Receiver::navigate(uint64_t sample) {
 #endif
     std::array<nav::Observation, channels> obs{};
     size_t n = 0;
+    const nav::Ionosphere* ionosphere = nullptr;
+#ifdef EPHEMERIS_GROUND_IONOSPHERE
+    static constexpr nav::Ionosphere cold_model{};
+    ionosphere = &cold_model;
+#endif
     status_.valid_nav_mask = 0;
     for (unsigned i = 0; i < channels; ++i) {
         if (!prns_[i] || !results_[i].locked) continue;
+#ifdef EPHEMERIS_GROUND_IONOSPHERE
+        const auto& page = decoders_[i].ionosphere();
+        if (page.fresh(double(sample)) && page.received_sample > ionosphere->received_sample)
+            ionosphere = &page;
+#endif
         const auto* ephem = decoders_[i].ephemeris();
         if (ephem) cache_[prns_[i]-1] = *ephem;
         else if (decoders_[i].can_use_cached(cache_[prns_[i]-1])) ephem = &cache_[prns_[i]-1];
@@ -265,7 +275,7 @@ void Receiver::navigate(uint64_t sample) {
     const double receiver_tow = have_clock_ ?
         clock_tow_ + static_cast<double>(sample - clock_sample_) / sig::raw_hz :
         std::numeric_limits<double>::quiet_NaN();
-    nav::solve_fix(obs.data(), n, status_.fix, receiver_tow);
+    nav::solve_fix(obs.data(), n, status_.fix, receiver_tow, ionosphere);
 #ifdef EPHEMERIS_DOPPLER_POSITION
     position_smoother_.update(status_.fix, sample);
 #endif

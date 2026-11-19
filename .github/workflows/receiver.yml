@@ -29,7 +29,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install 'numpy>=1.26,<3' 'scipy>=1.11,<2'
-      - run: cmake -S . -B build/native -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DEPHEMERIS_SANITIZE=${{ matrix.sanitize }} -DEPHEMERIS_BITPLANE_TRACKING=${{ matrix.bitplane }} -DEPHEMERIS_PREFIX_SUMS=${{ matrix.prefix }} -DEPHEMERIS_COARSE_TRACKING=${{ matrix.coarse }} -DEPHEMERIS_GROUND_SEARCH=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_GROUND_TROPOSPHERE=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_DOPPLER_POSITION=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_FLIGHT_SURVEY=${{ matrix.survey || 'OFF' }} -DEPHEMERIS_VELOCITY_FIT=${{ matrix.ground || matrix.survey || 'OFF' }}
+      - run: cmake -S . -B build/native -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DEPHEMERIS_SANITIZE=${{ matrix.sanitize }} -DEPHEMERIS_BITPLANE_TRACKING=${{ matrix.bitplane }} -DEPHEMERIS_PREFIX_SUMS=${{ matrix.prefix }} -DEPHEMERIS_COARSE_TRACKING=${{ matrix.coarse }} -DEPHEMERIS_GROUND_SEARCH=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_GROUND_TROPOSPHERE=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_GROUND_IONOSPHERE=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_LONG_CODE_SMOOTHING=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_DOPPLER_POSITION=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_FLIGHT_SURVEY=${{ matrix.survey || 'OFF' }} -DEPHEMERIS_VELOCITY_FIT=${{ matrix.ground || matrix.survey || 'OFF' }}
       - run: cmake --build build/native --parallel 2
       - run: ctest --test-dir build/native --output-on-failure -j 2
       - if: github.event_name == 'schedule' && matrix.backend == 'scalar' && matrix.sanitize == 'OFF'
@@ -76,7 +76,7 @@ jobs:
           cmake --build build/pico-scalar --target ephemeris_pico ephemeris_profile --parallel 2
       - name: Build the outdoor receiver
         run: |
-          cmake -S firmware -B build/pico-ground -G Ninja -DPICO_SDK_PATH="$GITHUB_WORKSPACE/build/sdk" -DCMAKE_BUILD_TYPE=Release -DEPHEMERIS_GROUND_SEARCH=ON -DEPHEMERIS_GROUND_TROPOSPHERE=ON -DEPHEMERIS_DOPPLER_POSITION=ON
+          cmake -S firmware -B build/pico-ground -G Ninja -DPICO_SDK_PATH="$GITHUB_WORKSPACE/build/sdk" -DCMAKE_BUILD_TYPE=Release -DEPHEMERIS_GROUND_SEARCH=ON -DEPHEMERIS_GROUND_TROPOSPHERE=ON -DEPHEMERIS_GROUND_IONOSPHERE=ON -DEPHEMERIS_DOPPLER_POSITION=ON -DEPHEMERIS_VELOCITY_FIT=ON
           cmake --build build/pico-ground --target ephemeris_pico ephemeris_profile --parallel 2
       - name: Cross-build the experimental orbital search
         run: |

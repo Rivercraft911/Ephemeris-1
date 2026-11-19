@@ -1,0 +1,215 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 00b6855..5b03e36 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -3,6 +3,10 @@ project(ephemeris LANGUAGES C CXX)
+ add_library(ephemeris STATIC receiver/coarse.cpp receiver/bitplane.cpp receiver/signal.cpp receiver/navigation.cpp receiver/app.cpp)
+ target_include_directories(ephemeris PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+ target_compile_features(ephemeris PUBLIC cxx_std_17)
++option(EPHEMERIS_PAIRED_REPLAY "Capture simultaneous ionosphere A/B on the clocked replay bench" OFF)
++if(EPHEMERIS_PAIRED_REPLAY)
++  target_compile_definitions(ephemeris PUBLIC EPHEMERIS_PAIRED_REPLAY=1)
++endif()
+ option(EPHEMERIS_GROUND_SEARCH "Try terrestrial Doppler before the full cold search" OFF)
+ if(EPHEMERIS_GROUND_SEARCH)
+   target_compile_definitions(ephemeris PUBLIC EPHEMERIS_GROUND_SEARCH=1)
+diff --git a/firmware/clocked.cpp b/firmware/clocked.cpp
+index 67e0472..8ac5609 100644
+--- a/firmware/clocked.cpp
++++ b/firmware/clocked.cpp
+@@ -24,6 +24,34 @@ uint8_t __uninitialized_ram(input_ring)[ring_bytes];
+ alignas(32) uint32_t __uninitialized_ram(worker_stack)[4096];
+ alignas(4) uint32_t raw[sig::raw_per_ms / 8];
+ ephemeris::Receiver receiver;
++#ifdef EPHEMERIS_PAIRED_REPLAY
++#if !defined(EPHEMERIS_GROUND_IONOSPHERE) || !defined(EPHEMERIS_DOPPLER_POSITION) || !defined(EPHEMERIS_VELOCITY_FIT)
++#error Paired benchmark expects the terrestrial receiver with Doppler smoothing and velocity fit
++#endif
++// The alternate path consumes a frozen copy of the primary solver inputs.
++// Evaluate it on core 1 between navigation reports, at sample epoch +20 ms.
++struct PairedSolve {
++    std::array<eph::nav::Observation, ephemeris::Receiver::channels> obs{};
++    std::array<eph::nav::Ephemeris, ephemeris::Receiver::channels> eph{};
++    eph::nav::PositionSmoother position;
++    eph::nav::VelocityFit velocity;
++    ephemeris::Status status{};
++    double tow{};
++    int64_t page_sample{};
++    unsigned count{};
++    bool pending{};
++} paired;
++void snapshot(const eph::nav::Observation* obs, size_t n, double tow, const eph::nav::Ionosphere* iono) {
++    paired.tow = tow;
++    paired.count = static_cast<unsigned>(n);
++    paired.page_sample = iono ? static_cast<int64_t>(iono->received_sample) : -1;
++    for (unsigned i=0; i<n; ++i) {
++        paired.eph[i] = *obs[i].ephemeris;
++        paired.obs[i] = obs[i];
++        paired.obs[i].ephemeris = &paired.eph[i];
++    }
++}
++#endif
+ struct Line { char text[448]; unsigned length{}; };
+ Line lines[slot_count];
+ std::atomic<unsigned> received{}, consumed{}, queued{}, sent{};
+@@ -89,6 +117,27 @@ void emit(const ephemeris::Status& status, uint64_t now) {
+     line.text[line.length - 1] = '\n';
+     queued.store(w + 1, std::memory_order_release);
+ }
++#ifdef EPHEMERIS_PAIRED_REPLAY
++void alternate() {
++    if (!paired.pending) return;
++    const auto begin = time_us_64();
++    auto& s = paired.status;
++    eph::nav::solve_fix(paired.obs.data(), paired.count, s.fix, paired.tow, nullptr);
++    paired.position.update(s.fix,s.sample);
++    paired.velocity.update(s.fix,s.sample);
++    const auto us = time_us_64() - begin;
++    paired.pending = false;
++    const auto w = queued.load(std::memory_order_relaxed);
++    if (w - sent.load(std::memory_order_acquire) == slot_count) { ++dropped_status; return; }
++    auto& line = lines[w % slot_count];
++    const int prefix = std::snprintf(line.text,sizeof(line.text),"# %" PRIu64 " %" PRId64 " ",us,paired.page_sample);
++    const int length = ephemeris::format_status(line.text+prefix,sizeof(line.text)-prefix,s);
++    if (length<0 || prefix+length+1>=int(sizeof(line.text))) { ++dropped_status; return; }
++    line.length = prefix+length+1;
++    line.text[line.length-1] = '\n';
++    queued.store(w+1,std::memory_order_release);
++}
++#endif
+ void process() {
+     while (!started.load(std::memory_order_acquire)) tight_loop_contents();
+     for (; processed < epochs; ++processed) {
+@@ -102,11 +151,24 @@ void process() {
+         expand(input_ring + offset % ring_bytes);
+         consumed.store(offset + epoch_bytes, std::memory_order_release);
+         receiver.process(reinterpret_cast<const uint8_t*>(raw), uint64_t(processed)*sig::raw_per_ms, false);
++#ifdef EPHEMERIS_PAIRED_REPLAY
++        if ((processed+1)%200 == 20) alternate();
++#endif
+         const auto end = time_us_64();
+         max_late_us = std::max(max_late_us, uint32_t(end - deadline));
+-        if ((processed + 1) % 200 == 0) emit(receiver.status(), end);
++        if ((processed + 1) % 200 == 0) {
++            emit(receiver.status(), end);
++#ifdef EPHEMERIS_PAIRED_REPLAY
++            paired.status = receiver.status();
++            paired.pending = true;
++#endif
++        }
+     }
+     elapsed_us = time_us_64() - start_us;
++#ifdef EPHEMERIS_PAIRED_REPLAY
++    // Flush even when the recording ends exactly on its last navigation report.
++    alternate();
++#endif
+     done.store(true, std::memory_order_release);
+     for (;;) tight_loop_contents();
+ }
+@@ -157,6 +219,9 @@ void run(uint32_t expected_crc) {
+ }
+ int main() {
+     usb::init();
++#ifdef EPHEMERIS_PAIRED_REPLAY
++    receiver.replay_observations = snapshot;
++#endif
+     board::install_tracking_irq(receiver);
+     multicore_launch_core1_with_stack(process, worker_stack, sizeof(worker_stack));
+     bool used = false;
+diff --git a/firmware/clocked_replay.py b/firmware/clocked_replay.py
+index 0ef5be1..065f8fd 100644
+--- a/firmware/clocked_replay.py
++++ b/firmware/clocked_replay.py
+@@ -116,7 +116,7 @@ def inspect_payload(source):
+     return epochs, crc, digest.hexdigest()
+
+
+-def run(port, source, out):
++def run(port, source, out, alternate=None):
+     epochs, crc, sha = inspect_payload(source)
+     port.reset_input_buffer()
+     send(port, f"clocked {epochs} {crc:08x}\n".encode("ascii"))
+@@ -152,6 +152,12 @@ def run(port, source, out):
+                 raise errors[0]
+             line = read_line(port)
+             host_offset = time.monotonic() - started
++            if line.startswith("# "):
++                if alternate is None:
++                    raise ValueError("alternate output file required for paired image")
++                _, solve_us, page_sample, values = line.split(" ",3)
++                alternate.write(f"{values},{int(solve_us)},{int(page_sample)}\n")
++                continue
+             if line.startswith("PASS "):
+                 break
+             if not line.startswith("S "):
+@@ -224,12 +230,32 @@ def run_files(args):
+
+     metrics = args.metrics or args.output.with_suffix(".json")
+     partial = args.output.with_name(args.output.name + ".partial")
++    alternate = args.paired
++    alternate_partial = alternate.with_name(alternate.name + ".partial") if alternate else None
+     paths = [args.input, args.output, metrics, partial]
++    if alternate:
++        paths.extend((alternate, alternate_partial))
+     if len({p.resolve() for p in paths}) != len(paths) or any(p.exists() for p in paths[1:]):
+         raise ValueError("use distinct new output, partial and metrics paths")
+     with (args.input.open("rb") as source, serial.Serial(args.port, 115200, timeout=8, write_timeout=8) as port,
+           partial.open("x", newline="") as out):
+-        result = run(port, source, out)
++        if alternate:
++            with alternate_partial.open("x", newline="") as alt:
++                alt.write(FIELDS + ",solve_us,page_sample\n")
++                result = run(port, source, out, alt)
++        else:
++            result = run(port, source, out)
++    if alternate:
++        with alternate_partial.open() as alt, partial.open() as primary:
++            pairs = 0
++            for a, b in zip(csv.DictReader(alt), csv.DictReader(primary), strict=True):
++                fields = ("sample", "sequence", "gaps", "nav_mask", "active_mask", "locked_mask")
++                if any(a[k] != b[k] for k in fields):
++                    raise ValueError("alternate observation mismatch")
++                pairs += 1
++            if pairs != result["status_rows"]:
++                raise ValueError("missing paired observations")
++        alternate_partial.rename(alternate)
+     metrics.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n")
+     partial.rename(args.output)
+     print(json.dumps(result, allow_nan=False))
+@@ -247,6 +273,7 @@ if __name__ == "__main__":
+     device.add_argument("input", type=Path)
+     device.add_argument("output", type=Path, help="new 5 Hz receiver CSV")
+     device.add_argument("--metrics", type=Path, help="timing JSON (default: output with .json suffix)")
++    device.add_argument("--paired", type=Path, help="alternate PVT CSV from a paired replay image")
+     args = cli.parse_args()
+     try:
+         if args.mode == "run":
+diff --git a/receiver/app.cpp b/receiver/app.cpp
+index c3cc12a..de825d0 100644
+--- a/receiver/app.cpp
++++ b/receiver/app.cpp
+@@ -275,6 +275,9 @@ void Receiver::navigate(uint64_t sample) {
+     const double receiver_tow = have_clock_ ?
+         clock_tow_ + static_cast<double>(sample - clock_sample_) / sig::raw_hz :
+         std::numeric_limits<double>::quiet_NaN();
++#ifdef EPHEMERIS_PAIRED_REPLAY
++    if (replay_observations) replay_observations(obs.data(), n, receiver_tow, ionosphere);
++#endif
+     nav::solve_fix(obs.data(), n, status_.fix, receiver_tow, ionosphere);
+ #ifdef EPHEMERIS_DOPPLER_POSITION
+     position_smoother_.update(status_.fix, sample);
+diff --git a/receiver/app.hpp b/receiver/app.hpp
+index e30543b..ce0f0dc 100644
+--- a/receiver/app.hpp
++++ b/receiver/app.hpp
+@@ -40,6 +40,10 @@ public:
+     // Install before processing begins. The notification must arrange exactly
+     // one worker to run work_tracking(); wait may sleep until it completes.
+     using WorkerHook = void (*)(void*);
++#ifdef EPHEMERIS_PAIRED_REPLAY
++    using ObservationHook = void (*)(const eph::nav::Observation*, size_t, double, const eph::nav::Ionosphere*);
++    ObservationHook replay_observations = nullptr;
++#endif
+     void set_tracking_worker(WorkerHook notify, WorkerHook wait, void* context);
+     bool work_tracking();
+     void save_warm(WarmState& out) const; // capture owner only
