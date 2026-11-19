@@ -36,6 +36,8 @@ The Pico also replayed the 550 km simulated orbit for 165 s. It produced its fir
 
 We also tried a running mean of the original Pico positions with the antenna explicitly assumed stationary. Over the final 111 time-matched fixes it raised p95 3D separation from 11.46 to 13.94 m. The mean retained the higher early height estimates. The receiver continues to report a moving-capable position.
 
+[Height error against two antenna references](height.md)
+
 ## Reproduce the replay
 
 Download the archive from the publisher and check its SHA-256 before unpacking. [Original CTTC archive and checksum](https://sourceforge.net/projects/gnss-sdr/files/data/2013_04_04_GNSS_SIGNAL_at_CTTC_SPAIN.tar.gz/download)

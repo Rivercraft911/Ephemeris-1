@@ -379,6 +379,33 @@ def doppler_figure(manifest, destination):
     plt.close(fig)
 
 
+def antenna_height_figure(manifest, destination):
+    from compare_ground import rows
+    from score_antenna import fix_errors
+    from iqio import RATE
+
+    data = json.loads(manifest.read_text())
+    fig, axes = plt.subplots(1, 2, sharey=True, figsize=(8.3, 3.2), layout="constrained")
+    for ax, key in zip(axes, ("t24", "fgi")):
+        site = data["recordings"][key]
+        antenna = np.array(site["ecef_m"])
+        paired = site["single_pass"]
+        for run, label, color in (("uncorrected_file", "Without ionosphere correction", PALETTE[1]),
+                                  ("corrected_file", "With ionosphere correction", PALETTE[0])):
+            status = rows(manifest.parent / paired[run])
+            fixes = fix_errors(status, antenna)
+            times = [int(r["sample"]) for r in status]
+            height = [fixes[k][2] if k in fixes else np.nan for k in times]
+            ax.plot(np.array(times) / RATE, height, lw=1.25, color=color, label=label)
+        ax.axhline(0, color="#aaaaaa", ls=":", lw=1)
+        ax.grid(axis="y", alpha=.22)
+        ax.set(title=site["label"], xlabel="Recording time (s)")
+    axes[0].set_ylabel("Height above antenna reference (m)")
+    fig.legend(*axes[0].get_legend_handles_labels(), loc="outside lower center", ncol=2, frameon=False)
+    fig.savefig(destination / "antenna-height.png", dpi=180)
+    plt.close(fig)
+
+
 def position_error_figure(budget, controls, destination):
     orbits = budget["orbits"]
     paired = {r["input_sha256"]: r for r in controls["orbits"]}
@@ -455,6 +482,9 @@ if __name__ == "__main__":
     doppler = a.results.with_name("doppler-windows.json")
     if doppler.exists():
         doppler_figure(doppler, a.out)
+    antenna = a.results.with_name("antenna-height.json")
+    if antenna.exists():
+        antenna_height_figure(antenna, a.out)
     survey = a.results.with_name("flight-survey.json")
     if survey.exists():
         flight_search_figure(json.loads(survey.read_text()), a.out)
