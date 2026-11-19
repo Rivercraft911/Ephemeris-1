@@ -116,7 +116,7 @@ def compare_native(executable, channels, raw, summary, observed):
     print(f"All {channels} final tracking epochs matched the native receiver tolerances.")
 
 
-def profile(port, channels, external, reference=None, offline=False):
+def profile(port, channels, external, reference=None, offline=False, pvt_load=False):
     # All code epochs repeat in exactly 1 ms at zero Doppler. Seed phase agrees
     # with the waveform generator at its first raw sample. Live builds have no seed command.
     from vectors import waveform
@@ -125,7 +125,10 @@ def profile(port, channels, external, reference=None, offline=False):
     if len(raw) != BYTES_MS:
         raise ValueError("bad replay vector length")
     port.reset_input_buffer()
-    mode = "offline" if offline else "external" if external else "profile"
+    if pvt_load:
+        mode = "load-ext" if external else "load"
+    else:
+        mode = "offline" if offline else "external" if external else "profile"
     port.write(f"{mode} {channels}\n".encode())
     ready = port.readline().strip()
     if ready != b"READY 8184":
@@ -170,6 +173,7 @@ if __name__ == "__main__":
     cadence = prof.add_mutually_exclusive_group()
     cadence.add_argument("--external", action="store_true", help="use an independently clocked fixture on GP6")
     cadence.add_argument("--offline", action="store_true", help="measure lossless compute cost without real-time pacing")
+    prof.add_argument("--pvt-load", action="store_true", help="add five truth-checked six-SV navigation solves under live DMA")
     prof.add_argument("--reference", type=Path, help="native eph-replay executable for numerical comparison")
     sub.add_parser("pvt", help="time the six-satellite navigation solver against an independent reference")
     sub.add_parser("clocktest", help="use the profile image to verify recovered high/low clock pauses")
@@ -178,12 +182,14 @@ if __name__ == "__main__":
     args = cli.parse_args()
     if args.action == "continuity" and not 1 <= args.seconds <= 600:
         cli.error("use a continuity duration between 1 and 600 seconds")
+    if args.action == "profile" and args.offline and args.pvt_load:
+        cli.error("--pvt-load requires a live sample clock")
     import serial  # pyserial is only required for the physical bench
     try:
         with serial.Serial(args.port, 115200, timeout=130 if getattr(args, "offline", False) else 9,
                            write_timeout=2) as device:
             if args.action == "profile":
-                profile(device, args.channels, args.external, args.reference, args.offline)
+                profile(device, args.channels, args.external, args.reference, args.offline, args.pvt_load)
             elif args.action == "pvt":
                 device.reset_input_buffer()
                 device.write(b"pvt\n")

@@ -231,4 +231,8 @@ bool Stream::read(uint32_t* out, uint64_t& first_sample, bool& gap) {
     ++stats_.blocks;
     return true;
 }
+uint32_t Stream::backlog_bytes() {
+    if (!update()) return 0;
+    return uint32_t(std::min<uint64_t>((produced_-consumed_)*4, UINT32_MAX));
+}
 }

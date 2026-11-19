@@ -24,7 +24,8 @@ alignas(4) uint32_t input[board::words_per_ms], replay[board::words_per_ms];
 std::atomic<uint32_t> work_count{0};
 std::atomic<bool> suspend_search{false}, search_idle{false};
 constexpr unsigned epoch_target = 1000;
-uint32_t durations[epoch_target];
+constexpr unsigned recovery_limit = 50;
+uint32_t durations[epoch_target + recovery_limit];
 
 void reply(const char* line) {
     const size_t length = std::strlen(line);
@@ -83,33 +84,49 @@ void check_clock_faults() {
                   good[0] && good[1] ? "PASS" : "FAIL", unsigned(good[0]), unsigned(good[1]));
     reply(line);
 }
-void check_fix_timing() {
-    std::array<eph::nav::Ephemeris,6> eph{};
-    std::array<eph::nav::Observation,6> obs{};
-    eph::fixture::rollover_observations(eph, obs);
+struct FixBench {
+    std::array<eph::nav::Ephemeris,6> eph;
+    std::array<eph::nav::Observation,6> obs;
     eph::nav::Fix f;
-    constexpr unsigned repeats = 20;
-    uint32_t total = 0, worst = 0;
-    bool valid = true;
-    for (unsigned i = 0; i < repeats; ++i) {
+    unsigned count{}, good{}, total{}, worst{};
+    double max_position_sq{}, max_velocity_sq{};
+
+    void reset() {
+        *this = {};
+        eph::fixture::rollover_observations(eph, obs);
+    }
+    void solve() {
         const auto start = time_us_32();
-        valid &= eph::nav::solve_fix(obs.data(), obs.size(), f, .0021);
+        const bool solved = eph::nav::solve_fix(obs.data(), obs.size(), f, .0021);
         const auto us = time_us_32()-start;
         total += us;
-        worst = std::max(worst,us);
+        worst = std::max(worst, unsigned(us));
+        double dp2 = 0, dv2 = 0;
+        for (unsigned i = 0; i < 3; ++i) {
+            const auto dp = f.position_m[i]-(eph::fixture::at_zero[i]+.002*eph::fixture::velocity[i]);
+            const auto dv = f.velocity_mps[i]-eph::fixture::velocity[i];
+            dp2 += dp*dp;
+            dv2 += dv*dv;
+        }
+        max_position_sq = std::max(max_position_sq, dp2);
+        max_velocity_sq = std::max(max_velocity_sq, dv2);
+        good += solved && f.valid && f.satellites == 6 && f.week_mod1024 == 303 &&
+                std::abs(f.tow_s-.002) < 1e-9 && dp2 < .04 && dv2 < .000016;
+        ++count;
+    }
+} fix_bench;
+
+void check_fix_timing() {
+    constexpr unsigned repeats = 20;
+    fix_bench.reset();
+    for (unsigned i = 0; i < repeats; ++i) {
+        fix_bench.solve();
         usb::poll();
     }
-    double dp2 = 0, dv2 = 0;
-    for (unsigned i = 0; i < 3; ++i) {
-        const auto dp = f.position_m[i]-(eph::fixture::at_zero[i]+.002*eph::fixture::velocity[i]);
-        const auto dv = f.velocity_mps[i]-eph::fixture::velocity[i];
-        dp2 += dp*dp;
-        dv2 += dv*dv;
-    }
-    valid &= f.valid && f.week_mod1024==303 && std::abs(f.tow_s-.002)<1e-9 && dp2<.04 && dv2<.000016;
     char line[160];
     std::snprintf(line,sizeof(line),"%s sv=6 repeats=%u mean_us=%u max_us=%u position_m=%.5f velocity_mps=%.6f\n",
-                  valid ? "PASS" : "FAIL",repeats,total/repeats,worst,std::sqrt(dp2),std::sqrt(dv2));
+                  fix_bench.good == repeats ? "PASS" : "FAIL", repeats, fix_bench.total/repeats, fix_bench.worst,
+                  std::sqrt(fix_bench.max_position_sq), std::sqrt(fix_bench.max_velocity_sq));
     reply(line);
 }
 void check_continuity(unsigned seconds) {
@@ -189,7 +206,7 @@ bool measure_kernels(unsigned& prepare_us, unsigned& tracker_us) {
 }
 
 enum class Mode { internal, external, offline };
-void profile(unsigned channels, Mode mode) {
+void profile(unsigned channels, Mode mode, bool pvt_load = false) {
     reply("READY 8184\n");
     size_t read = 0;
     uint64_t start = time_us_64();
@@ -205,10 +222,13 @@ void profile(unsigned channels, Mode mode) {
     unsigned prepare_us = 0, tracker_us = 0, full_epochs = 0;
     bool kernel_locked = false;
     uint64_t total_us = 0;
+    unsigned recoveries = 0, recovery_start = 0, recovery_max = 0, retained = 0, gaps = 0;
+    unsigned combined_max = 0, peak_backlog = 0, final_backlog = 0;
     uint32_t expected_mask = (1u << channels) - 1, locked_at_end = 0, full_lock_epochs = 0;
     constexpr uint64_t first_epoch = 0;
     unsigned n = 1;  // Epoch zero initializes the receiver before the DMA cadence starts.
     stream.stop();
+    if (pvt_load) fix_bench.reset();
     suspend_search.store(offline, std::memory_order_release);
     if (offline) {
         while (!search_idle.load(std::memory_order_acquire)) tight_loop_contents();
@@ -232,14 +252,31 @@ void profile(unsigned channels, Mode mode) {
     if (!offline) stream.start_at(mode == Mode::external ? board::clock_pin : internal_clock,
                                  first_epoch + board::samples_per_ms);
     start = time_us_64();
-    while (n < epoch_target && time_us_64() - start < (offline ? 120000000u : 6000000u)) {
+    const unsigned limit = epoch_target + (pvt_load ? recovery_limit : 0);
+    while (n < limit && time_us_64() - start < (offline ? 120000000u : 6000000u)) {
         usb::poll();
         uint64_t first = uint64_t(n) * board::samples_per_ms;
         bool gap = false;
         if (!offline && !stream.read(input, first, gap)) continue;
+        gaps += gap || first != first_epoch + uint64_t(n)*board::samples_per_ms;
         uint64_t tick = time_us_64();
         receiver.process(reinterpret_cast<const uint8_t*>(replay), first, gap);
         uint32_t us = time_us_64() - tick;
+        if (pvt_load) {
+            if (n < epoch_target && (n+1)%200 == 0) {
+                fix_bench.solve();
+                recovery_start = n;
+            }
+            if (fix_bench.count && fix_bench.f.valid) ++retained;
+            combined_max = std::max(combined_max, unsigned(time_us_64()-tick));
+            final_backlog = stream.backlog_bytes();
+            peak_backlog = std::max(peak_backlog, final_backlog);
+            if (recovery_start && final_backlog < sizeof(input)) {
+                ++recoveries;
+                recovery_max = std::max(recovery_max, n-recovery_start);
+                recovery_start = 0;
+            }
+        }
         if (n >= hot_start) { durations[full_epochs++] = us; total_us += us; }
         worst = std::max(worst, us);
         uint32_t active = 0, locked = 0;
@@ -254,30 +291,44 @@ void profile(unsigned channels, Mode mode) {
         locked_at_end = locked;
         if (n >= hot_start && locked == expected_mask) ++full_lock_epochs;
         ++n;
+        if (pvt_load && n >= epoch_target && recoveries == 5) break;
     }
     const auto& after = stream.stats();
+    if (!offline) stream.stop();
     uint64_t lost = after.missed_blocks - before.missed_blocks;
     uint32_t stalls = after.fifo_stalls - before.fifo_stalls;
     uint32_t timeouts = after.clock_timeouts - before.clock_timeouts;
     uint32_t work = work_count.load() - work_start;
     std::sort(durations, durations + full_epochs);
     const unsigned p95 = full_epochs ? durations[(95*full_epochs+99)/100-1] : 0;
-    bool passed = n == epoch_target && (offline ? kernel_locked : (!lost && !stalls && !timeouts && worst < 1000))
+    const bool pvt_pass = fix_bench.count == 5 && fix_bench.good == 5 && recoveries == 5 &&
+                          final_backlog < sizeof(input) && retained == n - 199;
+    bool passed = n >= epoch_target && (offline ? kernel_locked : (!lost && !stalls && !timeouts && !gaps &&
+                                               (pvt_load ? pvt_pass : worst < 1000)))
                && locked_at_end == expected_mask && maximum_active == channels
-               && full_lock_epochs == epoch_target - hot_start
+               && full_lock_epochs == n - hot_start
                && (offline || channels == receiver.channels || work > 0);
-    char line[512];
-    std::snprintf(line, sizeof(line),
+    static char line[1024];
+    const int used = std::snprintf(line, sizeof(line)-1,
         "%s clock=%s channels=%u epochs=%u first=%llu max_us=%u p95_us=%u steady_mean_us=%u missed=%llu "
         "stalls=%u clock_timeouts=%u max_active=%u locked_mask=%u full_lock_epochs=%u work_steps=%u "
         "isolated_prepare_mean_us=%u isolated_tracker_mean_us=%u isolated_locked=%u sys_hz=%u "
-        "tracking_cores=%u core0_stack_untouched_bytes=%d\n",
+        "tracking_cores=%u core0_stack_untouched_bytes=%d",
         passed ? "PASS" : "FAIL", offline ? "offline" : mode == Mode::external ? "external" : "internal",
         channels, n, (unsigned long long)first_epoch, unsigned(worst), p95,
         full_epochs ? unsigned(total_us/full_epochs) : 0, (unsigned long long)lost, unsigned(stalls),
         unsigned(timeouts), unsigned(maximum_active), unsigned(locked_at_end), unsigned(full_lock_epochs),
         unsigned(work), prepare_us, tracker_us, unsigned(kernel_locked), unsigned(clock_get_hz(clk_sys)),
         board::tracking_cores, board::core0_stack_untouched());
+    if (pvt_load && used >= 0 && size_t(used) < sizeof(line)-1)
+        std::snprintf(line+used, sizeof(line)-1-used,
+        " pvt_load=1 fixture_fixes=%u fixture_valid=%u fixture_retained_epochs=%u fixture_pvt_mean_us=%u "
+        "fixture_pvt_max_us=%u combined_max_us=%u recovery_count=%u recovery_max_epochs=%u "
+        "peak_backlog_bytes=%u final_backlog_bytes=%u capture_gaps=%u max_position_m=%.5f max_velocity_mps=%.6f",
+        fix_bench.count, fix_bench.good, retained, fix_bench.count ? fix_bench.total/fix_bench.count : 0,
+        fix_bench.worst, combined_max, recoveries, recovery_max, peak_backlog, final_backlog, gaps,
+        std::sqrt(fix_bench.max_position_sq), std::sqrt(fix_bench.max_velocity_sq));
+    std::strcat(line,"\n");
     reply(line);
     for (unsigned i = 0; i < receiver.channels; ++i) {
         const auto& result = receiver.channel(i);
@@ -316,6 +367,10 @@ void bench_worker() {
             if (!std::strcmp(cmd, expected)) { profile(channels, Mode::external); break; }
             std::snprintf(expected, sizeof(expected), "offline %u", channels);
             if (!std::strcmp(cmd, expected)) { profile(channels, Mode::offline); break; }
+            std::snprintf(expected, sizeof(expected), "load %u", channels);
+            if (!std::strcmp(cmd, expected)) { profile(channels, Mode::internal, true); break; }
+            std::snprintf(expected, sizeof(expected), "load-ext %u", channels);
+            if (!std::strcmp(cmd, expected)) { profile(channels, Mode::external, true); break; }
             if (channels == 8) reply("ERR expected profile, external or offline, followed by 1, 4, 6 or 8\n");
         }
     }

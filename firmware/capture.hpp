@@ -34,6 +34,7 @@ public:
     void start_at(unsigned clock_pin, uint64_t first_sample);
     bool read(uint32_t* words, uint64_t& first_sample, bool& gap);
     const Statistics& stats() const { return stats_; }
+    uint32_t backlog_bytes();
     bool clock_alive() const { return clock_alive_; }
 private:
     Lane lane_;
