@@ -351,6 +351,34 @@ def clocked_position_figure(manifest, destination):
     plt.close(fig)
 
 
+def doppler_figure(manifest, destination):
+    from campaign import FS
+
+    data = json.loads(manifest.read_text())
+    fig, (ground, orbit) = plt.subplots(1, 2, figsize=(8.4, 3.2), layout="constrained")
+    arcs = data["native_orbits"]
+    for key, label, color, marker in (("previous", "Per-channel windows", PALETTE[1], "o"),
+                                       ("aligned", "Common windows", PALETTE[0], "s")):
+        file = manifest.parent / data["cttc_pico"][key]["status_file"]
+        rows = np.genfromtxt(file, delimiter=",", names=True)
+        fixes = rows[rows["valid"] == 1]
+        speed = np.linalg.norm(np.column_stack([fixes[c] for c in ("vx_mps", "vy_mps", "vz_mps")]), axis=1)
+        ground.scatter(fixes["sample"] / FS, speed, s=7, color=color, marker=marker, linewidths=0)
+        orbit.scatter([arc[key]["p95_velocity_mps"] for arc in arcs], np.arange(len(arcs)),
+                      s=29, color=color, label=label, marker=marker)
+    ground.set(title="Rooftop recording · Pico", xlabel="Recording time (s)",
+               ylabel="Apparent antenna speed (m/s)", yscale="log")
+    orbit.set(title="Five simulated orbits · native replay", xlabel="3D velocity error, p95 (m/s)",
+              yticks=np.arange(len(arcs)), yticklabels=[f"{a['altitude_km']} km · {a['phase_deg']}°" for a in arcs])
+    orbit.axvline(0.2, ls=":", color="#bbbbbb", lw=1)
+    orbit.invert_yaxis()
+    ground.grid(axis="y", alpha=0.35)
+    orbit.grid(axis="x", alpha=0.35)
+    fig.legend(*orbit.get_legend_handles_labels(), loc="outside lower center", frameon=False, ncol=2)
+    fig.savefig(destination / "doppler-windows.png", dpi=180)
+    plt.close(fig)
+
+
 def position_error_figure(budget, controls, destination):
     orbits = budget["orbits"]
     paired = {r["input_sha256"]: r for r in controls["orbits"]}
@@ -424,6 +452,9 @@ if __name__ == "__main__":
     clocked = a.results.with_name("pico-clocked.json")
     if clocked.exists():
         clocked_position_figure(clocked, a.out)
+    doppler = a.results.with_name("doppler-windows.json")
+    if doppler.exists():
+        doppler_figure(doppler, a.out)
     survey = a.results.with_name("flight-survey.json")
     if survey.exists():
         flight_search_figure(json.loads(survey.read_text()), a.out)

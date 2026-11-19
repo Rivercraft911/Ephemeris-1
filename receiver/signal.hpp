@@ -123,6 +123,9 @@ struct TrackingResult {
 
 class Tracker {
 public:
+    // Set once per contiguous input segment, before its first update.
+    // Standalone tracking defaults to a report grid beginning at sample zero.
+    void set_report_origin(std::uint64_t sample);
     bool start(const Detection& detection);
     TrackingResult update(const Epoch& epoch);
 #ifdef EPHEMERIS_COARSE_TRACKING
@@ -153,10 +156,11 @@ private:
     std::uint32_t carrier_phase_{}, carrier_step_{}, code_phase_{}, code_step_{};
     std::int32_t ei_{}, eq_{}, pi_{}, pq_{}, li_{}, lq_{}, energy_{};
     IQf previous_{};
-    unsigned integrated_{}, averaging_count_{}, good_phases_{}, mean_count_{}, smooth_count_{};
+    unsigned integrated_{}, good_phases_{}, mean_count_{}, smooth_count_{};
     double local_turns_{}, smooth_boundary_{}, phase_sum_{}, time_sum_{};
     std::array<PhaseMean, 3> means_{};
-    double fit_sample_{}, fit_hz_{}, fit_hz_per_s_{};
-    bool fit_valid_{};
+    double fit_sample_{}, fit_hz_{}, fit_hz_per_s_{}, phase_window_end_{};
+    bool fit_valid_{}, phase_window_full_{};
+    unsigned report_phase_{};
 };
 } // namespace eph::signal

@@ -4,6 +4,8 @@ CTTC recorded 100 seconds of GPS L1 in Castelldefels, Spain, on April 4, 2013. T
 
 The 150 MHz Pico Plus 2 returned its first position at **41.274846° N, 1.987684° E, 81.69 m WGS 84 ellipsoid height**. The laptop received it 55.24 s after the USB handshake. The Pico used five satellites for that fix and decoded PRNs 1, 11, 17, 20, 23 and 32 during the recording.
 
+The six channels filled the first six tracking slots in that order. Core 1 correlated PRNs 1, 17 and 23. Core 0 correlated PRNs 11, 20 and 32 between acquisition work. [Work on the two Pico cores](receiver.md#work-on-the-two-pico-cores)
+
 | Pico measurement | Result |
 | --- | ---: |
 | First satellite lock / four locks, laptop clock | 1.44 s / 26.64 s |
@@ -19,6 +21,20 @@ GNSS-SDR 0.0.19 independently processed the original 4 MS/s recording. Of the Pi
 ![Horizontal, vertical and 3D separation between simultaneous Pico and GNSS-SDR fixes](measurements/cttc/separation.png)
 
 The capture notes identify a NovAtel GPS-600 on the CTTC roof. Their approximate coordinates disagree with the archived GNSS-SDR track and both fresh solutions. We have no surveyed antenna position for this recording, so these figures measure agreement between receivers. [CTTC site](https://www.cttc.cat/contact/) · [Original recording](https://gnss-sdr.org/my-first-fix/)
+
+## Doppler on a stationary antenna
+
+In the first Pico replay above, the stationary antenna’s apparent speed was 1.53 m/s at the 95th percentile. Each tracking channel used to start its Doppler averaging window when it acquired a satellite. The six channels therefore sampled a changing receiver oscillator over different intervals. Their shared frequency error could appear as a difference between satellites and enter the velocity solve.
+
+The receiver now collects carrier phase over common 200 ms intervals and estimates Doppler at the navigation epoch. On the **same Pico and recorded samples**, apparent speed fell to **0.038 m/s at p95**. Both builds returned their first position at 55.2 s and produced 225 consecutive fixes at 5 Hz. The new build used five to six satellites. Its p95 horizontal separation from GNSS-SDR was **5.74 m**, and its p95 3D separation was **14.12 m**, compared with 5.80 m and 13.94 m on the first build. This change improves velocity. Height remains the larger source of positional disagreement. [Tracking implementation](../../receiver/signal.cpp) · [Hardware status, hashes and orbital controls](measurements/doppler-windows.json)
+
+![Measured stationary antenna speed before and after aligning Doppler windows, and velocity errors in five simulated orbital arcs](measurements/doppler-windows.png)
+
+Both native builds used identical lock masks, navigation masks and satellite counts on every report of the five orbital arcs. Velocity error improved on all five. On the 400 km, 103° arc it dropped from 0.231 to 0.169 m/s at p95, with a position error of 2.64 m in both runs. An independent regression test feeds a common frequency variation into two trackers that acquire at different times, then restarts one tracker and checks their differential Doppler again. [Regression test](../../tests/signal_test.cpp)
+
+The Pico also replayed the 550 km simulated orbit for 165 s. It produced its first position at 87.2 s and delivered 390 consecutive fixes. Against the simulated trajectory, the new build had a p95 3D position error of 1.22 m and a p95 3D velocity error of 0.111 m/s. Background acquisition admitted different satellites in the two hardware runs. On the 60 fixes with matching times, satellite counts and navigation masks, p95 velocity error fell from 0.360 to 0.254 m/s. [Pico orbital status](measurements/clocked/orbit_165_aligned.csv.gz) · [Paired scores](measurements/doppler-windows.json)
+
+We also tried a running mean of the original Pico positions with the antenna explicitly assumed stationary. Over the final 111 time-matched fixes it raised p95 3D separation from 11.46 to 13.94 m. The mean retained the higher early height estimates. The receiver continues to report a moving-capable position.
 
 ## Reproduce the replay
 
@@ -51,7 +67,7 @@ Score the archived Pico fixes against the independent receiver, or substitute th
 
 ```sh
 data=docs/software/measurements/cttc
-python3 tools/compare_ground.py "$data/pico.csv.gz" "$data/gnss-sdr.csv.gz" --plot build/cttc/separation.png
+python3 tools/compare_ground.py "$data/pico-aligned.csv.gz" "$data/gnss-sdr.csv.gz" --plot build/cttc/separation.png
 ```
 
 GNSS-SDR used the archive date to select GPS week 1734. Ephemeris decoded week 710 modulo 1024. For the comparison, each published GNSS-SDR GPX epoch was matched to its double-precision ECEF position in the RTKLIB binary log. We subtracted the fitted receiver clock offset from its receive time, then interpolated the reference position at each Pico fix time. The scorer excludes times outside the reference and gaps longer than 0.15 s.

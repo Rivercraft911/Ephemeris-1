@@ -19,6 +19,12 @@ constexpr double bin_hz = acq_length * 1000.0 / fft_length;
 constexpr std::uint32_t chip_unit = 1u << 22;
 constexpr std::uint32_t code_period = code_length * chip_unit;
 constexpr double turns32 = 4294967296.0;
+// All channels estimate carrier frequency over the same receiver-clock windows.
+// Close a window 20 ms before the 5 Hz report so every channel has supplied
+// its last complete C/A period before the solver uses the fit.
+constexpr unsigned phase_window_ms = 200;
+constexpr unsigned phase_window_samples = phase_window_ms * raw_per_ms;
+constexpr unsigned phase_lead_samples = 20 * raw_per_ms;
 // Equalized noncoherent means for 1..4 dwells. Each threshold is for a
 // whole PRN search; acceptance also needs independent fresh code/carrier tests.
 constexpr float acq_threshold[] = {0,13.0f,8.8f,6.9f,5.8f};
@@ -497,11 +503,15 @@ bool Tracker::start(const Detection& detection) {
     carrier_step_ = phase_step(doppler_);
     carrier_phase_ = 0;
     ei_=eq_=pi_=pq_=li_=lq_=energy_=0;
-    integrated_ = averaging_count_ = good_phases_ = mean_count_ = smooth_count_ = 0;
+    integrated_ = good_phases_ = mean_count_ = smooth_count_ = 0;
     local_turns_ = time_sum_ = phase_sum_ = 0;
-    fit_valid_ = false;
+    fit_valid_ = phase_window_full_ = false;
     active_ = true;
     return true;
+}
+
+void Tracker::set_report_origin(std::uint64_t sample) {
+    report_phase_ = static_cast<unsigned>(sample % phase_window_samples);
 }
 
 void Tracker::initialize_phase(std::uint64_t sample) {
@@ -510,6 +520,9 @@ void Tracker::initialize_phase(std::uint64_t sample) {
     code_phase_ = static_cast<std::uint32_t>(phase*chip_unit);
     code_step_ = static_cast<std::uint32_t>(std::llround(rate*chip_unit/(samples_per_ms*1000.0)));
     period_start_ = double(sample) + 1.5 - phase*raw_hz/rate;
+    const auto offset = (sample % phase_window_samples + phase_window_samples - report_phase_
+                         + phase_lead_samples) % phase_window_samples;
+    phase_window_end_ = double(sample) + double(phase_window_samples - offset);
     initialized_ = true;
 }
 
@@ -520,16 +533,18 @@ double Tracker::measured_doppler(double sample) const {
 
 void Tracker::observe_phase(double sample, double turns, bool good) {
     // A tracking-loop tuning word contains 1 ms discriminator noise. Recover the
-    // measured carrier phase in a continuous frame, average three 160-epoch
+    // measured carrier phase in a continuous frame, average three 200 ms
     // windows, then differentiate their quadratic interpolant at the report time.
     // The acceleration term avoids the velocity lag of a trailing moving average.
-    if (good) {
-        time_sum_ += sample;
-        phase_sum_ += turns;
-        ++good_phases_;
+    if (sample < phase_window_end_) {
+        if (good) {
+            time_sum_ += sample;
+            phase_sum_ += turns;
+            ++good_phases_;
+        }
+        return;
     }
-    if (++averaging_count_ < 160) return;
-    if (good_phases_ >= 50) {
+    if (phase_window_full_ && good_phases_ >= 63) {
         means_[0] = means_[1];
         means_[1] = means_[2];
         means_[2] = {time_sum_/good_phases_,phase_sum_/good_phases_};
@@ -547,8 +562,13 @@ void Tracker::observe_phase(double sample, double turns, bool good) {
         fit_valid_ = false;
         mean_count_ = 0;
     }
-    phase_sum_ = time_sum_ = 0;
-    averaging_count_ = good_phases_ = 0;
+    // The first span after acquisition can be partial. Each subsequent
+    // boundary stays on the receiver sample grid even as code Doppler varies.
+    phase_window_full_ = true;
+    phase_window_end_ += phase_window_samples;
+    phase_sum_ = good ? turns : 0;
+    time_sum_ = good ? sample : 0;
+    good_phases_ = good ? 1u : 0u;
 }
 
 void Tracker::finish_period(double boundary, TrackingResult& result) {

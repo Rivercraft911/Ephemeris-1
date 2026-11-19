@@ -302,7 +302,10 @@ void Receiver::process(const uint8_t* packed, uint64_t first_sample, bool discon
         status_.sample = first_sample;
         ++status_.sequence; // immediately invalidate even between normal reporting epochs
     }
-    if (!running_ || gap) report_at_ = first_sample + report_samples;
+    if (!running_ || gap) {
+        report_at_ = first_sample + report_samples;
+        for (auto& tracker : trackers_) tracker.set_report_origin(first_sample);
+    }
     running_ = packed != nullptr;
     if (!running_) return;
     next_sample_ = first_sample + sig::raw_per_ms;
