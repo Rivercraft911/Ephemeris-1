@@ -4,6 +4,7 @@ SPDX-License-Identifier: Apache-2.0
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 import matplotlib
@@ -18,21 +19,32 @@ PALETTE = ["#2fa8ff", "#ff8c3a", "#6fdc5c"]
 
 def collect_orbits(directory):
     """Minute-by-minute errors for the three nominal 5 Hz, zero-offset software replays."""
-    from campaign import FS, Q, XYZ, table
+    from campaign import FS, Q, XYZ, orbit_period, table
+    from run_campaign import digest
 
     result = []
     for km in (400, 550, 800):
         run = directory / f"leo-{km}-1" / "nominal"
         report = json.loads((run / "report.json").read_text())
-        if report["level"] != "native raw I/Q replay" or report["stress"] != "nominal":
-            raise ValueError(f"expected a nominal native replay in {run}")
+        if (
+            report["level"] != "native raw I/Q replay"
+            or report["stress"] != "nominal"
+            or report["scenario"] != f"leo-{km}-1"
+            or report["seconds"] < math.ceil(orbit_period(km))
+        ):
+            raise ValueError(f"expected a complete nominal orbital replay in {run}")
+        for name, key in (("truth.csv", "truth_sha256"), ("receiver.csv", "output_sha256")):
+            if digest(run / name) != report[key]:
+                raise ValueError(f"{run / name} differs from the scored recording")
         truth = table(run / "truth.csv")
         output = table(run / "receiver.csv")
         sample_truth = {round(float(r["t_s"]) * FS): r for r in truth}
+        first_fix = report["result"]["ttff_s"]
+        first_sample = round(first_fix * FS) if first_fix is not None else math.inf
         windows = {}
         for row in output:
             sample = int(row["sample"])
-            if row["valid"] != "1":
+            if row["valid"] != "1" or sample < first_sample:
                 continue
             ref = sample_truth[sample]
             if (
@@ -56,6 +68,11 @@ def collect_orbits(directory):
                 "truth_sha256": report["truth_sha256"],
                 "receiver_csv_sha256": report["output_sha256"],
                 "receiver_sha256": report["receiver_sha256"],
+                "suite_sha256": report["suite_sha256"],
+                "generator_sources_sha256": report["generator_sources_sha256"],
+                "mixer_sha256": report["mixer_sha256"],
+                "noise_seed": int(report["generator"][report["generator"].index("--seed") + 1]),
+                "work_steps_per_ms": int(report["decoder"][report["decoder"].index("--work") + 1]),
                 "minute_p95": points,
             }
         )
@@ -174,7 +191,7 @@ def make_figures(data, destination):
     ax.set(
         xlabel="Seeded GPS channels",
         ylabel="Worst processing time (ms)",
-        title="RP2350B live tracking",
+        title="Scalar tracking on the 150 MHz RP2350B",
         xticks=x,
         xticklabels=[r["channels"] for r in profiles],
         ylim=(0, max(values) * 1.17),
@@ -204,7 +221,7 @@ def make_figures(data, destination):
         ax.axhline(1, ls=":", color="#dedede", label="1 ms budget")
         ax.set(
             yscale="log",
-            xticks=(1, 4, 8),
+            xticks=(1, 4, 6, 8),
             xlabel="Seeded GPS channels",
             ylabel="Mean processing time (ms)",
             title="Post-lock processing on the 150 MHz RP2350B",
@@ -218,11 +235,16 @@ def make_figures(data, destination):
             2, 1, figsize=(7.4, 4.4), sharex=True, layout="constrained"
         )
         for case, color, line in zip(data["orbits"], PALETTE, ("-", "--", "-.")):
+            if not case["minute_p95"]:
+                continue
             points = np.asarray(case["minute_p95"])
-            for col, ax in enumerate(axes, 1):
+            minutes = np.arange(int(points[-1, 0]) + 1)
+            errors = np.full((len(minutes), 2), np.nan)
+            errors[points[:, 0].astype(int)] = points[:, 1:]
+            for col, ax in enumerate(axes):
                 ax.plot(
-                    points[:, 0] + 0.5,
-                    points[:, col],
+                    minutes + 0.5,
+                    errors[:, col],
                     color=color,
                     ls=line,
                     label=f'{case["km"]} km',

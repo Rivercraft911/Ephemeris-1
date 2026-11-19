@@ -427,9 +427,9 @@
         "channels": 1,
         "epochs": 1000,
         "first": 0,
-        "max_us": 382,
-        "p95_us": 373,
-        "steady_mean_us": 371,
+        "max_us": 305,
+        "p95_us": 299,
+        "steady_mean_us": 297,
         "missed": 0,
         "stalls": 0,
         "clock_timeouts": 0,
@@ -437,11 +437,12 @@
         "locked_mask": 1,
         "full_lock_epochs": 990,
         "work_steps": 0,
-        "isolated_prepare_mean_us": 158,
-        "isolated_tracker_mean_us": 210,
+        "isolated_prepare_mean_us": 155,
+        "isolated_tracker_mean_us": 137,
         "isolated_locked": 1,
         "sys_hz": 150000000,
-        "tracking_cores": 1
+        "tracking_cores": 1,
+        "core0_stack_untouched_bytes": -1
       },
       {
         "result": "PASS",
@@ -449,9 +450,9 @@
         "channels": 4,
         "epochs": 1000,
         "first": 0,
-        "max_us": 1155,
-        "p95_us": 1136,
-        "steady_mean_us": 1129,
+        "max_us": 835,
+        "p95_us": 794,
+        "steady_mean_us": 789,
         "missed": 0,
         "stalls": 0,
         "clock_timeouts": 0,
@@ -460,10 +461,34 @@
         "full_lock_epochs": 990,
         "work_steps": 0,
         "isolated_prepare_mean_us": 160,
-        "isolated_tracker_mean_us": 214,
+        "isolated_tracker_mean_us": 138,
         "isolated_locked": 1,
         "sys_hz": 150000000,
-        "tracking_cores": 1
+        "tracking_cores": 1,
+        "core0_stack_untouched_bytes": -1
+      },
+      {
+        "result": "PASS",
+        "clock": "offline",
+        "channels": 6,
+        "epochs": 1000,
+        "first": 0,
+        "max_us": 1153,
+        "p95_us": 1122,
+        "steady_mean_us": 1116,
+        "missed": 0,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 6,
+        "locked_mask": 63,
+        "full_lock_epochs": 990,
+        "work_steps": 0,
+        "isolated_prepare_mean_us": 160,
+        "isolated_tracker_mean_us": 138,
+        "isolated_locked": 1,
+        "sys_hz": 150000000,
+        "tracking_cores": 1,
+        "core0_stack_untouched_bytes": -1
       },
       {
         "result": "PASS",
@@ -471,9 +496,9 @@
         "channels": 8,
         "epochs": 1000,
         "first": 0,
-        "max_us": 2193,
-        "p95_us": 2155,
-        "steady_mean_us": 2144,
+        "max_us": 1486,
+        "p95_us": 1449,
+        "steady_mean_us": 1441,
         "missed": 0,
         "stalls": 0,
         "clock_timeouts": 0,
@@ -481,11 +506,12 @@
         "locked_mask": 255,
         "full_lock_epochs": 990,
         "work_steps": 0,
-        "isolated_prepare_mean_us": 160,
-        "isolated_tracker_mean_us": 214,
+        "isolated_prepare_mean_us": 161,
+        "isolated_tracker_mean_us": 138,
         "isolated_locked": 1,
         "sys_hz": 150000000,
-        "tracking_cores": 1
+        "tracking_cores": 1,
+        "core0_stack_untouched_bytes": -1
       }
     ],
     "coarse_serial_live": [
@@ -495,9 +521,9 @@
         "channels": 1,
         "epochs": 1000,
         "first": 0,
-        "max_us": 441,
-        "p95_us": 381,
-        "steady_mean_us": 377,
+        "max_us": 363,
+        "p95_us": 308,
+        "steady_mean_us": 305,
         "missed": 0,
         "stalls": 0,
         "clock_timeouts": 0,
@@ -509,43 +535,68 @@
         "isolated_tracker_mean_us": 0,
         "isolated_locked": 0,
         "sys_hz": 150000000,
-        "tracking_cores": 1
+        "tracking_cores": 1,
+        "core0_stack_untouched_bytes": -1
+      },
+      {
+        "result": "PASS",
+        "clock": "internal",
+        "channels": 4,
+        "epochs": 1000,
+        "first": 0,
+        "max_us": 866,
+        "p95_us": 802,
+        "steady_mean_us": 797,
+        "missed": 0,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 4,
+        "locked_mask": 15,
+        "full_lock_epochs": 990,
+        "work_steps": 106,
+        "isolated_prepare_mean_us": 0,
+        "isolated_tracker_mean_us": 0,
+        "isolated_locked": 0,
+        "sys_hz": 150000000,
+        "tracking_cores": 1,
+        "core0_stack_untouched_bytes": -1
       },
       {
         "result": "FAIL",
         "clock": "internal",
-        "channels": 4,
+        "channels": 6,
         "epochs": 1000,
-        "first": 16384368,
-        "max_us": 1158,
+        "first": 0,
+        "max_us": 1219,
         "p95_us": 2,
-        "steady_mean_us": 3,
-        "missed": 1,
+        "steady_mean_us": 12,
+        "missed": 3,
         "stalls": 0,
         "clock_timeouts": 0,
-        "max_active": 4,
+        "max_active": 6,
         "locked_mask": 0,
-        "full_lock_epochs": 1,
+        "full_lock_epochs": 9,
         "work_steps": 104,
         "isolated_prepare_mean_us": 0,
         "isolated_tracker_mean_us": 0,
         "isolated_locked": 0,
         "sys_hz": 150000000,
-        "tracking_cores": 1
+        "tracking_cores": 1,
+        "core0_stack_untouched_bytes": -1
       },
       {
         "result": "FAIL",
         "clock": "internal",
         "channels": 8,
         "epochs": 1000,
-        "first": 32785104,
-        "max_us": 78,
+        "first": 0,
+        "max_us": 1488,
         "p95_us": 2,
         "steady_mean_us": 2,
         "missed": 3,
         "stalls": 0,
         "clock_timeouts": 0,
-        "max_active": 0,
+        "max_active": 8,
         "locked_mask": 0,
         "full_lock_epochs": 0,
         "work_steps": 105,
@@ -553,7 +604,8 @@
         "isolated_tracker_mean_us": 0,
         "isolated_locked": 0,
         "sys_hz": 150000000,
-        "tracking_cores": 1
+        "tracking_cores": 1,
+        "core0_stack_untouched_bytes": -1
       }
     ],
     "coarse_dual_offline": [
@@ -563,9 +615,9 @@
         "channels": 1,
         "epochs": 1000,
         "first": 0,
-        "max_us": 387,
-        "p95_us": 377,
-        "steady_mean_us": 375,
+        "max_us": 360,
+        "p95_us": 302,
+        "steady_mean_us": 301,
         "missed": 0,
         "stalls": 0,
         "clock_timeouts": 0,
@@ -573,12 +625,12 @@
         "locked_mask": 1,
         "full_lock_epochs": 990,
         "work_steps": 0,
-        "isolated_prepare_mean_us": 160,
-        "isolated_tracker_mean_us": 210,
+        "isolated_prepare_mean_us": 156,
+        "isolated_tracker_mean_us": 140,
         "isolated_locked": 1,
         "sys_hz": 150000000,
         "tracking_cores": 2,
-        "core0_stack_untouched_bytes": 1892
+        "core0_stack_untouched_bytes": 2104
       },
       {
         "result": "PASS",
@@ -586,9 +638,9 @@
         "channels": 4,
         "epochs": 1000,
         "first": 0,
-        "max_us": 693,
-        "p95_us": 667,
-        "steady_mean_us": 663,
+        "max_us": 555,
+        "p95_us": 494,
+        "steady_mean_us": 491,
         "missed": 0,
         "stalls": 0,
         "clock_timeouts": 0,
@@ -596,12 +648,35 @@
         "locked_mask": 15,
         "full_lock_epochs": 990,
         "work_steps": 0,
-        "isolated_prepare_mean_us": 156,
-        "isolated_tracker_mean_us": 215,
+        "isolated_prepare_mean_us": 158,
+        "isolated_tracker_mean_us": 141,
         "isolated_locked": 1,
         "sys_hz": 150000000,
         "tracking_cores": 2,
-        "core0_stack_untouched_bytes": 1892
+        "core0_stack_untouched_bytes": 2104
+      },
+      {
+        "result": "PASS",
+        "clock": "offline",
+        "channels": 6,
+        "epochs": 1000,
+        "first": 0,
+        "max_us": 723,
+        "p95_us": 662,
+        "steady_mean_us": 658,
+        "missed": 0,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 6,
+        "locked_mask": 63,
+        "full_lock_epochs": 990,
+        "work_steps": 0,
+        "isolated_prepare_mean_us": 158,
+        "isolated_tracker_mean_us": 141,
+        "isolated_locked": 1,
+        "sys_hz": 150000000,
+        "tracking_cores": 2,
+        "core0_stack_untouched_bytes": 2104
       },
       {
         "result": "PASS",
@@ -609,9 +684,9 @@
         "channels": 8,
         "epochs": 1000,
         "first": 0,
-        "max_us": 1214,
-        "p95_us": 1184,
-        "steady_mean_us": 1177,
+        "max_us": 870,
+        "p95_us": 830,
+        "steady_mean_us": 824,
         "missed": 0,
         "stalls": 0,
         "clock_timeouts": 0,
@@ -619,12 +694,12 @@
         "locked_mask": 255,
         "full_lock_epochs": 990,
         "work_steps": 0,
-        "isolated_prepare_mean_us": 156,
-        "isolated_tracker_mean_us": 215,
+        "isolated_prepare_mean_us": 158,
+        "isolated_tracker_mean_us": 141,
         "isolated_locked": 1,
         "sys_hz": 150000000,
         "tracking_cores": 2,
-        "core0_stack_untouched_bytes": 1892
+        "core0_stack_untouched_bytes": 2104
       }
     ],
     "coarse_dual_live": [
@@ -634,9 +709,9 @@
         "channels": 1,
         "epochs": 1000,
         "first": 0,
-        "max_us": 444,
-        "p95_us": 382,
-        "steady_mean_us": 379,
+        "max_us": 363,
+        "p95_us": 308,
+        "steady_mean_us": 305,
         "missed": 0,
         "stalls": 0,
         "clock_timeouts": 0,
@@ -656,46 +731,69 @@
         "clock": "internal",
         "channels": 4,
         "epochs": 1000,
-        "first": 16384368,
-        "max_us": 744,
-        "p95_us": 673,
-        "steady_mean_us": 669,
+        "first": 0,
+        "max_us": 557,
+        "p95_us": 498,
+        "steady_mean_us": 495,
         "missed": 0,
         "stalls": 0,
         "clock_timeouts": 0,
         "max_active": 4,
         "locked_mask": 15,
         "full_lock_epochs": 990,
-        "work_steps": 52,
+        "work_steps": 71,
         "isolated_prepare_mean_us": 0,
         "isolated_tracker_mean_us": 0,
         "isolated_locked": 0,
         "sys_hz": 150000000,
         "tracking_cores": 2,
-        "core0_stack_untouched_bytes": 1892
+        "core0_stack_untouched_bytes": 2104
       },
       {
-        "result": "FAIL",
+        "result": "PASS",
+        "clock": "internal",
+        "channels": 6,
+        "epochs": 1000,
+        "first": 0,
+        "max_us": 718,
+        "p95_us": 666,
+        "steady_mean_us": 662,
+        "missed": 0,
+        "stalls": 0,
+        "clock_timeouts": 0,
+        "max_active": 6,
+        "locked_mask": 63,
+        "full_lock_epochs": 990,
+        "work_steps": 54,
+        "isolated_prepare_mean_us": 0,
+        "isolated_tracker_mean_us": 0,
+        "isolated_locked": 0,
+        "sys_hz": 150000000,
+        "tracking_cores": 2,
+        "core0_stack_untouched_bytes": 2104
+      },
+      {
+        "result": "PASS",
         "clock": "internal",
         "channels": 8,
         "epochs": 1000,
-        "first": 32768736,
-        "max_us": 79,
-        "p95_us": 2,
-        "steady_mean_us": 2,
-        "missed": 3,
+        "first": 0,
+        "max_us": 872,
+        "p95_us": 830,
+        "steady_mean_us": 825,
+        "missed": 0,
         "stalls": 0,
         "clock_timeouts": 0,
-        "max_active": 0,
-        "locked_mask": 0,
-        "full_lock_epochs": 0,
-        "work_steps": 106,
+        "max_active": 8,
+        "locked_mask": 255,
+        "full_lock_epochs": 990,
+        "work_steps": 0,
         "isolated_prepare_mean_us": 0,
         "isolated_tracker_mean_us": 0,
         "isolated_locked": 0,
         "sys_hz": 150000000,
         "tracking_cores": 2,
-        "core0_stack_untouched_bytes": 1892
+        "core0_stack_untouched_bytes": 2104
       }
     ],
     "coarse_lut128": {
@@ -761,6 +859,148 @@
         -104
       ],
       "checksum": "1318.000"
+    },
+    "continuity": {
+      "result": "PASS",
+      "epochs": 270000,
+      "samples": 4419360000,
+      "elapsed_us": 269995310,
+      "first": 49202208,
+      "last": 4468545840,
+      "gaps": 0,
+      "missed": 0,
+      "stalls": 0,
+      "clock_timeouts": 0
+    },
+    "coarse_dual_image_sha256": "248961419ec9cbcf345d0612bc309047f94a978c0355727b711c6cbc4a5ff0ec",
+    "coarse_serial_image_sha256": "19358e64ab3ffb0222a45421e587b9e791c2c9b41cfbcb9dd6172ecad7cd4a32",
+    "pvt": {
+      "result": "PASS",
+      "sv": 6,
+      "repeats": 20,
+      "mean_us": 1802,
+      "max_us": 1802,
+      "position_m": "0.02415",
+      "velocity_mps": "0.000002"
+    },
+    "combined_navigation": {
+      "image_sha256": "f14a1dc5a0bc14118181654982517a9ba5eeab6e21324b482dbb1bdbfda7ecf5",
+      "ring_bytes": 32768,
+      "solve_period_ms": 200,
+      "navigation_source": "six-satellite rollover observations, independent of the repeated tracking input",
+      "runs": [
+        {
+          "result": "PASS",
+          "clock": "internal",
+          "channels": 8,
+          "epochs": 1013,
+          "first": 0,
+          "max_us": 867,
+          "p95_us": 827,
+          "steady_mean_us": 822,
+          "missed": 0,
+          "stalls": 0,
+          "clock_timeouts": 0,
+          "max_active": 8,
+          "locked_mask": 255,
+          "full_lock_epochs": 1003,
+          "work_steps": 0,
+          "isolated_prepare_mean_us": 0,
+          "isolated_tracker_mean_us": 0,
+          "isolated_locked": 0,
+          "sys_hz": 150000000,
+          "tracking_cores": 2,
+          "core0_stack_untouched_bytes": 3320,
+          "pvt_load": 1,
+          "fixture_fixes": 5,
+          "fixture_valid": 5,
+          "fixture_retained_epochs": 814,
+          "fixture_pvt_mean_us": 1803,
+          "fixture_pvt_max_us": 1804,
+          "combined_max_us": 2641,
+          "recovery_count": 5,
+          "recovery_max_epochs": 13,
+          "peak_backlog_bytes": 21908,
+          "final_backlog_bytes": 7464,
+          "capture_gaps": 0,
+          "max_position_m": 0.02415,
+          "max_velocity_mps": 2e-06
+        },
+        {
+          "result": "PASS",
+          "clock": "internal",
+          "channels": 8,
+          "epochs": 1013,
+          "first": 0,
+          "max_us": 868,
+          "p95_us": 827,
+          "steady_mean_us": 822,
+          "missed": 0,
+          "stalls": 0,
+          "clock_timeouts": 0,
+          "max_active": 8,
+          "locked_mask": 255,
+          "full_lock_epochs": 1003,
+          "work_steps": 0,
+          "isolated_prepare_mean_us": 0,
+          "isolated_tracker_mean_us": 0,
+          "isolated_locked": 0,
+          "sys_hz": 150000000,
+          "tracking_cores": 2,
+          "core0_stack_untouched_bytes": 3320,
+          "pvt_load": 1,
+          "fixture_fixes": 5,
+          "fixture_valid": 5,
+          "fixture_retained_epochs": 814,
+          "fixture_pvt_mean_us": 1803,
+          "fixture_pvt_max_us": 1804,
+          "combined_max_us": 2641,
+          "recovery_count": 5,
+          "recovery_max_epochs": 13,
+          "peak_backlog_bytes": 21908,
+          "final_backlog_bytes": 7464,
+          "capture_gaps": 0,
+          "max_position_m": 0.02415,
+          "max_velocity_mps": 2e-06
+        },
+        {
+          "result": "PASS",
+          "clock": "internal",
+          "channels": 8,
+          "epochs": 1013,
+          "first": 0,
+          "max_us": 869,
+          "p95_us": 827,
+          "steady_mean_us": 822,
+          "missed": 0,
+          "stalls": 0,
+          "clock_timeouts": 0,
+          "max_active": 8,
+          "locked_mask": 255,
+          "full_lock_epochs": 1003,
+          "work_steps": 0,
+          "isolated_prepare_mean_us": 0,
+          "isolated_tracker_mean_us": 0,
+          "isolated_locked": 0,
+          "sys_hz": 150000000,
+          "tracking_cores": 2,
+          "core0_stack_untouched_bytes": 3320,
+          "pvt_load": 1,
+          "fixture_fixes": 5,
+          "fixture_valid": 5,
+          "fixture_retained_epochs": 814,
+          "fixture_pvt_mean_us": 1803,
+          "fixture_pvt_max_us": 1804,
+          "combined_max_us": 2642,
+          "recovery_count": 5,
+          "recovery_max_epochs": 13,
+          "peak_backlog_bytes": 21904,
+          "final_backlog_bytes": 7420,
+          "capture_gaps": 0,
+          "max_position_m": 0.02415,
+          "max_velocity_mps": 2e-06
+        }
+      ]
     }
   },
   "example": {
@@ -1310,5 +1550,1526 @@
       5.17100400000345
     ],
     "max_difference_from_native_position_m": 0.014071247103944456
-  }
+  },
+  "orbits": [
+    {
+      "km": 400,
+      "seconds": 5554,
+      "result": {
+        "passed": true,
+        "ttff_s": 32.6,
+        "eligible_epochs": 26577,
+        "valid_epochs": 26577,
+        "availability": 1.0,
+        "p95_position_m": 1.3838248620306617,
+        "p95_velocity_mps": 0.04760454370835857,
+        "p95_abs_rtn_m": [
+          1.3029609029373477,
+          0.6167235335934894,
+          0.5246257713681282
+        ],
+        "faults": []
+      },
+      "truth_sha256": "8b3033703376ccfabc12a9bd2a695bf5d0202f0fbed55d6c5c07451696072bd8",
+      "receiver_csv_sha256": "24534664af6f37c62d2d4353d9df73df114788f49b49756bdf7abcdeba85438b",
+      "receiver_sha256": "6a687a4599d2f8d597194c18ecf4cb4ce8557c69c0b8890bc39bdce0c6e5a593",
+      "suite_sha256": "33c3888ecf47780547300b9d7b6d68fbcb777d7fa0fa3a2c80a727a507c327e5",
+      "generator_sources_sha256": {
+        "scenarios.json": "33c3888ecf47780547300b9d7b6d68fbcb777d7fa0fa3a2c80a727a507c327e5",
+        "sky_signal.py": "ac9b0bfa45931c7297605880939aa62843975c68b5f2f1b9b164f9d3db335703",
+        "vectors.py": "3a0c3761c9af4b8dac0145c2594b2dbe16759e7f76e16876f8ba00420273c78e",
+        "iqio.py": "00fe76dbcab0ca8244d4e8be1e6bdac84dafb4c53b48b0abac9039c90c63adc8",
+        "stress.py": "3f0331812b8f9ea205e5af6113330fb44203fe79ad9f9f6949b1ff947505c7a4",
+        "campaign.py": "10dfff35403d904027b2da6954204965cfad2ecb627393a3b710e633969cda41",
+        "run_campaign.py": "8e1853af94aa95eba22153a221a9c5d07bef111410072c1a8c91fa5a0a07d1f9",
+        "sky_mixer.cpp": "adc2927a8eccba322558b6edf7b84e4f090eda790e6060f7fbcf1f80b8ec99f8"
+      },
+      "mixer_sha256": "befa13e7eb396f2bbde50f64effd90c75b9acb90c9fac2cb54403ad3140e1ef6",
+      "noise_seed": 1111,
+      "work_steps_per_ms": 8,
+      "minute_p95": [
+        [
+          0,
+          1.59997,
+          0.04901
+        ],
+        [
+          1,
+          2.13855,
+          0.05061
+        ],
+        [
+          2,
+          0.96233,
+          0.04629
+        ],
+        [
+          3,
+          1.77054,
+          0.04387
+        ],
+        [
+          4,
+          1.2288,
+          0.04442
+        ],
+        [
+          5,
+          1.22077,
+          0.05865
+        ],
+        [
+          6,
+          1.49872,
+          0.05166
+        ],
+        [
+          7,
+          0.95588,
+          0.04556
+        ],
+        [
+          8,
+          1.1725,
+          0.04466
+        ],
+        [
+          9,
+          1.22337,
+          0.04752
+        ],
+        [
+          10,
+          1.56636,
+          0.04424
+        ],
+        [
+          11,
+          1.39198,
+          0.04279
+        ],
+        [
+          12,
+          1.54485,
+          0.03942
+        ],
+        [
+          13,
+          0.99804,
+          0.04377
+        ],
+        [
+          14,
+          1.20471,
+          0.04319
+        ],
+        [
+          15,
+          1.05282,
+          0.04303
+        ],
+        [
+          16,
+          1.20356,
+          0.0409
+        ],
+        [
+          17,
+          0.78332,
+          0.04232
+        ],
+        [
+          18,
+          1.60056,
+          0.05146
+        ],
+        [
+          19,
+          2.07825,
+          0.06999
+        ],
+        [
+          20,
+          2.01609,
+          0.06324
+        ],
+        [
+          21,
+          2.28522,
+          0.06719
+        ],
+        [
+          22,
+          1.69359,
+          0.06691
+        ],
+        [
+          23,
+          1.70649,
+          0.07013
+        ],
+        [
+          24,
+          2.29052,
+          0.06477
+        ],
+        [
+          27,
+          3.80708,
+          0.11149
+        ],
+        [
+          28,
+          1.41318,
+          0.06179
+        ],
+        [
+          29,
+          1.0234,
+          0.03983
+        ],
+        [
+          30,
+          1.32924,
+          0.0353
+        ],
+        [
+          31,
+          1.0324,
+          0.03476
+        ],
+        [
+          32,
+          1.08541,
+          0.03731
+        ],
+        [
+          33,
+          0.9451,
+          0.03528
+        ],
+        [
+          34,
+          1.21188,
+          0.03913
+        ],
+        [
+          35,
+          1.41781,
+          0.04187
+        ],
+        [
+          36,
+          1.43,
+          0.04817
+        ],
+        [
+          37,
+          1.30725,
+          0.04442
+        ],
+        [
+          38,
+          1.412,
+          0.0456
+        ],
+        [
+          39,
+          1.08496,
+          0.04414
+        ],
+        [
+          40,
+          1.18656,
+          0.04198
+        ],
+        [
+          41,
+          1.12941,
+          0.04666
+        ],
+        [
+          42,
+          0.94585,
+          0.04117
+        ],
+        [
+          43,
+          1.1826,
+          0.04004
+        ],
+        [
+          44,
+          1.11822,
+          0.04659
+        ],
+        [
+          45,
+          1.20373,
+          0.04467
+        ],
+        [
+          46,
+          1.20081,
+          0.04541
+        ],
+        [
+          47,
+          1.33463,
+          0.0434
+        ],
+        [
+          48,
+          1.09537,
+          0.04437
+        ],
+        [
+          49,
+          1.02989,
+          0.04052
+        ],
+        [
+          50,
+          1.29221,
+          0.04447
+        ],
+        [
+          51,
+          1.55554,
+          0.04299
+        ],
+        [
+          52,
+          1.2582,
+          0.05016
+        ],
+        [
+          53,
+          1.65931,
+          0.0538
+        ],
+        [
+          54,
+          1.22624,
+          0.05387
+        ],
+        [
+          55,
+          1.73498,
+          0.04571
+        ],
+        [
+          56,
+          1.3839,
+          0.0467
+        ],
+        [
+          57,
+          1.23421,
+          0.03943
+        ],
+        [
+          58,
+          1.35882,
+          0.03758
+        ],
+        [
+          59,
+          1.72323,
+          0.04347
+        ],
+        [
+          60,
+          1.27852,
+          0.04111
+        ],
+        [
+          61,
+          1.13673,
+          0.03943
+        ],
+        [
+          62,
+          0.79979,
+          0.0451
+        ],
+        [
+          63,
+          1.01503,
+          0.04175
+        ],
+        [
+          64,
+          1.35309,
+          0.04927
+        ],
+        [
+          65,
+          1.04308,
+          0.04601
+        ],
+        [
+          66,
+          1.38146,
+          0.04098
+        ],
+        [
+          67,
+          1.74162,
+          0.05377
+        ],
+        [
+          68,
+          1.6883,
+          0.05469
+        ],
+        [
+          69,
+          1.17967,
+          0.06278
+        ],
+        [
+          70,
+          1.72651,
+          0.05493
+        ],
+        [
+          71,
+          1.65114,
+          0.04983
+        ],
+        [
+          72,
+          1.74165,
+          0.05304
+        ],
+        [
+          73,
+          1.63449,
+          0.06293
+        ],
+        [
+          74,
+          1.22963,
+          0.04868
+        ],
+        [
+          75,
+          0.91579,
+          0.04362
+        ],
+        [
+          76,
+          1.37955,
+          0.03972
+        ],
+        [
+          77,
+          1.0776,
+          0.0419
+        ],
+        [
+          78,
+          1.28222,
+          0.04447
+        ],
+        [
+          79,
+          0.97899,
+          0.04317
+        ],
+        [
+          80,
+          1.45676,
+          0.03847
+        ],
+        [
+          81,
+          0.94289,
+          0.04152
+        ],
+        [
+          82,
+          1.22783,
+          0.03504
+        ],
+        [
+          83,
+          1.30174,
+          0.03604
+        ],
+        [
+          84,
+          1.05008,
+          0.04162
+        ],
+        [
+          85,
+          1.42261,
+          0.04067
+        ],
+        [
+          86,
+          0.90104,
+          0.04021
+        ],
+        [
+          87,
+          1.29375,
+          0.04168
+        ],
+        [
+          88,
+          1.20896,
+          0.03997
+        ],
+        [
+          89,
+          1.67678,
+          0.04593
+        ],
+        [
+          90,
+          1.37172,
+          0.05256
+        ],
+        [
+          91,
+          1.48975,
+          0.05127
+        ],
+        [
+          92,
+          1.39883,
+          0.05802
+        ]
+      ]
+    },
+    {
+      "km": 550,
+      "seconds": 5739,
+      "result": {
+        "passed": true,
+        "ttff_s": 32.6,
+        "eligible_epochs": 27400,
+        "valid_epochs": 27400,
+        "availability": 1.0,
+        "p95_position_m": 1.3571413265112848,
+        "p95_velocity_mps": 0.0471101577199178,
+        "p95_abs_rtn_m": [
+          1.2752319471273357,
+          0.5912108417155475,
+          0.523950215177916
+        ],
+        "faults": []
+      },
+      "truth_sha256": "fe3324d34b1d82438719dd859ade993863fd9169127530ef3a65ea6dcd82b182",
+      "receiver_csv_sha256": "b5bbedf0da084f13e696a6c8e6628629eb913971b7f1eea75acd397a52fcdeff",
+      "receiver_sha256": "6a687a4599d2f8d597194c18ecf4cb4ce8557c69c0b8890bc39bdce0c6e5a593",
+      "suite_sha256": "33c3888ecf47780547300b9d7b6d68fbcb777d7fa0fa3a2c80a727a507c327e5",
+      "generator_sources_sha256": {
+        "scenarios.json": "33c3888ecf47780547300b9d7b6d68fbcb777d7fa0fa3a2c80a727a507c327e5",
+        "sky_signal.py": "ac9b0bfa45931c7297605880939aa62843975c68b5f2f1b9b164f9d3db335703",
+        "vectors.py": "3a0c3761c9af4b8dac0145c2594b2dbe16759e7f76e16876f8ba00420273c78e",
+        "iqio.py": "00fe76dbcab0ca8244d4e8be1e6bdac84dafb4c53b48b0abac9039c90c63adc8",
+        "stress.py": "3f0331812b8f9ea205e5af6113330fb44203fe79ad9f9f6949b1ff947505c7a4",
+        "campaign.py": "10dfff35403d904027b2da6954204965cfad2ecb627393a3b710e633969cda41",
+        "run_campaign.py": "8e1853af94aa95eba22153a221a9c5d07bef111410072c1a8c91fa5a0a07d1f9",
+        "sky_mixer.cpp": "adc2927a8eccba322558b6edf7b84e4f090eda790e6060f7fbcf1f80b8ec99f8"
+      },
+      "mixer_sha256": "befa13e7eb396f2bbde50f64effd90c75b9acb90c9fac2cb54403ad3140e1ef6",
+      "noise_seed": 1261,
+      "work_steps_per_ms": 8,
+      "minute_p95": [
+        [
+          0,
+          1.52019,
+          0.05008
+        ],
+        [
+          1,
+          1.31136,
+          0.04394
+        ],
+        [
+          2,
+          1.36986,
+          0.04327
+        ],
+        [
+          3,
+          1.20485,
+          0.04543
+        ],
+        [
+          4,
+          1.25173,
+          0.04732
+        ],
+        [
+          5,
+          1.0508,
+          0.05273
+        ],
+        [
+          6,
+          1.74613,
+          0.04723
+        ],
+        [
+          7,
+          1.19603,
+          0.04672
+        ],
+        [
+          8,
+          1.40992,
+          0.04308
+        ],
+        [
+          9,
+          1.51693,
+          0.04273
+        ],
+        [
+          10,
+          1.18949,
+          0.0434
+        ],
+        [
+          11,
+          1.16008,
+          0.03874
+        ],
+        [
+          12,
+          1.26275,
+          0.04205
+        ],
+        [
+          13,
+          1.25429,
+          0.04393
+        ],
+        [
+          14,
+          1.03615,
+          0.04538
+        ],
+        [
+          15,
+          1.025,
+          0.03856
+        ],
+        [
+          16,
+          1.06175,
+          0.03968
+        ],
+        [
+          17,
+          1.2949,
+          0.04036
+        ],
+        [
+          18,
+          1.2362,
+          0.04705
+        ],
+        [
+          19,
+          2.03349,
+          0.06401
+        ],
+        [
+          20,
+          1.77556,
+          0.06227
+        ],
+        [
+          21,
+          1.55648,
+          0.06435
+        ],
+        [
+          22,
+          1.64961,
+          0.06938
+        ],
+        [
+          23,
+          1.90309,
+          0.06871
+        ],
+        [
+          24,
+          3.00827,
+          0.07532
+        ],
+        [
+          28,
+          2.63504,
+          0.08421
+        ],
+        [
+          29,
+          1.8628,
+          0.0731
+        ],
+        [
+          30,
+          1.14748,
+          0.04139
+        ],
+        [
+          31,
+          1.03703,
+          0.0384
+        ],
+        [
+          32,
+          1.12497,
+          0.03389
+        ],
+        [
+          33,
+          0.95439,
+          0.0333
+        ],
+        [
+          34,
+          1.2659,
+          0.03347
+        ],
+        [
+          35,
+          1.07138,
+          0.03924
+        ],
+        [
+          36,
+          1.21028,
+          0.04093
+        ],
+        [
+          37,
+          1.30169,
+          0.04733
+        ],
+        [
+          38,
+          1.16865,
+          0.04703
+        ],
+        [
+          39,
+          1.47939,
+          0.04148
+        ],
+        [
+          40,
+          1.60329,
+          0.04351
+        ],
+        [
+          41,
+          1.47108,
+          0.0446
+        ],
+        [
+          42,
+          1.0463,
+          0.04476
+        ],
+        [
+          43,
+          0.97353,
+          0.04519
+        ],
+        [
+          44,
+          1.34528,
+          0.04076
+        ],
+        [
+          45,
+          2.11235,
+          0.04894
+        ],
+        [
+          46,
+          1.23095,
+          0.04528
+        ],
+        [
+          47,
+          1.2576,
+          0.0498
+        ],
+        [
+          48,
+          1.3997,
+          0.04679
+        ],
+        [
+          49,
+          1.22114,
+          0.04423
+        ],
+        [
+          50,
+          1.27497,
+          0.04373
+        ],
+        [
+          51,
+          1.59803,
+          0.04487
+        ],
+        [
+          52,
+          1.06563,
+          0.04338
+        ],
+        [
+          53,
+          1.12801,
+          0.04717
+        ],
+        [
+          54,
+          1.22782,
+          0.05617
+        ],
+        [
+          55,
+          1.44681,
+          0.05322
+        ],
+        [
+          56,
+          1.85927,
+          0.05017
+        ],
+        [
+          57,
+          1.20101,
+          0.0487
+        ],
+        [
+          58,
+          1.49092,
+          0.04734
+        ],
+        [
+          59,
+          1.03712,
+          0.03903
+        ],
+        [
+          60,
+          0.91166,
+          0.04246
+        ],
+        [
+          61,
+          1.55761,
+          0.03806
+        ],
+        [
+          62,
+          1.10029,
+          0.03824
+        ],
+        [
+          63,
+          0.98294,
+          0.04034
+        ],
+        [
+          64,
+          1.27592,
+          0.04206
+        ],
+        [
+          65,
+          1.27555,
+          0.04253
+        ],
+        [
+          66,
+          1.07065,
+          0.04687
+        ],
+        [
+          67,
+          1.40699,
+          0.04924
+        ],
+        [
+          68,
+          1.10014,
+          0.04628
+        ],
+        [
+          69,
+          1.10496,
+          0.04357
+        ],
+        [
+          70,
+          1.16646,
+          0.05299
+        ],
+        [
+          71,
+          1.22529,
+          0.0467
+        ],
+        [
+          72,
+          1.55576,
+          0.04885
+        ],
+        [
+          73,
+          1.6159,
+          0.05393
+        ],
+        [
+          74,
+          1.30758,
+          0.05487
+        ],
+        [
+          75,
+          1.52144,
+          0.05186
+        ],
+        [
+          76,
+          1.26626,
+          0.05326
+        ],
+        [
+          77,
+          1.11071,
+          0.0425
+        ],
+        [
+          78,
+          1.16711,
+          0.04193
+        ],
+        [
+          79,
+          1.34027,
+          0.03824
+        ],
+        [
+          80,
+          1.31691,
+          0.04531
+        ],
+        [
+          81,
+          0.84118,
+          0.04111
+        ],
+        [
+          82,
+          1.36817,
+          0.04387
+        ],
+        [
+          83,
+          0.95,
+          0.0411
+        ],
+        [
+          84,
+          1.22308,
+          0.03902
+        ],
+        [
+          85,
+          1.00088,
+          0.04341
+        ],
+        [
+          86,
+          1.25774,
+          0.03747
+        ],
+        [
+          87,
+          1.07862,
+          0.04518
+        ],
+        [
+          88,
+          1.09238,
+          0.03959
+        ],
+        [
+          89,
+          1.1936,
+          0.04053
+        ],
+        [
+          90,
+          1.14064,
+          0.03829
+        ],
+        [
+          91,
+          1.27732,
+          0.04723
+        ],
+        [
+          92,
+          1.27173,
+          0.04258
+        ],
+        [
+          93,
+          1.28943,
+          0.04581
+        ],
+        [
+          94,
+          1.37879,
+          0.05249
+        ],
+        [
+          95,
+          1.60778,
+          0.05529
+        ]
+      ]
+    },
+    {
+      "km": 800,
+      "seconds": 6053,
+      "result": {
+        "passed": true,
+        "ttff_s": 32.6,
+        "eligible_epochs": 28791,
+        "valid_epochs": 28791,
+        "availability": 1.0,
+        "p95_position_m": 1.3514831258100348,
+        "p95_velocity_mps": 0.04653099412526354,
+        "p95_abs_rtn_m": [
+          1.2747773520062604,
+          0.6026728719246228,
+          0.5385972305550191
+        ],
+        "faults": []
+      },
+      "truth_sha256": "8039d8c6823c7174f285565da1b87a3cafc2355005a1c7a39db0d18797c17291",
+      "receiver_csv_sha256": "d35f27af8ffdd5d45e2a58aec695edaffb38af81eb1665f82ace5df91daac6d9",
+      "receiver_sha256": "6a687a4599d2f8d597194c18ecf4cb4ce8557c69c0b8890bc39bdce0c6e5a593",
+      "suite_sha256": "33c3888ecf47780547300b9d7b6d68fbcb777d7fa0fa3a2c80a727a507c327e5",
+      "generator_sources_sha256": {
+        "scenarios.json": "33c3888ecf47780547300b9d7b6d68fbcb777d7fa0fa3a2c80a727a507c327e5",
+        "sky_signal.py": "ac9b0bfa45931c7297605880939aa62843975c68b5f2f1b9b164f9d3db335703",
+        "vectors.py": "3a0c3761c9af4b8dac0145c2594b2dbe16759e7f76e16876f8ba00420273c78e",
+        "iqio.py": "00fe76dbcab0ca8244d4e8be1e6bdac84dafb4c53b48b0abac9039c90c63adc8",
+        "stress.py": "3f0331812b8f9ea205e5af6113330fb44203fe79ad9f9f6949b1ff947505c7a4",
+        "campaign.py": "10dfff35403d904027b2da6954204965cfad2ecb627393a3b710e633969cda41",
+        "run_campaign.py": "8e1853af94aa95eba22153a221a9c5d07bef111410072c1a8c91fa5a0a07d1f9",
+        "sky_mixer.cpp": "adc2927a8eccba322558b6edf7b84e4f090eda790e6060f7fbcf1f80b8ec99f8"
+      },
+      "mixer_sha256": "befa13e7eb396f2bbde50f64effd90c75b9acb90c9fac2cb54403ad3140e1ef6",
+      "noise_seed": 1511,
+      "work_steps_per_ms": 8,
+      "minute_p95": [
+        [
+          0,
+          0.95423,
+          0.048
+        ],
+        [
+          1,
+          1.29656,
+          0.04144
+        ],
+        [
+          2,
+          1.12696,
+          0.04373
+        ],
+        [
+          3,
+          1.02473,
+          0.04483
+        ],
+        [
+          4,
+          1.40565,
+          0.04213
+        ],
+        [
+          5,
+          1.2573,
+          0.04751
+        ],
+        [
+          6,
+          1.64576,
+          0.05642
+        ],
+        [
+          7,
+          2.24813,
+          0.04332
+        ],
+        [
+          8,
+          1.19954,
+          0.04432
+        ],
+        [
+          9,
+          1.10996,
+          0.04275
+        ],
+        [
+          10,
+          1.31755,
+          0.04432
+        ],
+        [
+          11,
+          1.3024,
+          0.04278
+        ],
+        [
+          12,
+          1.6445,
+          0.04283
+        ],
+        [
+          13,
+          1.4591,
+          0.04382
+        ],
+        [
+          14,
+          1.18011,
+          0.03704
+        ],
+        [
+          15,
+          1.1673,
+          0.04028
+        ],
+        [
+          16,
+          1.00535,
+          0.04052
+        ],
+        [
+          17,
+          1.49856,
+          0.04142
+        ],
+        [
+          18,
+          1.50823,
+          0.0413
+        ],
+        [
+          19,
+          1.20872,
+          0.05232
+        ],
+        [
+          20,
+          1.80637,
+          0.06368
+        ],
+        [
+          21,
+          1.66597,
+          0.05995
+        ],
+        [
+          22,
+          2.41065,
+          0.0628
+        ],
+        [
+          23,
+          1.40343,
+          0.06165
+        ],
+        [
+          24,
+          2.40586,
+          0.06522
+        ],
+        [
+          25,
+          1.54239,
+          0.07334
+        ],
+        [
+          30,
+          2.61863,
+          0.0733
+        ],
+        [
+          31,
+          1.14032,
+          0.04228
+        ],
+        [
+          32,
+          0.9616,
+          0.03719
+        ],
+        [
+          33,
+          1.3168,
+          0.03732
+        ],
+        [
+          34,
+          1.00318,
+          0.03716
+        ],
+        [
+          35,
+          1.10792,
+          0.03462
+        ],
+        [
+          36,
+          0.77771,
+          0.03363
+        ],
+        [
+          37,
+          1.31368,
+          0.03414
+        ],
+        [
+          38,
+          1.25617,
+          0.04417
+        ],
+        [
+          39,
+          1.50481,
+          0.05294
+        ],
+        [
+          40,
+          1.30046,
+          0.04635
+        ],
+        [
+          41,
+          1.32172,
+          0.04562
+        ],
+        [
+          42,
+          1.17467,
+          0.04516
+        ],
+        [
+          43,
+          2.01801,
+          0.04563
+        ],
+        [
+          44,
+          1.16628,
+          0.04233
+        ],
+        [
+          45,
+          1.08993,
+          0.04312
+        ],
+        [
+          46,
+          1.08504,
+          0.03959
+        ],
+        [
+          47,
+          1.29006,
+          0.04148
+        ],
+        [
+          48,
+          1.11271,
+          0.04493
+        ],
+        [
+          49,
+          1.79386,
+          0.04465
+        ],
+        [
+          50,
+          1.21284,
+          0.04429
+        ],
+        [
+          51,
+          2.00964,
+          0.0429
+        ],
+        [
+          52,
+          1.14924,
+          0.05004
+        ],
+        [
+          53,
+          1.75324,
+          0.039
+        ],
+        [
+          54,
+          1.17511,
+          0.04313
+        ],
+        [
+          55,
+          1.54011,
+          0.04141
+        ],
+        [
+          56,
+          1.27507,
+          0.04459
+        ],
+        [
+          57,
+          1.35636,
+          0.05139
+        ],
+        [
+          58,
+          1.82474,
+          0.05071
+        ],
+        [
+          59,
+          1.11807,
+          0.04652
+        ],
+        [
+          60,
+          1.91478,
+          0.05126
+        ],
+        [
+          61,
+          1.22099,
+          0.05015
+        ],
+        [
+          62,
+          0.99514,
+          0.04241
+        ],
+        [
+          63,
+          1.12733,
+          0.0401
+        ],
+        [
+          64,
+          0.95174,
+          0.0417
+        ],
+        [
+          65,
+          1.33278,
+          0.03776
+        ],
+        [
+          66,
+          0.97835,
+          0.04008
+        ],
+        [
+          67,
+          1.16874,
+          0.04198
+        ],
+        [
+          68,
+          1.04654,
+          0.0439
+        ],
+        [
+          69,
+          1.25805,
+          0.04894
+        ],
+        [
+          70,
+          1.62215,
+          0.05611
+        ],
+        [
+          71,
+          1.1102,
+          0.05274
+        ],
+        [
+          72,
+          1.24438,
+          0.05596
+        ],
+        [
+          73,
+          1.68305,
+          0.05374
+        ],
+        [
+          74,
+          1.55661,
+          0.05765
+        ],
+        [
+          75,
+          1.18128,
+          0.05902
+        ],
+        [
+          76,
+          1.04774,
+          0.04217
+        ],
+        [
+          77,
+          0.99024,
+          0.03846
+        ],
+        [
+          78,
+          1.67695,
+          0.03981
+        ],
+        [
+          79,
+          1.1832,
+          0.04165
+        ],
+        [
+          80,
+          1.0038,
+          0.03856
+        ],
+        [
+          81,
+          1.11667,
+          0.03759
+        ],
+        [
+          82,
+          1.62142,
+          0.03833
+        ],
+        [
+          83,
+          1.19096,
+          0.04164
+        ],
+        [
+          84,
+          1.15825,
+          0.04271
+        ],
+        [
+          85,
+          0.93668,
+          0.04739
+        ],
+        [
+          86,
+          1.02805,
+          0.0475
+        ],
+        [
+          87,
+          1.07463,
+          0.04392
+        ],
+        [
+          88,
+          1.2714,
+          0.04959
+        ],
+        [
+          89,
+          1.33768,
+          0.04589
+        ],
+        [
+          90,
+          0.94508,
+          0.04156
+        ],
+        [
+          91,
+          1.27056,
+          0.03819
+        ],
+        [
+          92,
+          1.01545,
+          0.04063
+        ],
+        [
+          93,
+          0.95495,
+          0.04142
+        ],
+        [
+          94,
+          0.9407,
+          0.04081
+        ],
+        [
+          95,
+          1.14344,
+          0.03937
+        ],
+        [
+          96,
+          1.6163,
+          0.04154
+        ],
+        [
+          97,
+          0.99086,
+          0.04344
+        ],
+        [
+          98,
+          1.43855,
+          0.04236
+        ],
+        [
+          99,
+          1.22612,
+          0.04711
+        ],
+        [
+          100,
+          1.21266,
+          0.04988
+        ]
+      ]
+    }
+  ]
 }

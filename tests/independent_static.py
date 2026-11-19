@@ -12,12 +12,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from iqio import RATE
 
 
-def check(path):
+def check(path, trajectory=None, seconds=65):
     with path.open() as f:
         rows = list(csv.DictReader(f))
     t = np.array([int(r["sample"]) / RATE for r in rows])
-    if len(t) != 325 or not np.allclose(t, (np.arange(325) + 1) / 5, rtol=0, atol=1e-8):
-        raise ValueError("expected all 325 status epochs from the 65-second recording")
+    count = seconds * 5
+    if len(t) != count or not np.allclose(
+        t, (np.arange(count) + 1) / 5, rtol=0, atol=1e-8
+    ):
+        raise ValueError(
+            f"expected all {count} status epochs from the {seconds}-second recording"
+        )
     flags = np.array([int(r["valid"]) for r in rows])
     if np.any((flags != 0) & (flags != 1)):
         raise ValueError("unknown solution validity")
@@ -28,8 +33,13 @@ def check(path):
     velocity = np.array(
         [[float(r[k]) for k in ("vx_mps", "vy_mps", "vz_mps")] for r in fixes]
     )
-    dp = np.linalg.norm(positions - [6378137, 0, 0], axis=1)
-    dv = np.linalg.norm(velocity, axis=1)
+    if trajectory is None:
+        ref_position, ref_velocity = [6378137, 0, 0], [0, 0, 0]
+    else:
+        truth = trajectory(t[flags == 1])
+        ref_position, ref_velocity = truth[:, :3], truth[:, 3:]
+    dp = np.linalg.norm(positions - ref_position, axis=1)
+    dv = np.linalg.norm(velocity - ref_velocity, axis=1)
     time_error = max(
         abs(float(r["tow_s"]) - 525609 - int(r["sample"]) / RATE) for r in fixes
     )
