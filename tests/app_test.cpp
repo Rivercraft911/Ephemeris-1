@@ -3,6 +3,7 @@
 
 #include <array>
 #include <cassert>
+#include <cstdlib>
 #include <cstring>
 
 #ifdef EPHEMERIS_FLIGHT_HEALTH
