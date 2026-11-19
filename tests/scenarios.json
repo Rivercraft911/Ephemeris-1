@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "motion": "circular two-body receiver with rotating ECEF frame",
+  "inclination_deg": 97.6,
+  "raan_deg": 35,
+  "antenna": "zenith-facing; 5 deg elevation mask",
+  "nominal_cno_dbhz": [40, 48],
+  "altitudes_km": [400, 550, 800],
+  "starts": [
+    {"phase_deg": 12, "gps_week": 2430, "tow_s": 86403.6},
+    {"phase_deg": 103, "gps_week": 2430, "tow_s": 194417.2},
+    {"phase_deg": 211, "gps_week": 2431, "tow_s": 307229.8},
+    {"phase_deg": 302, "gps_week": 2431, "tow_s": 472824.4}
+  ],
+  "qualification": {"hz": 5, "max_ttff_s": 120, "valid_streak": 5, "max_p95_position_m": 10, "max_p95_velocity_mps": 0.2, "min_availability": 0.99, "min_healthy_sv": 6, "min_cno_dbhz": 40, "max_pdop": 3},
+  "stress": [
+    {"id":"antenna-tumble","type":"rotate_antenna","period_s":30,"start_s":130,"end_s":230},
+    {"id":"single-fade","type":"attenuate_strongest_sv","loss_db":24,"start_s":130,"end_s":150},
+    {"id":"total-outage","type":"disable_all_sv","start_s":130,"end_s":140},
+    {"id":"three-visible","type":"limit_healthy_sv","count":3,"start_s":160,"end_s":190},
+    {"id":"frequency-low","type":"receiver_reference_offset_ppm","ppm":-2},
+    {"id":"frequency-high","type":"receiver_reference_offset_ppm","ppm":2},
+    {"id":"warm-restart","type":"receiver_reset_while_rf_on","start_s":180}
+  ]
+}

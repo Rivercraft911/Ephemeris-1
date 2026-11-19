@@ -1,0 +1,60 @@
+{
+  "level": "native replay of independently generated baseband",
+  "recording": {
+    "gps_sdr_sim_revision": "28ca29a6719475195e3aabd5930c4ed02d67190f",
+    "source_sha256": {
+      "gpssim.c": "e1707b112d9f5291b06b95ab5af17e1b83c9399e35ccb968467db4f282437b24",
+      "gpssim.h": "093c341c6045bbfacc70df20ef7dc0f1a63e88741606808b44fe7463f2862fe4",
+      "brdc0010.22n": "7db04513dd2d0e13c0ee20cb4eaa8f71e5a28ab58b65c9b5b789f86eeab436cd"
+    },
+    "input_pcm_sha256": "47abeb57011d450b6a63b521677286aa972c4c4e6d8bfb5d4c107544d402cd5c",
+    "eiq_sha256": "faabca8705ab72b408f09a36c4ede91f77a2c60ab0605dc18cb5c29b92a6e63c",
+    "samples": 1063920000,
+    "gain": 0.012,
+    "noise_sigma": 0.8,
+    "noise_seed": 10209,
+    "gps_week": 2190,
+    "start_tow_s": 525609,
+    "ecef_m": [
+      6378137,
+      0,
+      0
+    ]
+  },
+  "host": {
+    "platform": "macOS-15.7.9-arm64-arm-64bit-Mach-O",
+    "cc": "Apple clang 17.0.0 (clang-1700.0.13.5)",
+    "numpy": "2.2.5"
+  },
+  "work_per_epoch": 8,
+  "runs": {
+    "scalar": {
+      "eph_replay_sha256": "7b695aaa0275745585b7637e59a9051cf49c1ee6cbfdc3fc38f0c8ae8c29a03e",
+      "receiver_csv_sha256": "ed31a20c70b82c22eeb3ec473f5e911333b18bd9a8a44c306fb9990aa120c140",
+      "passed": true,
+      "status_epochs": 325,
+      "valid_epochs": 160,
+      "first_valid_s": 33.2,
+      "first_five_truth_checked_s": 33.6,
+      "availability_after_streak": 1.0,
+      "p95_position_m": 0.6850273167315827,
+      "p95_velocity_mps": 0.15902982167887655,
+      "max_time_error_s": 1.0477378964424133e-09,
+      "gaps": 0
+    },
+    "coarse": {
+      "eph_replay_sha256": "a8b63c83c8c19ce039d6d1152f776c8e3b3b1efc9f5dd95a1fa761965c89aa26",
+      "receiver_csv_sha256": "7430c04d6c81ae1006563efa3c07437573b755c82a62ff55965ddaae76bbe99a",
+      "passed": true,
+      "status_epochs": 325,
+      "valid_epochs": 160,
+      "first_valid_s": 33.2,
+      "first_five_truth_checked_s": 33.6,
+      "availability_after_streak": 1.0,
+      "p95_position_m": 1.0051295667917433,
+      "p95_velocity_mps": 0.16713463221133926,
+      "max_time_error_s": 2.0489068219831097e-09,
+      "gaps": 0
+    }
+  }
+}
