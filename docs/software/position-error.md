@@ -28,6 +28,12 @@ We also tested a seven-report velocity fit on the host. It improved velocity err
 
 These independent 165-second recordings disable the simulator's ionospheric delay and have no injected multipath or hardware oscillator drift. An antenna or conducted RF test is needed to measure the physical error budget. Separate ground simulations exercise atmosphere and reflections. [Ground propagation controls](accuracy.md#biases-in-the-ground-experiment)
 
+## What a survey receiver measures
+
+Our position solver uses GPS L1 C/A code timing. It also uses carrier Doppler for velocity. A survey rover also measures the accumulated carrier phase in cycles for each satellite. At 1,575.42 MHz one cycle spans 190.3 mm, so a hundredth of a cycle resolves 1.9 mm along that line of sight. The receiver still has to determine the integer number of cycles. In ground RTK a nearby surveyed base observes the same satellites. Differencing the two receivers' observations reduces shared clock, orbit and atmospheric errors. Continuous lock and observations on multiple frequencies help resolve the integers. [Receiver observations](../../receiver/navigation.hpp) · [ESA RTK fundamentals](https://gssc.esa.int/navipedia/index.php/RTK_Fundamentals)
+
+The same u-blox ZED-F9P-05B specifies 1.5 m horizontal CEP standalone and 10 mm plus 1 mm per kilometre of base separation in fixed RTK. CEP is a 50% horizontal radius. The replay tables here use the 95th percentile of 3D distance. For an L1-only LEO comparison, DLR obtained 0.6–1 m 3D RMS with flight data, broadcast ephemerides and a filter combining code, carrier and orbital dynamics. A first test on Ephemeris 1 would measure change in carrier range against known motion, including a forced loss of lock and a fresh phase ambiguity on reacquisition. [u-blox data sheet, Table 3](https://content.u-blox.com/sites/default/files/documents/ZED-F9P-05B_DataSheet_UBXDOC-963802114-12824.pdf) · [DLR flight-data study](https://elib.dlr.de/49634/)
+
 ## Reproduce the budget
 
 Generate the independent orbital EIQ files with the pinned simulator, start time, gain and noise settings. The final two cases use (475 km, 151°, seed 62031) and (400 km, 281°, seed 73919). Run the diagnostic from a checkout containing the receiver revision recorded in the JSON. It uses Python 3.12+, NumPy, CMake and native C/C++ compilers. The source instrumentation and build are temporary. [Waveform generation](independent.md#recreate-the-reference-input)
