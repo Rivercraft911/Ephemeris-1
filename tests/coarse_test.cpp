@@ -31,6 +31,13 @@ void packing() {
         assert(!low::preprocess({0,nullptr,0},out));
         assert(low::preprocess({origin,bytes.data(),bytes.size(),true},out));
         assert(out.first_sample==origin && out.discontinuity);
+        alignas(4) std::array<std::uint8_t, sig::bytes_per_ms + 3> shifted{};
+        for (unsigned offset = 1; offset <= 3; ++offset) {
+            std::memcpy(shifted.data() + offset, bytes.data(), bytes.size());
+            low::Epoch unaligned;
+            assert(low::preprocess({origin, shifted.data() + offset, bytes.size(), true}, unaligned));
+            assert(unaligned.i == out.i && unaligned.q == out.q);
+        }
         for(unsigned k=0;k<low::half_chips;++k) {
             int i=0,q=0;
             for(unsigned j=0;j<8;++j) {

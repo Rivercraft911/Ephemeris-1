@@ -33,6 +33,12 @@ jobs:
       - run: cmake -S . -B build/native -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DEPHEMERIS_SANITIZE=${{ matrix.sanitize }} -DEPHEMERIS_BITPLANE_TRACKING=${{ matrix.bitplane }} -DEPHEMERIS_PREFIX_SUMS=${{ matrix.prefix }} -DEPHEMERIS_COARSE_TRACKING=${{ matrix.coarse }} -DEPHEMERIS_GROUND_SEARCH=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_GROUND_TROPOSPHERE=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_GROUND_IONOSPHERE=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_LONG_CODE_SMOOTHING=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_DOPPLER_POSITION=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_COMPACT_SURVEY=${{ matrix.compact || 'OFF' }} -DEPHEMERIS_MOTION_AVERAGE=${{ matrix.compact || 'OFF' }} -DEPHEMERIS_FLIGHT_SURVEY=${{ matrix.survey || 'OFF' }} -DEPHEMERIS_VELOCITY_FIT=${{ matrix.ground || matrix.survey || 'OFF' }}
       - run: cmake --build build/native --parallel 2
       - run: ctest --test-dir build/native --output-on-failure -j 2
+      - name: Check the longer orbital average
+        if: matrix.backend == 'compact'
+        run: |
+          cmake -S . -B build/native -DEPHEMERIS_MOTION_WINDOW=100
+          cmake --build build/native --target navigation_test --parallel 2
+          ctest --test-dir build/native -R '^navigation$' --output-on-failure
       - if: github.event_name == 'schedule' && matrix.backend == 'scalar' && matrix.sanitize == 'OFF'
         run: |
           mkdir -p build/evidence
@@ -81,7 +87,7 @@ jobs:
           cmake --build build/pico-ground --target ephemeris_pico ephemeris_profile --parallel 2
       - name: Cross-build the experimental orbital search
         run: |
-          cmake -S firmware -B build/pico-survey -G Ninja -DPICO_SDK_PATH="$GITHUB_WORKSPACE/build/sdk" -DCMAKE_BUILD_TYPE=Release -DEPHEMERIS_FLIGHT_SURVEY=ON -DEPHEMERIS_COMPACT_SURVEY=ON -DEPHEMERIS_VELOCITY_FIT=ON -DEPHEMERIS_MOTION_AVERAGE=ON
+          cmake -S firmware -B build/pico-survey -G Ninja -DPICO_SDK_PATH="$GITHUB_WORKSPACE/build/sdk" -DCMAKE_BUILD_TYPE=Release -DEPHEMERIS_FLIGHT_SURVEY=ON -DEPHEMERIS_COMPACT_SURVEY=ON -DEPHEMERIS_VELOCITY_FIT=ON -DEPHEMERIS_MOTION_AVERAGE=ON -DEPHEMERIS_MOTION_WINDOW=100
           cmake --build build/pico-survey --target ephemeris_pico ephemeris_clocked_replay --parallel 2
       - uses: actions/upload-artifact@v4
         with:
