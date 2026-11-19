@@ -495,6 +495,51 @@ void multiple_dwell_timing(s::Acquisition& acq) {
     require(!acq.add_dwell(first),"cannot add after FFT search starts");
 }
 
+void common_clock_doppler() {
+    // Two channels see the same oscillator fluctuation. Starting their fits at
+    // different times must not turn it into differential range rate.
+    const auto code = reference_code(1);
+    const uint64_t origin_ms = (uint64_t{1} << 32)/s::raw_per_ms - 73;
+    const uint64_t offset = 67*s::raw_per_ms + 5;
+    s::Tracker first, late;
+    first.set_report_origin(origin_ms*s::raw_per_ms);
+    late.set_report_origin(origin_ms*s::raw_per_ms + offset);
+    s::Epoch epoch;
+    unsigned comparisons = 0;
+    float peak_doppler = 0;
+    for (unsigned ms = 0; ms < 2600; ++ms) {
+        epoch.first_sample = (origin_ms + ms)*s::raw_per_ms;
+        const double t = (ms + 0.5)*0.001;
+        const double angle = tau*3.0*std::sin(tau*t/1.6);
+        const int i = static_cast<int>(std::lround(40*std::cos(angle)));
+        const int q = static_cast<int>(std::lround(40*std::sin(angle)));
+        for (unsigned j = 0; j < epoch.samples.size(); ++j) {
+            const auto sign = code[j/4];
+            epoch.samples[j] = {static_cast<int8_t>(i*sign), static_cast<int8_t>(q*sign)};
+        }
+        s::Detection seed{1, epoch.first_sample, 0, 0, 50, true};
+        if (ms == 0) require(first.start(seed), "start common clock tracker");
+        const auto a = first.update(epoch);
+        if (ms < 73) continue;
+        // The second segment has different absolute sample tags. Its reports
+        // still occur at the same offsets from the start of this waveform.
+        epoch.first_sample += offset;
+        seed.first_sample = epoch.first_sample;
+        if (ms == 73 || ms == 1337) require(late.start(seed), "restart offset tracker");
+        const auto b = late.update(epoch);
+        const unsigned age = ms - (ms >= 1337 ? 1337 : 73);
+        if (age >= 900 && (ms + 1) % 200 == 0) {
+            require(a.locked && b.locked, "common clock reports retain lock");
+            peak_doppler = std::max(peak_doppler, std::abs(a.doppler_hz));
+            require(std::abs(a.doppler_hz - b.doppler_hz) < 0.12,
+                    "channel start time must not leak oscillator motion into differential Doppler");
+            ++comparisons;
+        }
+    }
+    require(comparisons >= 3, "exercise common clock before and after reacquisition");
+    require(peak_doppler > 5.0f, "track the applied common oscillator variation");
+}
+
 void benchmark() {
     using clock=std::chrono::steady_clock;
     Source src({1,0,0,0,1});
@@ -536,6 +581,7 @@ int main(int argc,char** argv) {
     if (argc==2 && std::strcmp(argv[1],"--sweep")==0) { sensitivity_run();return 0; }
     if (argc==2 && std::strcmp(argv[1],"--bench")==0) { benchmark();return 0; }
     format_tests();
+    common_clock_doppler();
     stale_search(-90.,true);
     stale_search(+90.,true);
     stale_search(0.,true);
