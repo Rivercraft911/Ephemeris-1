@@ -277,6 +277,21 @@ def path_bias_seconds(time_s, prn, slant_tecu, broadcast_error_m):
     return (common_m + ionosphere_m) / C, (common_m - ionosphere_m) / C
 
 
+def ground_delays(sin_el, zenith_m, reflector_height_m):
+    """Return neutral and reflected excess delays in seconds for the visible sky."""
+    # Black–Eisner mapping above the generator's 5° elevation mask.
+    neutral = zenith_m * 1.001 / np.sqrt(0.002001 + sin_el**2)
+    # Far-field path difference to the image antenna across a horizontal plane.
+    excess = 2 * reflector_height_m * sin_el
+    return neutral / C, excess / C
+
+
+def mix_numpy(z, local, chip0, chip_hz, phase0, if_hz, amplitude, code, nav, table):
+    chip = np.floor(chip0 + chip_hz * local).astype(np.int64)
+    index = np.floor(2048 * (phase0 + if_hz * local)).astype(np.int64) & 2047
+    z += amplitude * code[chip % 1023] * nav[chip // 20460] * table[index]
+
+
 def generate(
     output,
     truth,
@@ -290,11 +305,21 @@ def generate(
     mixer=None,
     slant_tecu=0.0,
     broadcast_error_m=0.0,
+    zenith_delay_m=0.0,
+    ground_echo=None,
 ):
-    if not all(math.isfinite(x) and x >= 0 for x in (slant_tecu, broadcast_error_m)):
-        raise ValueError(
-            "slant TEC and broadcast error amplitude must be finite and nonnegative"
-        )
+    delays = (slant_tecu, broadcast_error_m, zenith_delay_m)
+    if not all(math.isfinite(x) and x >= 0 for x in delays):
+        raise ValueError("slant TEC, broadcast error and zenith delay must be finite and nonnegative")
+    reflector_height_m, reflection = ground_echo if ground_echo is not None else (0.0, 0.0)
+    if (
+        not math.isfinite(reflector_height_m) or reflector_height_m < 0
+        or not -1 <= reflection <= 1
+    ):
+        raise ValueError("ground echo needs a finite nonnegative height and voltage ratio in [-1, 1]")
+    ground_model = bool(zenith_delay_m or reflection)
+    if ground_model and (height or scenario):
+        raise ValueError("ground propagation requires the static ground receiver")
     start_tow, week = START, WEEK
     phase = node = 0.0
     if scenario:
@@ -348,6 +373,7 @@ def generate(
     clock_scale = effects.clock_scale
     t = np.arange(10 * SAMPLES_MS) / RATE / clock_scale
     if_physical = L1 - (L1 - IF_HZ) * clock_scale
+    add = mixer.add if mixer is not None else mix_numpy
     prns = np.array([sv.prn for sv in satellites])
     threshold = math.sqrt(
         2 * sigma**2 * 10 ** (SPEC["qualification"]["min_cno_dbhz"] / 10) / RATE
@@ -395,10 +421,17 @@ def generate(
             start = ms / (1000 * clock_scale)
             span = size / (RATE * clock_scale)
             p, v = receiver(start, height, phase, node)
-            _, amplitudes = signal_levels(start, p)
+            directions, amplitudes = signal_levels(start, p)
             if ms % 200 == 0:
                 record(writer, ms / 1000)
             rx_end = receiver(start + span, height, phase, node)[0]
+            if ground_model:
+                sine = directions @ (p / np.linalg.norm(p))
+                _, sine_end = visibility(satellites, start_tow + start + span, rx_end)
+                neutral, excess = ground_delays(sine, zenith_delay_m, reflector_height_m)
+                neutral_end, excess_end = ground_delays(
+                    sine_end, zenith_delay_m, reflector_height_m
+                )
             z = sigma * (
                 rng.standard_normal(size, dtype=np.float32)
                 + 1j * rng.standard_normal(size, dtype=np.float32)
@@ -414,6 +447,12 @@ def generate(
                 slope = (end - delay[j]) / span
                 code_delay, carrier_delay = delay[j], delay[j]
                 code_slope, carrier_slope = slope, slope
+                if ground_model:
+                    code_delay += neutral[j]
+                    carrier_delay += neutral[j]
+                    delay_rate = (neutral_end[j] - neutral[j]) / span
+                    code_slope += delay_rate
+                    carrier_slope += delay_rate
                 if slant_tecu or broadcast_error_m:
                     c0, p0 = path_bias_seconds(
                         start, sv.prn, slant_tecu, broadcast_error_m
@@ -434,30 +473,25 @@ def generate(
                     + (if_physical * start) % 1
                 ) % 1
                 carrier_hz = if_physical - L1 * carrier_slope
-                if mixer is not None:
-                    mixer.add(
+                add(
+                    z, local, first_chip, chip_hz, phase0, carrier_hz,
+                    amplitudes[j], sv.code, nav[j], table,
+                )
+                if reflection:
+                    # The echo carries the delayed navigation bits, spreading code
+                    # and L1 phase. Changing elevation gives differential Doppler.
+                    rate = (excess_end[j] - excess[j]) / span
+                    add(
                         z,
                         local,
-                        first_chip,
-                        chip_hz,
-                        phase0,
-                        carrier_hz,
-                        amplitudes[j],
+                        first_chip - 1023000 * excess[j],
+                        chip_hz - 1023000 * rate,
+                        (phase0 - L1 * excess[j]) % 1,
+                        carrier_hz - L1 * rate,
+                        reflection * amplitudes[j],
                         sv.code,
                         nav[j],
                         table,
-                    )
-                else:
-                    chip = np.floor(first_chip + chip_hz * local).astype(np.int64)
-                    oscillator_index = (
-                        np.floor(2048 * (phase0 + carrier_hz * local)).astype(np.int64)
-                        & 2047
-                    )
-                    z += (
-                        amplitudes[j]
-                        * sv.code[chip % 1023]
-                        * nav[j][chip // 20460]
-                        * table[oscillator_index]
                     )
                 delay[j] = end
             delay[~visible] = np.nan
@@ -503,6 +537,14 @@ if __name__ == "__main__":
         help="amplitude of a slowly varying line-of-sight orbit/clock residual",
     )
     cli.add_argument(
+        "--zenith-delay-m", type=float, default=0,
+        help="static ground receiver neutral-atmosphere zenith delay, in meters",
+    )
+    cli.add_argument(
+        "--ground-echo", type=float, nargs=2, metavar=("HEIGHT_M", "VOLTAGE"),
+        help="static ground echo from a flat plane below the antenna, signed voltage relative to direct",
+    )
+    cli.add_argument(
         "--cn0", type=float, default=53.0, help="per-SV nominal C/N0 in dB-Hz"
     )
     cli.add_argument(
@@ -524,4 +566,6 @@ if __name__ == "__main__":
         NativeMixer(a.mixer) if a.mixer else None,
         a.slant_tecu,
         a.broadcast_error_m,
+        a.zenith_delay_m,
+        a.ground_echo,
     )

@@ -12,7 +12,7 @@ namespace ephemeris {
 namespace sig = eph::signal;
 namespace nav = eph::nav;
 namespace {
-constexpr uint64_t report_samples = sig::raw_per_ms * 200u;
+constexpr uint64_t report_samples = nav::PositionSmoother::interval_samples;
 uint32_t mask(unsigned prn) { return uint32_t{1} << (prn - 1); }
 }
 
@@ -82,6 +82,9 @@ void Receiver::clear_channels() {
     prns_.fill(0);
     occupied_.store(0, std::memory_order_release);
     status_.fix = {};
+#ifdef EPHEMERIS_DOPPLER_POSITION
+    position_smoother_ = {};
+#endif
     status_.active_mask = status_.locked_mask = status_.valid_nav_mask = 0;
     have_clock_ = false;
     generation_.fetch_add(1, std::memory_order_release);
@@ -204,6 +207,9 @@ void Receiver::navigate(uint64_t sample) {
         clock_tow_ + static_cast<double>(sample - clock_sample_) / sig::raw_hz :
         std::numeric_limits<double>::quiet_NaN();
     nav::solve_fix(obs.data(), n, status_.fix, receiver_tow);
+#ifdef EPHEMERIS_DOPPLER_POSITION
+    position_smoother_.update(status_.fix, sample);
+#endif
     status_.sample = sample;
     ++status_.sequence;
 }

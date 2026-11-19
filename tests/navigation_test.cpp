@@ -146,9 +146,42 @@ void bad_fix_clears_state() {
     obs[1].prn=obs[0].prn;
     assert(!solve_fix(obs.data(),obs.size(),fix));
 }
+void doppler_position() {
+    PositionSmoother smoother;
+    constexpr auto step = PositionSmoother::interval_samples;
+    Fix fix;
+    fix.valid = true;
+    fix.velocity_mps = {10, -4, 0};
+    fix.position_m = {100, 200, 300};
+    smoother.update(fix, 0);
+    assert((fix.position_m == Vec3{100, 200, 300}));
+
+    // Constant acceleration in x, constant velocity in y, 40 m of code noise in z.
+    fix.velocity_mps[0] = 12;
+    fix.position_m = {102.2, 199.2, 340};
+    smoother.update(fix, step);
+    assert(std::abs(fix.position_m[0] - 102.2) < 1e-12);
+    assert(std::abs(fix.position_m[1] - 199.2) < 1e-12);
+    assert(fix.position_m[2] == 301 && fix.velocity_mps[0] == 12);
+
+    // A dropped report, repeated or restarted clock, or explicit loss of fix
+    // must seed directly from the next valid position.
+    for (const auto sample : {3*step, 3*step, 0*step}) {
+        fix.position_m = {50, 100, 150};
+        smoother.update(fix, sample);
+        assert((fix.position_m == Vec3{50, 100, 150}));
+    }
+    Fix invalid;
+    smoother.update(invalid, step);
+    assert(!invalid.valid);
+    fix.position_m = {20, 40, 60};
+    smoother.update(fix, step);
+    assert((fix.position_m == Vec3{20, 40, 60}));
+}
 }
 int main() {
     orbit_reference(); message_test(false); message_test(true);
     parity_and_issue(); independent_fix_at_rollover(); bad_fix_clears_state();
+    doppler_position();
     std::puts("LNAV, RTKLIB broadcast state and navigation rejection tests passed");
 }

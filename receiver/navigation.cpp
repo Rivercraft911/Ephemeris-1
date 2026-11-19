@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "navigation.hpp"
+#ifdef EPHEMERIS_GROUND_TROPOSPHERE
+#include "troposphere.hpp"
+#endif
 
 #include <algorithm>
 #include <cmath>
@@ -305,6 +308,25 @@ bool propagate(const Ephemeris& e, double t, Satellite& sat) {
     return std::isfinite(sat.clock_s + sat.clock_drift + dot(sat.position_m,sat.velocity_mps));
 }
 
+void PositionSmoother::update(Fix& fix, uint64_t sample) {
+    if (!fix.valid) {
+        initialized_ = false;
+        return;
+    }
+    if (initialized_ && sample > previous_sample_ && sample - previous_sample_ == interval_samples) {
+        constexpr double dt = interval_samples / sample_rate;
+        constexpr double gain = dt / 8.0;
+        for (unsigned i = 0; i < position_.size(); ++i) {
+            const double predicted = position_[i] + 0.5 * dt * (velocity_[i] + fix.velocity_mps[i]);
+            fix.position_m[i] = predicted + gain * (fix.position_m[i] - predicted);
+        }
+    }
+    position_ = fix.position_m;
+    velocity_ = fix.velocity_mps;
+    previous_sample_ = sample;
+    initialized_ = true;
+}
+
 bool solve_fix(const Observation* obs, std::size_t n, Fix& fix, double receiver_tow_s) {
     fix = {};
     if (!obs || n < 4 || n > 32) return false;
@@ -343,6 +365,10 @@ bool solve_fix(const Observation* obs, std::size_t n, Fix& fix, double receiver_
     }
     Fix trial{};
     bool converged = false;
+#ifdef EPHEMERIS_GROUND_TROPOSPHERE
+    GroundAtmosphere atmosphere;
+    bool checked_height = false;
+#endif
     for (int iter = 0; iter < 12; ++iter) {
         LeastSquares ls;
         for (std::size_t i = 0; i < n; ++i) {
@@ -353,13 +379,24 @@ bool solve_fix(const Observation* obs, std::size_t n, Fix& fix, double receiver_
             const double length = std::sqrt(dot(line,line));
             if (!(length > 1)) return false;
             for (double& x : line) x /= length;
-            ls.add(line, m.range - (length + trial.clock_bias_m));
+            double model = length + trial.clock_bias_m;
+#ifdef EPHEMERIS_GROUND_TROPOSPHERE
+            if (atmosphere.zenith_m > 0) model += atmosphere.slant_m(line);
+#endif
+            ls.add(line, m.range - model);
         }
         std::array<double,4> d{};
         if (!ls.solve(d,trial.pdop)) return false;
         for (int j = 0; j < 3; ++j) trial.position_m[j] += d[j];
         trial.clock_bias_m += d[3];
-        if (std::max({std::abs(d[0]),std::abs(d[1]),std::abs(d[2]),std::abs(d[3])}) < .001) {
+        const double step = std::max({std::abs(d[0]),std::abs(d[1]),std::abs(d[2]),std::abs(d[3])});
+#ifdef EPHEMERIS_GROUND_TROPOSPHERE
+        if (!checked_height && step < 100) {
+            checked_height = true;
+            if (atmosphere.set_from_ecef(trial.position_m)) continue;
+        }
+#endif
+        if (step < .001) {
             trial.range_rms_m = std::sqrt(ls.sumsq/n);
             converged = true;
             break;

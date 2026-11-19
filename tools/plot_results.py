@@ -259,6 +259,37 @@ def make_figures(data, destination):
         plt.close(fig)
 
 
+def ground_figure(data, destination):
+    labels = {
+        "clean": "No atmosphere or echo",
+        "neutral": "Neutral delay, 2.4 m",
+        "echo": "Reflection only",
+        "combined": "Neutral delay + reflection",
+        "heldout-clean": "No atmosphere or echo",
+        "heldout-dry": "Neutral delay, 1.9 m",
+        "heldout-wet-echo": "2.8 m + reflection",
+    }
+    fig, ax = plt.subplots(figsize=(7.2, 3.7), layout="constrained")
+    rows = data["cases"]
+    y = np.arange(len(rows))
+    for i, (key, label) in enumerate((
+        ("uncorrected", "Raw solution"),
+        ("corrected", "Atmosphere correction"),
+        ("corrected_with_doppler", "Correction + Doppler"),
+    )):
+        ax.scatter([r[key]["position_p95_m"] for r in rows], y + (i - 1) * 0.15,
+                   color=PALETTE[i], marker=("o", "s", "^")[i], label=label, s=32)
+    ax.axhline(3.5, color="#888888", lw=0.65)
+    ax.set(yticks=y, yticklabels=[labels[r["name"]] for r in rows],
+           xlabel="95th-percentile 3D position error (m)",
+           title="Ground receiver, two simulated skies", xlim=(0, None))
+    ax.invert_yaxis()
+    ax.grid(axis="x", linewidth=0.45, alpha=0.55)
+    ax.legend(frameon=False, loc="lower center", bbox_to_anchor=(0.5, -0.34), ncol=3, fontsize=8)
+    fig.savefig(destination / "ground-accuracy.png", dpi=180)
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--results", type=Path, default=BASE / "baseline.json")
@@ -274,3 +305,6 @@ if __name__ == "__main__":
         data["orbits"] = collect_orbits(a.import_orbits)
         a.results.write_text(json.dumps(data, indent=2, allow_nan=False) + "\n")
     make_figures(data, a.out)
+    ground = a.results.with_name("ground-bias.json")
+    if ground.exists():
+        ground_figure(json.loads(ground.read_text()), a.out)

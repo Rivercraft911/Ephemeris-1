@@ -116,24 +116,57 @@ def compare_native(executable, channels, raw, summary, observed):
     print(f"All {channels} final tracking epochs matched the native receiver tolerances.")
 
 
+def send_fixture(port, command, raw):
+    if len(raw) != BYTES_MS:
+        raise ValueError("bad replay vector length")
+    port.reset_input_buffer()
+    port.write(command.encode() + b"\n")
+    ready = port.readline().strip()
+    if ready != b"READY 8184":
+        raise ValueError(f"unexpected fixture handshake {ready!r}")
+    port.write(raw)
+
+
+def blind_lock(port, prn, seconds):
+    from vectors import waveform
+
+    # The USB command carries only a timeout. Keep the PRN and phase in the host scorer.
+    phase = 137.25
+    raw = waveform(1, [(prn, 0.0, phase, 1.0, 0.0)], noise=0.05, alternate_bits=False)
+    send_fixture(port, f"blind {seconds}", raw)
+    port.timeout = seconds + 5
+    result = port.readline().decode("ascii", errors="replace").strip()
+    print(result)
+    if not result.startswith("PASS "):
+        raise ValueError("no sustained cold lock with continuous capture")
+    fields = dict(part.split("=", 1) for part in result.split()[1:])
+    required = {"prn", "consecutive", "lock_sample", "end_sample", "lock_us", "elapsed_us",
+                "phase_chips", "doppler_hz", "capture_gaps", "missed", "stalls", "clock_timeouts"}
+    if not required.issubset(fields):
+        raise ValueError("incomplete cold-lock report")
+    lock_sample = int(fields["lock_sample"])
+    if (int(fields["prn"]) != prn or int(fields["consecutive"]) != 20
+            or lock_sample <= 0 or int(fields["end_sample"]) - lock_sample != 19 * SAMPLES_MS
+            or not 0 < int(fields["lock_us"]) < int(fields["elapsed_us"])
+            or not abs(math.remainder(float(fields["phase_chips"]) - phase, 1023)) <= 1
+            or not abs(float(fields["doppler_hz"])) <= 50
+            or any(int(fields[k]) for k in ("capture_gaps", "missed", "stalls", "clock_timeouts"))):
+        raise ValueError("cold lock differs from the host fixture or timing record")
+    print(f"Verified PRN {prn}: first lock at {lock_sample / RATE:.3f} s of samples, "
+          f"{int(fields['lock_us']) / 1e6:.6f} s of wall time.")
+
+
 def profile(port, channels, external, reference=None, offline=False, pvt_load=False):
     # All code epochs repeat in exactly 1 ms at zero Doppler. Seed phase agrees
     # with the waveform generator at its first raw sample. Live builds have no seed command.
     from vectors import waveform
     signals = [(i + 1, 0.0, i * 37.0, 1.0, 0.0) for i in range(channels)]
     raw = waveform(1, signals, noise=0.05, alternate_bits=False)
-    if len(raw) != BYTES_MS:
-        raise ValueError("bad replay vector length")
-    port.reset_input_buffer()
     if pvt_load:
         mode = "load-ext" if external else "load"
     else:
         mode = "offline" if offline else "external" if external else "profile"
-    port.write(f"{mode} {channels}\n".encode())
-    ready = port.readline().strip()
-    if ready != b"READY 8184":
-        raise ValueError(f"unexpected profile handshake {ready!r}")
-    port.write(raw)
+    send_fixture(port, f"{mode} {channels}", raw)
     result = port.readline().decode("ascii", errors="replace").strip()
     print(result)
     observed = []
@@ -175,13 +208,16 @@ if __name__ == "__main__":
     cadence.add_argument("--offline", action="store_true", help="measure lossless compute cost without real-time pacing")
     prof.add_argument("--pvt-load", action="store_true", help="add five truth-checked six-SV navigation solves under live DMA")
     prof.add_argument("--reference", type=Path, help="native eph-replay executable for numerical comparison")
+    cold = sub.add_parser("blind-lock", help="time a cold, unseeded acquisition on a fresh profile image")
+    cold.add_argument("prn", type=int, choices=range(1, 33), help="PRN in the host waveform")
+    cold.add_argument("--seconds", type=int, default=60, help="stop after this many seconds of input")
     sub.add_parser("pvt", help="time the six-satellite navigation solver against an independent reference")
     sub.add_parser("clocktest", help="use the profile image to verify recovered high/low clock pauses")
     cont = sub.add_parser("continuity", help="measure continuous digital input on the profile image")
     cont.add_argument("--seconds", type=int, default=70)
     args = cli.parse_args()
-    if args.action == "continuity" and not 1 <= args.seconds <= 600:
-        cli.error("use a continuity duration between 1 and 600 seconds")
+    if args.action in ("continuity", "blind-lock") and not 1 <= args.seconds <= 600:
+        cli.error("use a duration between 1 and 600 seconds")
     if args.action == "profile" and args.offline and args.pvt_load:
         cli.error("--pvt-load requires a live sample clock")
     import serial  # pyserial is only required for the physical bench
@@ -190,6 +226,8 @@ if __name__ == "__main__":
                            write_timeout=2) as device:
             if args.action == "profile":
                 profile(device, args.channels, args.external, args.reference, args.offline, args.pvt_load)
+            elif args.action == "blind-lock":
+                blind_lock(device, args.prn, args.seconds)
             elif args.action == "pvt":
                 device.reset_input_buffer()
                 device.write(b"pvt\n")
