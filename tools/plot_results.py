@@ -318,6 +318,39 @@ def acquisition_figure(pico, replay, destination):
     plt.close(fig)
 
 
+def clocked_position_figure(manifest, destination):
+    from campaign import EARTH_RADIUS, FS, XYZ, circular
+
+    data = json.loads(manifest.read_text())
+    fig, axes = plt.subplots(1, 2, sharex=True, sharey=True, figsize=(8.0, 3.15), layout="constrained")
+    largest = 0.0
+    for ax, name, color in zip(axes, ("ground_165", "orbit_165"), PALETTE):
+        run = data["runs"][name]
+        sky = data["fixtures"][run["fixture"]]
+        rows = np.genfromtxt(manifest.parent / run["status_file"], delimiter=",", names=True)
+        fixes = rows[rows["valid"] == 1]
+        times = fixes["sample"] / FS
+        positions = np.column_stack([fixes[field] for field in XYZ[:3]])
+        if "ecef_m" in sky:
+            truth = np.asarray(sky["ecef_m"])
+        else:
+            truth = circular(EARTH_RADIUS + 1000 * sky["altitude_km"],
+                             *np.deg2rad([sky["inclination_deg"], sky["raan_deg"], sky["phase_deg"]]),
+                             times)[:, :3]
+        errors = np.linalg.norm(positions - truth, axis=1)
+        largest = max(largest, errors.max())
+        p95 = np.percentile(errors, 95)
+        ax.scatter(times, errors, s=4, color=color, alpha=0.6, linewidths=0)
+        ax.axhline(p95, color=color, linestyle="--", linewidth=1, label=f"95th percentile · {p95:.2f} m")
+        ax.legend(frameon=False, loc="upper left")
+        ax.set(title=sky["label"], xlim=(0, run["transport"]["epochs"] / 1000))
+        ax.grid(axis="y", linewidth=0.45, alpha=0.55)
+    axes[0].set(ylabel="3D position error (m)", ylim=(0, largest * 1.08))
+    fig.supxlabel("Seconds from the start of device-clocked replay", fontsize=10)
+    fig.savefig(destination / "pico-clocked.png", dpi=180)
+    plt.close(fig)
+
+
 def position_error_figure(budget, controls, destination):
     orbits = budget["orbits"]
     paired = {r["input_sha256"]: r for r in controls["orbits"]}
@@ -388,6 +421,9 @@ if __name__ == "__main__":
     replay = a.results.with_name("cold-replay.json")
     if pico.exists() and replay.exists():
         acquisition_figure(json.loads(pico.read_text()), json.loads(replay.read_text()), a.out)
+    clocked = a.results.with_name("pico-clocked.json")
+    if clocked.exists():
+        clocked_position_figure(clocked, a.out)
     survey = a.results.with_name("flight-survey.json")
     if survey.exists():
         flight_search_figure(json.loads(survey.read_text()), a.out)

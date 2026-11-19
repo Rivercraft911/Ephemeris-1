@@ -1,0 +1,300 @@
+{
+  "receiver_revision": "e2c89024b8f37f6fe4efa44df9f2b397350315d4",
+  "target": "Pimoroni Pico Plus 2, RP2350B, dual Cortex-M33 at 150 MHz. SRAM-only Release images, Pico SDK 2.2.0, Arm GCC 14.2.",
+  "method": "Independent GPS-SDR-SIM waveform packed to 2,046 I/Q half-chip sign pairs every millisecond on the host. Empty receiver on each SRAM load. Acquisition, tracking, LNAV and PVT on the Pico. The on-device 1 kHz clock starts after input prefill. No RF front end was connected.",
+  "fixtures": {
+    "ground": {
+      "label": "Static ground",
+      "ecef_m": [
+        6378137,
+        0,
+        0
+      ]
+    },
+    "orbit": {
+      "label": "550 km orbit",
+      "altitude_km": 550,
+      "inclination_deg": 97.6,
+      "raan_deg": 35,
+      "phase_deg": 12
+    }
+  },
+  "profiles": {
+    "ground": {
+      "EPHEMERIS_GROUND_SEARCH": true,
+      "EPHEMERIS_FLIGHT_SURVEY": false,
+      "EPHEMERIS_VELOCITY_FIT": false,
+      "EPHEMERIS_COARSE_TRACKING": true,
+      "EPHEMERIS_DUAL_TRACKING": true,
+      "EPHEMERIS_DOPPLER_POSITION": false,
+      "EPHEMERIS_GROUND_TROPOSPHERE": false,
+      "sram_uf2_sha256": "5a0490d2a5105c43d384d4f1c0585caf96d0856e7c9c92618a9a470bf21ef35c"
+    },
+    "flight": {
+      "EPHEMERIS_GROUND_SEARCH": false,
+      "EPHEMERIS_FLIGHT_SURVEY": true,
+      "EPHEMERIS_VELOCITY_FIT": true,
+      "EPHEMERIS_COARSE_TRACKING": true,
+      "EPHEMERIS_DUAL_TRACKING": true,
+      "EPHEMERIS_DOPPLER_POSITION": false,
+      "EPHEMERIS_GROUND_TROPOSPHERE": false,
+      "sram_uf2_sha256": "323af27501d1cf8c55e65212286b9f1b7527e60614b8043ba2df48763b1785a6"
+    },
+    "ground_fit": {
+      "EPHEMERIS_GROUND_SEARCH": true,
+      "EPHEMERIS_FLIGHT_SURVEY": false,
+      "EPHEMERIS_VELOCITY_FIT": true,
+      "EPHEMERIS_COARSE_TRACKING": true,
+      "EPHEMERIS_DUAL_TRACKING": true,
+      "EPHEMERIS_DOPPLER_POSITION": false,
+      "EPHEMERIS_GROUND_TROPOSPHERE": false,
+      "sram_uf2_sha256": "1e6b7e8b44b82d44a603d5599b011717a8abb6cdd08fddde187d4eee2b05ac0e"
+    }
+  },
+  "runs": {
+    "ground_65": {
+      "profile": "ground",
+      "fixture": "ground",
+      "raw_eiq_sha256": "faabca8705ab72b408f09a36c4ede91f77a2c60ab0605dc18cb5c29b92a6e63c",
+      "status_file": "clocked/ground_65.csv.gz",
+      "uncompressed_csv_sha256": "ef9fa5eb6e7d77b6b23aec53fad275189d68b8cf22d830113c4c0447c47289b9",
+      "min_satellites_in_fix": 6,
+      "max_satellites_in_fix": 6,
+      "locked_prns_outside_transmitted_set": [],
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 65000,
+        "compact_sha256": "716dc52c9d24589491c3b71dfc00fa3fabedb5ceb4dc33f7ac86f919ba713d3f",
+        "compact_crc32": "6f2db55b",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 1.4,
+            "device_s": 1.400422,
+            "host_s": 1.440291500010062
+          },
+          "four_locks": {
+            "sample_s": 10.2,
+            "device_s": 10.200692,
+            "host_s": 10.240018957993016
+          },
+          "first_valid": {
+            "sample_s": 39.2,
+            "device_s": 39.202725,
+            "host_s": 39.241410041984636
+          }
+        },
+        "status_rows": 325,
+        "valid_rows": 130,
+        "gaps": 0,
+        "device_elapsed_s": 65.002754,
+        "host_elapsed_s": 65.04257341701305,
+        "min_device_status_interval_us": 199946,
+        "max_device_status_interval_us": 201844,
+        "late_us": 2766,
+        "starved": 0,
+        "peak_backlog": 2,
+        "first_valid_host_offset_s": 39.241410041984636,
+        "last_valid_host_offset_s": 65.04178699996555,
+        "longest_valid_streak_reports": 130,
+        "longest_valid_streak_wall_s": 25.800376957980916,
+        "longest_valid_streak_wall_hz": 4.999926947195087
+      },
+      "truth": {
+        "passed": false,
+        "status_epochs": 325,
+        "valid_epochs": 130,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.3782380358373627,
+        "p95_velocity_mps": 0.2064595532665464,
+        "max_time_error_s": 4.95928986765648e-09,
+        "gaps": 0
+      }
+    },
+    "ground_165": {
+      "profile": "ground",
+      "fixture": "ground",
+      "raw_eiq_sha256": "81ac5404c39ac5c4410bab20ce096f6ebda777089d843176cd9f08d3e4e904b5",
+      "status_file": "clocked/ground_165.csv.gz",
+      "uncompressed_csv_sha256": "b42e6b64bb04d7a927db99f488b673b51469f0828922fde8e441d59579724b82",
+      "min_satellites_in_fix": 5,
+      "max_satellites_in_fix": 6,
+      "locked_prns_outside_transmitted_set": [],
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 165000,
+        "compact_sha256": "9c4be989d8ef7352b541ee592915f4f5645e1f8e2f9b00ce44f224877e7d39b4",
+        "compact_crc32": "5ed80b94",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 1.4,
+            "device_s": 1.400423,
+            "host_s": 1.4375426250044256
+          },
+          "four_locks": {
+            "sample_s": 11.8,
+            "device_s": 11.80073,
+            "host_s": 11.837883915985003
+          },
+          "first_valid": {
+            "sample_s": 39.2,
+            "device_s": 39.202492,
+            "host_s": 39.24168899998767
+          }
+        },
+        "status_rows": 825,
+        "valid_rows": 630,
+        "gaps": 0,
+        "device_elapsed_s": 165.002833,
+        "host_elapsed_s": 165.05037358298432,
+        "min_device_status_interval_us": 199938,
+        "max_device_status_interval_us": 201573,
+        "late_us": 2889,
+        "starved": 0,
+        "peak_backlog": 2,
+        "first_valid_host_offset_s": 39.24168899998767,
+        "last_valid_host_offset_s": 165.03995499998564,
+        "longest_valid_streak_reports": 630,
+        "longest_valid_streak_wall_s": 125.79826599999797,
+        "longest_valid_streak_wall_hz": 5.000068919868976
+      },
+      "truth": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.283135295500142,
+        "p95_velocity_mps": 0.18849848560193164,
+        "max_time_error_s": 4.95928986765648e-09,
+        "gaps": 0
+      }
+    },
+    "orbit_165": {
+      "profile": "flight",
+      "fixture": "orbit",
+      "raw_eiq_sha256": "f783daaa975a8e9b3c348addaf9f3570ed5a9b1f4ab73c8084f0c14e31e23eae",
+      "status_file": "clocked/orbit_165.csv.gz",
+      "uncompressed_csv_sha256": "21f6103fd1afd9999ed8e97223f212d45ece4aeb31ed710e3965ace2726ad43f",
+      "min_satellites_in_fix": 4,
+      "max_satellites_in_fix": 6,
+      "locked_prns_outside_transmitted_set": [],
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 165000,
+        "compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+        "compact_crc32": "87a51e97",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 5.0,
+            "device_s": 5.000417,
+            "host_s": 5.0389539579628035
+          },
+          "four_locks": {
+            "sample_s": 40.6,
+            "device_s": 40.600649,
+            "host_s": 40.64041187497787
+          },
+          "first_valid": {
+            "sample_s": 87.2,
+            "device_s": 87.202382,
+            "host_s": 87.23874970799079
+          }
+        },
+        "status_rows": 825,
+        "valid_rows": 390,
+        "gaps": 0,
+        "device_elapsed_s": 165.002757,
+        "host_elapsed_s": 165.0428722499637,
+        "min_device_status_interval_us": 199931,
+        "max_device_status_interval_us": 201468,
+        "late_us": 2767,
+        "starved": 0,
+        "peak_backlog": 2,
+        "first_valid_host_offset_s": 87.23874970799079,
+        "last_valid_host_offset_s": 165.0419424159918,
+        "longest_valid_streak_reports": 390,
+        "longest_valid_streak_wall_s": 77.803192708001,
+        "longest_valid_streak_wall_hz": 4.999794821530462
+      },
+      "truth": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 390,
+        "first_valid_s": 87.2,
+        "first_five_truth_checked_s": 89.0,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.301317827958219,
+        "p95_velocity_mps": 0.16103416097227144,
+        "max_time_error_s": 4.051258883919218e-09,
+        "gaps": 0
+      }
+    },
+    "ground_fit_65": {
+      "profile": "ground_fit",
+      "fixture": "ground",
+      "raw_eiq_sha256": "faabca8705ab72b408f09a36c4ede91f77a2c60ab0605dc18cb5c29b92a6e63c",
+      "status_file": "clocked/ground_fit_65.csv.gz",
+      "uncompressed_csv_sha256": "cf15f67285daf8c4e4b9140cdd633bb3610d5c0c93fea32deec1e93faf05c39c",
+      "min_satellites_in_fix": 6,
+      "max_satellites_in_fix": 6,
+      "locked_prns_outside_transmitted_set": [],
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 65000,
+        "compact_sha256": "716dc52c9d24589491c3b71dfc00fa3fabedb5ceb4dc33f7ac86f919ba713d3f",
+        "compact_crc32": "6f2db55b",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 1.4,
+            "device_s": 1.400422,
+            "host_s": 1.4390602079802193
+          },
+          "four_locks": {
+            "sample_s": 10.2,
+            "device_s": 10.200692,
+            "host_s": 10.24025279097259
+          },
+          "first_valid": {
+            "sample_s": 39.2,
+            "device_s": 39.202725,
+            "host_s": 39.24279399996158
+          }
+        },
+        "status_rows": 325,
+        "valid_rows": 130,
+        "gaps": 0,
+        "device_elapsed_s": 65.002797,
+        "host_elapsed_s": 65.04788283299422,
+        "min_device_status_interval_us": 199941,
+        "max_device_status_interval_us": 201846,
+        "late_us": 2760,
+        "starved": 0,
+        "peak_backlog": 2,
+        "first_valid_host_offset_s": 39.24279399996158,
+        "last_valid_host_offset_s": 65.04150004097028,
+        "longest_valid_streak_reports": 130,
+        "longest_valid_streak_wall_s": 25.7987060410087,
+        "longest_valid_streak_wall_hz": 5.000250779823849
+      },
+      "truth": {
+        "passed": true,
+        "status_epochs": 325,
+        "valid_epochs": 130,
+        "first_valid_s": 39.2,
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.338015268110782,
+        "p95_velocity_mps": 0.17715960493588975,
+        "max_time_error_s": 4.95928986765648e-09,
+        "gaps": 0
+      }
+    }
+  }
+}

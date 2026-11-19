@@ -2,6 +2,30 @@
 
 [3D position error budget](position-error.md) · [Cold-search timing and accuracy](accuracy.md#time-from-cold-start) · [Independent ground and orbital replay](independent.md#cold-search-at-a-fixed-work-rate)
 
+## Device-clocked replay on the Pico
+
+The 150 MHz Pico Plus 2 ran cold acquisition, tracking, LNAV decoding and the navigation solver on two independent 165-second recordings. The laptop supplied half-chip I/Q signs over USB and measured when each fix arrived. Both recordings completed with zero input gaps or underruns. Each run started from an empty receiver in SRAM. The RF front end and antenna are outside this bench.
+
+| Recorded motion | First satellite lock | Four locks | First position on laptop | Consecutive fixes | Wall-clock rate | 3D position / velocity error, p95 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Static ground | 1.44 s | 11.84 s | 39.24 s | 630 | 5.0001 Hz | 1.28 m / 0.188 m/s |
+| 550 km orbit | 5.04 s | 40.64 s | 87.24 s | 390 | 4.9998 Hz | 1.30 m / 0.161 m/s |
+
+Times start at the USB replay handshake. The Pico starts its 1 kHz clock after filling 64 ms of input. Ground fixes used five to six satellites and orbital fixes used four to six. Every reported lock matched a satellite transmitted at that epoch. The first five consecutive reports within both 10 m and 0.2 m/s began at 39.2 s of recording time on the ground and 89.0 s in orbit. [Firmware settings, timing and truth scores](measurements/pico-clocked.json) · [Bench procedure](../../firmware/README.md#clocked-iq-replay-on-the-pico)
+
+![3D error at every valid fix reported by the Pico during the ground and orbital recordings](measurements/pico-clocked.png)
+
+Two shorter trials used the same 65 seconds of ground I/Q. The unfiltered run missed the 0.200 m/s velocity threshold at 0.2065 m/s p95. Enabling the five-report velocity fit brought it to 0.1772 m/s. Both runs used the same six satellites at all 130 fixes and delivered the first position at 39.24 s. Applying the same fit offline to the original velocity reports gives 0.1770 m/s. [Velocity fit](independent.md#five-report-velocity-fit)
+
+These commands score the archived Pico reports against the independent trajectories.
+
+```sh
+python3 tests/independent_static.py docs/software/measurements/clocked/ground_165.csv.gz --seconds 165
+python3 tests/independent_orbit.py --score docs/software/measurements/clocked/orbit_165.csv.gz --seconds 165
+```
+
+## Cold search in the host simulation
+
 ![Time from cold start to four locks, eight locks and a position in three independent orbital recordings](measurements/flight-search.png)
 
 In the 550 km simulation the strong-signal survey reached eight tracked satellites 75.4 seconds earlier. Both versions produced their first position at 69.2 seconds. A position also needs decoded satellite clocks and orbits. All three simulations used the same search budget calibrated on the Pico. [Measurements and receiver settings](measurements/flight-survey.json)

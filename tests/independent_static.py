@@ -2,6 +2,7 @@
 
 import argparse
 import csv
+import gzip
 import json
 from pathlib import Path
 import sys
@@ -16,7 +17,8 @@ from campaign import Q
 def check(path, trajectory=None, seconds=65):
     if seconds <= 0:
         raise ValueError("recording duration must be positive")
-    with path.open() as f:
+    open_csv = gzip.open if path.suffix == ".gz" else open
+    with open_csv(path, "rt", newline="") as f:
         rows = list(csv.DictReader(f))
     t = np.array([int(r["sample"]) / RATE for r in rows])
     hz = Q["hz"]
