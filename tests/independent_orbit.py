@@ -31,6 +31,7 @@ if __name__ == "__main__":
         cli.error("recording duration must be positive")
     if not np.isfinite(args.altitude_km) or args.altitude_km <= 0 or not np.isfinite(args.phase_deg):
         cli.error("use a finite phase and a positive finite orbit altitude")
+
     def motion(t):
         return trajectory(t, args.altitude_km, args.phase_deg)
 

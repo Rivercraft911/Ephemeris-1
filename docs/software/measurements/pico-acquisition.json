@@ -97,6 +97,37 @@
         "input_underruns": 1,
         "usb_transfer_bytes": 512
       }
-    ]
+    ],
+    "native_control": {
+      "method": "Lossy compact input expanded to unit-amplitude IF for 165 seconds, native half-chip receiver, 8 acquisition work steps per millisecond. Device clock and USB are outside this control.",
+      "ground": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 660,
+        "first_valid_s": 33.2,
+        "first_five_truth_checked_s": 33.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.0435411273284372,
+        "p95_velocity_mps": 0.1559349778158761,
+        "max_time_error_s": 3.050075747523806e-09,
+        "gaps": 0,
+        "compact_sha256": "9c4be989d8ef7352b541ee592915f4f5645e1f8e2f9b00ce44f224877e7d39b4",
+        "receiver_csv_sha256": "ba13f3a6227eed63f85242e3117d23e4c417ae18b19388facd5321819249b568"
+      },
+      "orbit": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 660,
+        "first_valid_s": 33.2,
+        "first_five_truth_checked_s": 33.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 0.8793633193503428,
+        "p95_velocity_mps": 0.17474129117885814,
+        "max_time_error_s": 2.048921032837825e-09,
+        "gaps": 0,
+        "compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+        "receiver_csv_sha256": "4fd7dd47b9809195617ca88260bb4008f3637918f587a9a60d0731e1c4b75542"
+      }
+    }
   }
 }
