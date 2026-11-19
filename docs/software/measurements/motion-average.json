@@ -1,0 +1,1208 @@
+{
+  "firmware_commit": "e1c83bd",
+  "seconds": 165,
+  "orbit": {
+    "altitude_km": 550,
+    "phase_deg": 12,
+    "inclination_deg": 97.6,
+    "raan_deg": 35
+  },
+  "pico": [
+    {
+      "label": "forty_a",
+      "allocation_boundary_reports": [],
+      "window_fixes": 40,
+      "release_build": false,
+      "status_file": "clocked/motion_forty_a.csv.gz",
+      "status_sha256": "0e3d7ca1d399fe5ef5b16393f2e9f23adf64468c5198f6d648f6b0203e4a2a59",
+      "uf2_sha256": "393173cd6872e38fa76b020ba74221b48b9504347da66ea1d02e8dcb070321a5",
+      "first_fix_prns": [
+        1,
+        3,
+        4,
+        8,
+        21,
+        27,
+        31,
+        32
+      ],
+      "paired_score": {
+        "status_epochs": 825,
+        "window_fixes": 40,
+        "window_span_s": 7.8,
+        "first_fix_s": 39.2,
+        "first_raw_error_m": 0.3840134065738764,
+        "first_onboard_error_m": 0.3840134065738764,
+        "all_valid": {
+          "epochs": 630,
+          "first_s": 39.2,
+          "raw_p95_m": 0.8889320194018623,
+          "onboard_p95_m": 0.624550273620013
+        },
+        "full_window": {
+          "epochs": 591,
+          "first_s": 47.0,
+          "raw_p95_m": 0.9069007155280873,
+          "onboard_p95_m": 0.6283096330213398
+        },
+        "max_reference_difference_3d_m": 0.0008679356828132621,
+        "max_reference_difference_axis_m": 0.0006336672231554985,
+        "csv_rounding_bound_axis_m": 0.0010195,
+        "matches_reference": true
+      },
+      "truth_score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 8,
+        "first_fix_position_error_m": 0.3840134065738764,
+        "first_used_s": {
+          "6": 39.2,
+          "7": 39.2,
+          "8": 39.2
+        },
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 0.624550273620013,
+        "p95_velocity_mps": 0.06902131423920824,
+        "max_time_error_s": 3.050075747523806e-09,
+        "gaps": 0
+      },
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 165000,
+        "compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+        "compact_crc32": "87a51e97",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 1.0,
+            "device_s": 1.000371,
+            "host_s": 1.037608708953485
+          },
+          "four_locks": {
+            "sample_s": 7.8,
+            "device_s": 7.80057,
+            "host_s": 7.837844708992634
+          },
+          "first_valid": {
+            "sample_s": 39.2,
+            "device_s": 39.203219,
+            "host_s": 39.24034329195274
+          },
+          "six_used": {
+            "sample_s": 39.2,
+            "device_s": 39.203219,
+            "host_s": 39.24034329195274
+          },
+          "seven_used": {
+            "sample_s": 39.2,
+            "device_s": 39.203219,
+            "host_s": 39.24034329195274
+          }
+        },
+        "status_rows": 825,
+        "valid_rows": 630,
+        "gaps": 0,
+        "device_elapsed_s": 165.003331,
+        "host_elapsed_s": 165.0395145000075,
+        "min_device_status_interval_us": 199940,
+        "max_device_status_interval_us": 202293,
+        "late_us": 3446,
+        "worst_epoch": 87801,
+        "starved": 0,
+        "peak_backlog": 3,
+        "first_valid_host_offset_s": 39.24034329195274,
+        "last_valid_host_offset_s": 165.0392687919666,
+        "longest_valid_streak_reports": 630,
+        "longest_valid_streak_wall_s": 125.79892550001387,
+        "longest_valid_streak_wall_hz": 5.00004270704149
+      },
+      "same_epochs_host": {
+        "epochs": 531,
+        "first_s": 59.0,
+        "p95_m": {
+          "raw": 0.9239304414035663,
+          "40": 0.6481495557052779,
+          "100": 0.49900406706095857
+        }
+      }
+    },
+    {
+      "label": "forty_b",
+      "allocation_boundary_reports": [],
+      "window_fixes": 40,
+      "release_build": true,
+      "status_file": "clocked/motion_forty_b.csv.gz",
+      "status_sha256": "c841f778a6b7465fb8537090cea7fd4a6706f81d3acb7db287f77bb290dff94e",
+      "uf2_sha256": "f717e2fd9baccdb6b4c9d1c624ed5ff79c5474d34200f0edc0f5bb2e7c4f89d2",
+      "first_fix_prns": [
+        3,
+        8,
+        16,
+        21,
+        27,
+        32
+      ],
+      "paired_score": {
+        "status_epochs": 825,
+        "window_fixes": 40,
+        "window_span_s": 7.8,
+        "first_fix_s": 39.2,
+        "first_raw_error_m": 0.3725962018461501,
+        "first_onboard_error_m": 0.3725962018461501,
+        "all_valid": {
+          "epochs": 630,
+          "first_s": 39.2,
+          "raw_p95_m": 0.9680343334118212,
+          "onboard_p95_m": 0.7276636889573743
+        },
+        "full_window": {
+          "epochs": 591,
+          "first_s": 47.0,
+          "raw_p95_m": 0.9652308475636636,
+          "onboard_p95_m": 0.7307409018917025
+        },
+        "max_reference_difference_3d_m": 0.00084476153238641,
+        "max_reference_difference_axis_m": 0.0007479991763830185,
+        "csv_rounding_bound_axis_m": 0.0010195,
+        "matches_reference": true
+      },
+      "truth_score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 6,
+        "first_fix_position_error_m": 0.3725962018461501,
+        "first_used_s": {
+          "6": 39.2,
+          "7": 63.2,
+          "8": 69.2
+        },
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 0.7276636889573743,
+        "p95_velocity_mps": 0.07795632071909095,
+        "max_time_error_s": 4.051258883919218e-09,
+        "gaps": 0
+      },
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 165000,
+        "compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+        "compact_crc32": "87a51e97",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 2.0,
+            "device_s": 2.000371,
+            "host_s": 2.037276874994859
+          },
+          "four_locks": {
+            "sample_s": 7.0,
+            "device_s": 7.000566,
+            "host_s": 7.03745191701455
+          },
+          "first_valid": {
+            "sample_s": 39.2,
+            "device_s": 39.202684,
+            "host_s": 39.239424084022176
+          },
+          "six_used": {
+            "sample_s": 39.2,
+            "device_s": 39.202684,
+            "host_s": 39.239424084022176
+          },
+          "seven_used": {
+            "sample_s": 63.2,
+            "device_s": 63.202996,
+            "host_s": 63.239533417043276
+          }
+        },
+        "status_rows": 825,
+        "valid_rows": 630,
+        "gaps": 0,
+        "motion_window": 40,
+        "device_elapsed_s": 165.003326,
+        "host_elapsed_s": 165.0402815840207,
+        "min_device_status_interval_us": 199898,
+        "max_device_status_interval_us": 201822,
+        "late_us": 3370,
+        "worst_epoch": 71801,
+        "starved": 0,
+        "peak_backlog": 3,
+        "first_valid_host_offset_s": 39.239424084022176,
+        "last_valid_host_offset_s": 165.0396414170391,
+        "longest_valid_streak_reports": 630,
+        "longest_valid_streak_wall_s": 125.80021733301692,
+        "longest_valid_streak_wall_hz": 4.999991361977685
+      },
+      "same_epochs_host": {
+        "epochs": 531,
+        "first_s": 59.0,
+        "p95_m": {
+          "raw": 0.9709382625710938,
+          "40": 0.7436761369111491,
+          "100": 0.5776283092566667
+        }
+      }
+    },
+    {
+      "label": "forty_c",
+      "allocation_boundary_reports": [],
+      "window_fixes": 40,
+      "release_build": true,
+      "status_file": "clocked/motion_forty_c.csv.gz",
+      "status_sha256": "a27f927daa70b6c46688ccd3a2ab1eabb7729e1f46392deb7999ff40a6e316ee",
+      "uf2_sha256": "f717e2fd9baccdb6b4c9d1c624ed5ff79c5474d34200f0edc0f5bb2e7c4f89d2",
+      "first_fix_prns": [
+        3,
+        8,
+        10,
+        21,
+        27,
+        31,
+        32
+      ],
+      "paired_score": {
+        "status_epochs": 825,
+        "window_fixes": 40,
+        "window_span_s": 7.8,
+        "first_fix_s": 39.2,
+        "first_raw_error_m": 0.4103347731651991,
+        "first_onboard_error_m": 0.4103347731651991,
+        "all_valid": {
+          "epochs": 630,
+          "first_s": 39.2,
+          "raw_p95_m": 1.2107352050307312,
+          "onboard_p95_m": 0.9669892747403099
+        },
+        "full_window": {
+          "epochs": 591,
+          "first_s": 47.0,
+          "raw_p95_m": 1.2164169881343783,
+          "onboard_p95_m": 0.9771088121540152
+        },
+        "max_reference_difference_3d_m": 0.0008202251566224079,
+        "max_reference_difference_axis_m": 0.0006009740754961967,
+        "csv_rounding_bound_axis_m": 0.0010195,
+        "matches_reference": true
+      },
+      "truth_score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 7,
+        "first_fix_position_error_m": 0.4103347731651991,
+        "first_used_s": {
+          "6": 39.2,
+          "7": 39.2,
+          "8": 123.2
+        },
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 0.9669892747403099,
+        "p95_velocity_mps": 0.073611680299782,
+        "max_time_error_s": 4.0279672930410015e-09,
+        "gaps": 0
+      },
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 165000,
+        "compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+        "compact_crc32": "87a51e97",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 2.0,
+            "device_s": 2.000371,
+            "host_s": 2.0371062079793774
+          },
+          "four_locks": {
+            "sample_s": 7.0,
+            "device_s": 7.000566,
+            "host_s": 7.037303541961592
+          },
+          "first_valid": {
+            "sample_s": 39.2,
+            "device_s": 39.20298,
+            "host_s": 39.23954391700681
+          },
+          "six_used": {
+            "sample_s": 39.2,
+            "device_s": 39.20298,
+            "host_s": 39.23954391700681
+          },
+          "seven_used": {
+            "sample_s": 39.2,
+            "device_s": 39.20298,
+            "host_s": 39.23954391700681
+          }
+        },
+        "status_rows": 825,
+        "valid_rows": 630,
+        "gaps": 0,
+        "motion_window": 40,
+        "device_elapsed_s": 165.003329,
+        "host_elapsed_s": 165.03891858295538,
+        "min_device_status_interval_us": 199932,
+        "max_device_status_interval_us": 202068,
+        "late_us": 3341,
+        "worst_epoch": 151401,
+        "starved": 0,
+        "peak_backlog": 3,
+        "first_valid_host_offset_s": 39.23954391700681,
+        "last_valid_host_offset_s": 165.03866812499473,
+        "longest_valid_streak_reports": 630,
+        "longest_valid_streak_wall_s": 125.79912420798792,
+        "longest_valid_streak_wall_hz": 5.000034809145834
+      },
+      "same_epochs_host": {
+        "epochs": 531,
+        "first_s": 59.0,
+        "p95_m": {
+          "raw": 1.1646135959070765,
+          "40": 0.9860299616130529,
+          "100": 0.7493229120168288
+        }
+      }
+    },
+    {
+      "label": "hundred_a",
+      "allocation_boundary_reports": [],
+      "window_fixes": 100,
+      "release_build": true,
+      "status_file": "clocked/motion_hundred_a.csv.gz",
+      "status_sha256": "129ac0c59b5695a50ce8d2244114bd512a9ba5587a2b4e1ebbfc2aeefdc90d9c",
+      "uf2_sha256": "3b8712103b7ca3728ace5e71015d856e3eaa48ffca893360af1b2f8d5eae2b46",
+      "first_fix_prns": [
+        4,
+        8,
+        21,
+        27,
+        32
+      ],
+      "paired_score": {
+        "status_epochs": 825,
+        "window_fixes": 100,
+        "window_span_s": 19.8,
+        "first_fix_s": 39.2,
+        "first_raw_error_m": 0.5017417801178204,
+        "first_onboard_error_m": 0.5017417801178204,
+        "all_valid": {
+          "epochs": 630,
+          "first_s": 39.2,
+          "raw_p95_m": 1.24110872175562,
+          "onboard_p95_m": 0.641896531642923
+        },
+        "full_window": {
+          "epochs": 531,
+          "first_s": 59.0,
+          "raw_p95_m": 1.2406609161450466,
+          "onboard_p95_m": 0.6258835418426281
+        },
+        "max_reference_difference_3d_m": 0.0008732948834451352,
+        "max_reference_difference_axis_m": 0.0006312858313322067,
+        "csv_rounding_bound_axis_m": 0.0010495,
+        "matches_reference": true
+      },
+      "truth_score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 5,
+        "first_fix_position_error_m": 0.5017417801178204,
+        "first_used_s": {
+          "6": 69.2,
+          "7": 99.2,
+          "8": 159.2
+        },
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 0.641896531642923,
+        "p95_velocity_mps": 0.09583015768351828,
+        "max_time_error_s": 4.004689913017501e-09,
+        "gaps": 0
+      },
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 165000,
+        "compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+        "compact_crc32": "87a51e97",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 2.0,
+            "device_s": 2.000372,
+            "host_s": 2.0377428340143524
+          },
+          "four_locks": {
+            "sample_s": 7.0,
+            "device_s": 7.000566,
+            "host_s": 7.038736584014259
+          },
+          "first_valid": {
+            "sample_s": 39.2,
+            "device_s": 39.202329,
+            "host_s": 39.2396152089932
+          },
+          "six_used": {
+            "sample_s": 69.2,
+            "device_s": 69.202708,
+            "host_s": 69.24072300002445
+          },
+          "seven_used": {
+            "sample_s": 99.2,
+            "device_s": 99.202972,
+            "host_s": 99.23976225004299
+          }
+        },
+        "status_rows": 825,
+        "valid_rows": 630,
+        "gaps": 0,
+        "motion_window": 100,
+        "device_elapsed_s": 165.003336,
+        "host_elapsed_s": 165.03975616703974,
+        "min_device_status_interval_us": 199966,
+        "max_device_status_interval_us": 201582,
+        "late_us": 3296,
+        "worst_epoch": 161001,
+        "starved": 0,
+        "peak_backlog": 3,
+        "first_valid_host_offset_s": 39.2396152089932,
+        "last_valid_host_offset_s": 165.0395137090236,
+        "longest_valid_streak_reports": 630,
+        "longest_valid_streak_wall_s": 125.7998985000304,
+        "longest_valid_streak_wall_hz": 5.000004034183287
+      },
+      "same_epochs_host": {
+        "epochs": 531,
+        "first_s": 59.0,
+        "p95_m": {
+          "raw": 1.2406609161450466,
+          "40": 0.9302619427119885,
+          "100": 0.6259753279135734
+        }
+      }
+    },
+    {
+      "label": "hundred_b",
+      "allocation_boundary_reports": [
+        {
+          "sample_s": 81.0,
+          "locked_departures": [
+            26
+          ],
+          "navigation_departures": [
+            26
+          ]
+        }
+      ],
+      "window_fixes": 100,
+      "release_build": true,
+      "status_file": "clocked/motion_hundred_b.csv.gz",
+      "status_sha256": "1f6b89ab428af86beeb2b695909540b11cc5b6287a8ca808fa45cd6811ca9a30",
+      "uf2_sha256": "3b8712103b7ca3728ace5e71015d856e3eaa48ffca893360af1b2f8d5eae2b46",
+      "first_fix_prns": [
+        1,
+        8,
+        16,
+        26,
+        27,
+        32
+      ],
+      "paired_score": {
+        "status_epochs": 825,
+        "window_fixes": 100,
+        "window_span_s": 19.8,
+        "first_fix_s": 39.2,
+        "first_raw_error_m": 0.22270009440583266,
+        "first_onboard_error_m": 0.22270009440583266,
+        "all_valid": {
+          "epochs": 630,
+          "first_s": 39.2,
+          "raw_p95_m": 1.1327121164435394,
+          "onboard_p95_m": 0.9004712081814543
+        },
+        "full_window": {
+          "epochs": 531,
+          "first_s": 59.0,
+          "raw_p95_m": 1.0054345076067492,
+          "onboard_p95_m": 0.6662246834505197
+        },
+        "max_reference_difference_3d_m": 0.0008308068188230055,
+        "max_reference_difference_axis_m": 0.0006219332572072744,
+        "csv_rounding_bound_axis_m": 0.0010495,
+        "matches_reference": true
+      },
+      "truth_score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 6,
+        "first_fix_position_error_m": 0.22270009440583266,
+        "first_used_s": {
+          "6": 39.2,
+          "7": 57.2,
+          "8": 69.2
+        },
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 0.9004712081814543,
+        "p95_velocity_mps": 0.0814211086205565,
+        "max_time_error_s": 4.004689913017501e-09,
+        "gaps": 0
+      },
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 165000,
+        "compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+        "compact_crc32": "87a51e97",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 2.0,
+            "device_s": 2.00037,
+            "host_s": 2.039244666986633
+          },
+          "four_locks": {
+            "sample_s": 7.0,
+            "device_s": 7.000574,
+            "host_s": 7.038300333020743
+          },
+          "first_valid": {
+            "sample_s": 39.2,
+            "device_s": 39.202746,
+            "host_s": 39.24079858302139
+          },
+          "six_used": {
+            "sample_s": 39.2,
+            "device_s": 39.202746,
+            "host_s": 39.24079858302139
+          },
+          "seven_used": {
+            "sample_s": 57.2,
+            "device_s": 57.203,
+            "host_s": 57.24061845801771
+          }
+        },
+        "status_rows": 825,
+        "valid_rows": 630,
+        "gaps": 0,
+        "motion_window": 100,
+        "device_elapsed_s": 165.003327,
+        "host_elapsed_s": 165.03984237503028,
+        "min_device_status_interval_us": 199717,
+        "max_device_status_interval_us": 201822,
+        "late_us": 3311,
+        "worst_epoch": 73401,
+        "starved": 0,
+        "peak_backlog": 3,
+        "first_valid_host_offset_s": 39.24079858302139,
+        "last_valid_host_offset_s": 165.03950770798838,
+        "longest_valid_streak_reports": 630,
+        "longest_valid_streak_wall_s": 125.79870912496699,
+        "longest_valid_streak_wall_hz": 5.000051307165312
+      },
+      "same_epochs_host": {
+        "epochs": 531,
+        "first_s": 59.0,
+        "p95_m": {
+          "raw": 1.0054345076067492,
+          "40": 0.6878180132051124,
+          "100": 0.6658915679898796
+        }
+      }
+    }
+  ],
+  "fixture": "Same GPS-SDR-SIM January 1 2022, 02:00:09 GPS waveform and half-chip sign transport used for orbit-fix.json. Pico Plus 2, 150 MHz, SRAM, two cores, no aiding.",
+  "comparison": "Positions in each row come from the same solve. Full window counts include exactly N consecutive valid fixes; all-valid includes the first raw fix. The same_epochs_host comparison applies both windows to the captured raw points and fitted velocities at the same epochs from the 100th valid fix onward.",
+  "images": "Release images share firmware source e1c83bd. forty_a is the first 40-fix prototype, before the variable-window handshake and explicit finite-input check. The experimental flight artifact selects 100.",
+  "input_compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+  "preprocessing": {
+    "image_sha256": "0abf065d8e0c554087bb7063cdd6525440507df9906660510aa6ad8edc239c83",
+    "clock_hz": 150000000,
+    "milliseconds": 512,
+    "results": {
+      "baseline": {
+        "total_us": 84332,
+        "mean_us": 164.7109375,
+        "max_us": 168,
+        "wrong_words": 0,
+        "checksum": 2950396288
+      },
+      "fixedword": {
+        "total_us": 68352,
+        "mean_us": 133.5,
+        "max_us": 138,
+        "wrong_words": 0,
+        "checksum": 2950396288
+      },
+      "tree": {
+        "total_us": 70832,
+        "mean_us": 138.34375,
+        "max_us": 144,
+        "wrong_words": 0,
+        "checksum": 2950396288
+      },
+      "signreverse": {
+        "total_us": 69275,
+        "mean_us": 135.302734375,
+        "max_us": 140,
+        "wrong_words": 0,
+        "checksum": 2950396288
+      },
+      "paired": {
+        "total_us": 67300,
+        "mean_us": 131.4453125,
+        "max_us": 137,
+        "wrong_words": 0,
+        "checksum": 2950396288
+      },
+      "usad": {
+        "total_us": 170840,
+        "mean_us": 333.671875,
+        "max_us": 337,
+        "wrong_words": 0,
+        "checksum": 2950396288
+      }
+    }
+  },
+  "native": {
+    "execution": "Native C++ eph-replay --work 1141/5706, compact full-Doppler flight survey, half-chip tracker, five-report ECEF velocity fit. Position from firmware. Baseline raw positions came from previous raw runs after equality checks on all other status fields at every sample. Window fill reconstructed for native comparisons from the verified uninterrupted epoch sequence.",
+    "recording_s": 165,
+    "window_fixes": [
+      40,
+      100
+    ],
+    "runs": [
+      {
+        "arc": "400",
+        "altitude_km": 400,
+        "phase_deg": 103,
+        "fixes": 40,
+        "receiver_sha256": "351ccae128cc64ce7d2a695132af5f5d7a5c315409dcb9bcd5ca236d18295dda",
+        "input_sha256": "e0a4cd27957f37fa7e4bd2568b423d40edc08494f03d7455cbcc84de00c359c0",
+        "allocation_log_sha256": "8b30678f448e3156237cb3640757fcf5b8701f424b2e4ebcc4157391de63e202",
+        "raw_status_sha256": "5964728e619a61119b446ab592d9fcb48d71be9e8935f1af6893bc2c046ca67b",
+        "filtered_status_sha256": "10e1eb4c46613a0992fb9322d16a6668ec229ff306a5f0a697af4c198422fd38",
+        "matching_nonposition_epochs": 825,
+        "first_fix_used": 7,
+        "all_used_prns": [
+          1,
+          10,
+          14,
+          17,
+          19,
+          21,
+          24,
+          32
+        ],
+        "max_svs": 8,
+        "absent_prns_in_navigation_at_report_epoch": [],
+        "absent_prns_in_tracking_at_report_epoch": [],
+        "allocation_transitions_with_departed_prn_used": [],
+        "p95_velocity_mps": 0.1474297565791482,
+        "gap_count": 0,
+        "independent_acceptance_passed": true,
+        "position": {
+          "status_epochs": 825,
+          "window_fixes": 40,
+          "window_span_s": 7.8,
+          "first_fix_s": 39.2,
+          "first_raw_error_m": 0.291188862899963,
+          "first_onboard_error_m": 0.291188862899963,
+          "all_valid": {
+            "epochs": 630,
+            "first_s": 39.2,
+            "raw_p95_m": 1.7356190910740563,
+            "onboard_p95_m": 1.0127428115440178
+          },
+          "full_window": {
+            "epochs": 591,
+            "first_s": 47.0,
+            "raw_p95_m": 1.7784378566311303,
+            "onboard_p95_m": 1.020282880103707
+          },
+          "max_reference_difference_3d_m": 0.0008599167655539765,
+          "max_reference_difference_axis_m": 0.0006153741851449013,
+          "csv_rounding_bound_axis_m": 0.0010195,
+          "matches_reference": true
+        },
+        "common_100_full_epochs": 531,
+        "common_100_full_first_s": 59.0,
+        "common_100_full_p95_m": 0.9975339047627264
+      },
+      {
+        "arc": "800",
+        "altitude_km": 800,
+        "phase_deg": 211,
+        "fixes": 40,
+        "receiver_sha256": "351ccae128cc64ce7d2a695132af5f5d7a5c315409dcb9bcd5ca236d18295dda",
+        "input_sha256": "bf64df944288abc3bfdf6c702055f60419d75510d3398c5c787c3102a247ced5",
+        "allocation_log_sha256": "c0ad90df5bc037bb851da68d7a04c7443d5735e528901a8e24b1684db60b5d0f",
+        "raw_status_sha256": "0775053f8a8e9e6b158b583fe01681c5a29d47fd062bdcea2e9a2dbe7cb7cf48",
+        "filtered_status_sha256": "a519fac83c1fe673b40141c24109403267ed17d4ee280c57f6d34132ae340a91",
+        "matching_nonposition_epochs": 825,
+        "first_fix_used": 7,
+        "all_used_prns": [
+          2,
+          5,
+          6,
+          9,
+          13,
+          15,
+          19,
+          20,
+          30
+        ],
+        "max_svs": 8,
+        "absent_prns_in_navigation_at_report_epoch": [
+          [
+            111.0,
+            [
+              19
+            ]
+          ]
+        ],
+        "absent_prns_in_tracking_at_report_epoch": [
+          [
+            111.0,
+            [
+              19
+            ]
+          ]
+        ],
+        "allocation_transitions_with_departed_prn_used": [
+          111.0
+        ],
+        "p95_velocity_mps": 0.09062836308665544,
+        "gap_count": 0,
+        "independent_acceptance_passed": true,
+        "position": {
+          "status_epochs": 825,
+          "window_fixes": 40,
+          "window_span_s": 7.8,
+          "first_fix_s": 39.2,
+          "first_raw_error_m": 0.7332619859265299,
+          "first_onboard_error_m": 0.7332619859265299,
+          "all_valid": {
+            "epochs": 630,
+            "first_s": 39.2,
+            "raw_p95_m": 1.650870265361023,
+            "onboard_p95_m": 1.1503083307893942
+          },
+          "full_window": {
+            "epochs": 591,
+            "first_s": 47.0,
+            "raw_p95_m": 1.6573983244731492,
+            "onboard_p95_m": 1.155275095502773
+          },
+          "max_reference_difference_3d_m": 0.0009979351767060187,
+          "max_reference_difference_axis_m": 0.0007183998823165894,
+          "csv_rounding_bound_axis_m": 0.0010195,
+          "matches_reference": true
+        },
+        "common_100_full_epochs": 531,
+        "common_100_full_first_s": 59.0,
+        "common_100_full_p95_m": 1.1289449417185407
+      },
+      {
+        "arc": "475",
+        "altitude_km": 475,
+        "phase_deg": 151,
+        "fixes": 40,
+        "receiver_sha256": "351ccae128cc64ce7d2a695132af5f5d7a5c315409dcb9bcd5ca236d18295dda",
+        "input_sha256": "2a36d58bdffde31e3e4109012c5c0fa58876970e2c4af659eab1b6e9963163aa",
+        "allocation_log_sha256": "bed7191e79eb6caed7711d15418e066df0241db359d28b2ce11215e5ce911303",
+        "raw_status_sha256": "e7e52b1dbd721bff2771623f8c61d8855e9fd1716b9244b0422b593d4cae19c2",
+        "filtered_status_sha256": "002e93115259f70636440d93d5fcaf4f8e483e05cf3d23d5cb51575207faecf3",
+        "matching_nonposition_epochs": 825,
+        "first_fix_used": 7,
+        "all_used_prns": [
+          6,
+          12,
+          13,
+          14,
+          15,
+          17,
+          19,
+          24
+        ],
+        "max_svs": 8,
+        "absent_prns_in_navigation_at_report_epoch": [],
+        "absent_prns_in_tracking_at_report_epoch": [],
+        "allocation_transitions_with_departed_prn_used": [],
+        "p95_velocity_mps": 0.07066757384018166,
+        "gap_count": 0,
+        "independent_acceptance_passed": true,
+        "position": {
+          "status_epochs": 825,
+          "window_fixes": 40,
+          "window_span_s": 7.8,
+          "first_fix_s": 39.2,
+          "first_raw_error_m": 0.3891105565807336,
+          "first_onboard_error_m": 0.3891105565807336,
+          "all_valid": {
+            "epochs": 630,
+            "first_s": 39.2,
+            "raw_p95_m": 1.0849290079526628,
+            "onboard_p95_m": 0.918878769195232
+          },
+          "full_window": {
+            "epochs": 591,
+            "first_s": 47.0,
+            "raw_p95_m": 1.0999638455526117,
+            "onboard_p95_m": 0.9235020038303794
+          },
+          "max_reference_difference_3d_m": 0.0008661639963229474,
+          "max_reference_difference_axis_m": 0.0006697499193251133,
+          "csv_rounding_bound_axis_m": 0.0010195,
+          "matches_reference": true
+        },
+        "common_100_full_epochs": 531,
+        "common_100_full_first_s": 59.0,
+        "common_100_full_p95_m": 0.9321476903196309
+      },
+      {
+        "arc": "400b",
+        "altitude_km": 400,
+        "phase_deg": 281,
+        "fixes": 40,
+        "receiver_sha256": "351ccae128cc64ce7d2a695132af5f5d7a5c315409dcb9bcd5ca236d18295dda",
+        "input_sha256": "516f375789b621506a460126ce5268b80acb395d6c22c9e16a96f579ada277d8",
+        "allocation_log_sha256": "4f1c2c835d11ef19358f07fc79373f34f5f64a0ac5820c54a67ce3e13a6d7ee7",
+        "raw_status_sha256": "bdcfa31ad89925b319b751fdec95e465037b2d5768f303af11eb2063feb77c31",
+        "filtered_status_sha256": "6722c5b5f2e7ae879c64bd53ecd331c0b0c62e84d3e330a5e8d6c12d05b666c5",
+        "matching_nonposition_epochs": 825,
+        "first_fix_used": 5,
+        "all_used_prns": [
+          2,
+          4,
+          5,
+          7,
+          9,
+          16,
+          20,
+          26
+        ],
+        "max_svs": 8,
+        "absent_prns_in_navigation_at_report_epoch": [
+          [
+            141.0,
+            [
+              7
+            ]
+          ]
+        ],
+        "absent_prns_in_tracking_at_report_epoch": [
+          [
+            141.0,
+            [
+              7
+            ]
+          ]
+        ],
+        "allocation_transitions_with_departed_prn_used": [
+          141.0
+        ],
+        "p95_velocity_mps": 0.15560026213940079,
+        "gap_count": 0,
+        "independent_acceptance_passed": true,
+        "position": {
+          "status_epochs": 825,
+          "window_fixes": 40,
+          "window_span_s": 7.8,
+          "first_fix_s": 33.2,
+          "first_raw_error_m": 2.0065125428226946,
+          "first_onboard_error_m": 2.0065125428226946,
+          "all_valid": {
+            "epochs": 660,
+            "first_s": 33.2,
+            "raw_p95_m": 2.414976202228044,
+            "onboard_p95_m": 1.931071461594031
+          },
+          "full_window": {
+            "epochs": 621,
+            "first_s": 41.0,
+            "raw_p95_m": 2.2378293286951907,
+            "onboard_p95_m": 1.7630817956695704
+          },
+          "max_reference_difference_3d_m": 0.000830296855166568,
+          "max_reference_difference_axis_m": 0.0006205011159181595,
+          "csv_rounding_bound_axis_m": 0.0010195,
+          "matches_reference": true
+        },
+        "common_100_full_epochs": 561,
+        "common_100_full_first_s": 53.0,
+        "common_100_full_p95_m": 1.7929782077263867
+      },
+      {
+        "arc": "400",
+        "altitude_km": 400,
+        "phase_deg": 103,
+        "fixes": 100,
+        "receiver_sha256": "4ff49da5e19325a98564a2040c22da46fc6b38ff2f88917a4b636bc307a26e50",
+        "input_sha256": "e0a4cd27957f37fa7e4bd2568b423d40edc08494f03d7455cbcc84de00c359c0",
+        "allocation_log_sha256": "8b30678f448e3156237cb3640757fcf5b8701f424b2e4ebcc4157391de63e202",
+        "raw_status_sha256": "5964728e619a61119b446ab592d9fcb48d71be9e8935f1af6893bc2c046ca67b",
+        "filtered_status_sha256": "d492ee34fefa794a4680df44a0038e116168c2aefb193edb99fe649b59b68881",
+        "matching_nonposition_epochs": 825,
+        "first_fix_used": 7,
+        "all_used_prns": [
+          1,
+          10,
+          14,
+          17,
+          19,
+          21,
+          24,
+          32
+        ],
+        "max_svs": 8,
+        "absent_prns_in_navigation_at_report_epoch": [],
+        "absent_prns_in_tracking_at_report_epoch": [],
+        "allocation_transitions_with_departed_prn_used": [],
+        "p95_velocity_mps": 0.1474297565791482,
+        "gap_count": 0,
+        "independent_acceptance_passed": true,
+        "position": {
+          "status_epochs": 825,
+          "window_fixes": 100,
+          "window_span_s": 19.8,
+          "first_fix_s": 39.2,
+          "first_raw_error_m": 0.291188862899963,
+          "first_onboard_error_m": 0.291188862899963,
+          "all_valid": {
+            "epochs": 630,
+            "first_s": 39.2,
+            "raw_p95_m": 1.7356190910740563,
+            "onboard_p95_m": 0.6957822593359816
+          },
+          "full_window": {
+            "epochs": 531,
+            "first_s": 59.0,
+            "raw_p95_m": 1.7325723621399736,
+            "onboard_p95_m": 0.6823559003557775
+          },
+          "max_reference_difference_3d_m": 0.0009024355809213785,
+          "max_reference_difference_axis_m": 0.0005724667571485043,
+          "csv_rounding_bound_axis_m": 0.0010495,
+          "matches_reference": true
+        },
+        "common_100_full_epochs": 531,
+        "common_100_full_first_s": 59.0,
+        "common_100_full_p95_m": 0.6823559003557775
+      },
+      {
+        "arc": "800",
+        "altitude_km": 800,
+        "phase_deg": 211,
+        "fixes": 100,
+        "receiver_sha256": "4ff49da5e19325a98564a2040c22da46fc6b38ff2f88917a4b636bc307a26e50",
+        "input_sha256": "bf64df944288abc3bfdf6c702055f60419d75510d3398c5c787c3102a247ced5",
+        "allocation_log_sha256": "c0ad90df5bc037bb851da68d7a04c7443d5735e528901a8e24b1684db60b5d0f",
+        "raw_status_sha256": "0775053f8a8e9e6b158b583fe01681c5a29d47fd062bdcea2e9a2dbe7cb7cf48",
+        "filtered_status_sha256": "0d23bbaeb443f3b21285cd064e36638def1c47358a36ab9792443c3b5d2b35ea",
+        "matching_nonposition_epochs": 825,
+        "first_fix_used": 7,
+        "all_used_prns": [
+          2,
+          5,
+          6,
+          9,
+          13,
+          15,
+          19,
+          20,
+          30
+        ],
+        "max_svs": 8,
+        "absent_prns_in_navigation_at_report_epoch": [
+          [
+            111.0,
+            [
+              19
+            ]
+          ]
+        ],
+        "absent_prns_in_tracking_at_report_epoch": [
+          [
+            111.0,
+            [
+              19
+            ]
+          ]
+        ],
+        "allocation_transitions_with_departed_prn_used": [
+          111.0
+        ],
+        "p95_velocity_mps": 0.09062836308665544,
+        "gap_count": 0,
+        "independent_acceptance_passed": true,
+        "position": {
+          "status_epochs": 825,
+          "window_fixes": 100,
+          "window_span_s": 19.8,
+          "first_fix_s": 39.2,
+          "first_raw_error_m": 0.7332619859265299,
+          "first_onboard_error_m": 0.7332619859265299,
+          "all_valid": {
+            "epochs": 630,
+            "first_s": 39.2,
+            "raw_p95_m": 1.650870265361023,
+            "onboard_p95_m": 0.8697514409042034
+          },
+          "full_window": {
+            "epochs": 531,
+            "first_s": 59.0,
+            "raw_p95_m": 1.6638466694780258,
+            "onboard_p95_m": 0.85204814444698
+          },
+          "max_reference_difference_3d_m": 0.0009979351767060187,
+          "max_reference_difference_axis_m": 0.0007183998823165894,
+          "csv_rounding_bound_axis_m": 0.0010495,
+          "matches_reference": true
+        },
+        "common_100_full_epochs": 531,
+        "common_100_full_first_s": 59.0,
+        "common_100_full_p95_m": 0.85204814444698
+      },
+      {
+        "arc": "475",
+        "altitude_km": 475,
+        "phase_deg": 151,
+        "fixes": 100,
+        "receiver_sha256": "4ff49da5e19325a98564a2040c22da46fc6b38ff2f88917a4b636bc307a26e50",
+        "input_sha256": "2a36d58bdffde31e3e4109012c5c0fa58876970e2c4af659eab1b6e9963163aa",
+        "allocation_log_sha256": "bed7191e79eb6caed7711d15418e066df0241db359d28b2ce11215e5ce911303",
+        "raw_status_sha256": "e7e52b1dbd721bff2771623f8c61d8855e9fd1716b9244b0422b593d4cae19c2",
+        "filtered_status_sha256": "41328bdf66d5d0339c5a45d14e4517b4651c9b9ff86609709d54a8bf1f09422d",
+        "matching_nonposition_epochs": 825,
+        "first_fix_used": 7,
+        "all_used_prns": [
+          6,
+          12,
+          13,
+          14,
+          15,
+          17,
+          19,
+          24
+        ],
+        "max_svs": 8,
+        "absent_prns_in_navigation_at_report_epoch": [],
+        "absent_prns_in_tracking_at_report_epoch": [],
+        "allocation_transitions_with_departed_prn_used": [],
+        "p95_velocity_mps": 0.07066757384018166,
+        "gap_count": 0,
+        "independent_acceptance_passed": true,
+        "position": {
+          "status_epochs": 825,
+          "window_fixes": 100,
+          "window_span_s": 19.8,
+          "first_fix_s": 39.2,
+          "first_raw_error_m": 0.3891105565807336,
+          "first_onboard_error_m": 0.3891105565807336,
+          "all_valid": {
+            "epochs": 630,
+            "first_s": 39.2,
+            "raw_p95_m": 1.0849290079526628,
+            "onboard_p95_m": 0.5572105249078813
+          },
+          "full_window": {
+            "epochs": 531,
+            "first_s": 59.0,
+            "raw_p95_m": 1.1095361999258517,
+            "onboard_p95_m": 0.5634736214285622
+          },
+          "max_reference_difference_3d_m": 0.0008362264470585406,
+          "max_reference_difference_axis_m": 0.0006697499193251133,
+          "csv_rounding_bound_axis_m": 0.0010495,
+          "matches_reference": true
+        },
+        "common_100_full_epochs": 531,
+        "common_100_full_first_s": 59.0,
+        "common_100_full_p95_m": 0.5634736214285622
+      },
+      {
+        "arc": "400b",
+        "altitude_km": 400,
+        "phase_deg": 281,
+        "fixes": 100,
+        "receiver_sha256": "4ff49da5e19325a98564a2040c22da46fc6b38ff2f88917a4b636bc307a26e50",
+        "input_sha256": "516f375789b621506a460126ce5268b80acb395d6c22c9e16a96f579ada277d8",
+        "allocation_log_sha256": "4f1c2c835d11ef19358f07fc79373f34f5f64a0ac5820c54a67ce3e13a6d7ee7",
+        "raw_status_sha256": "bdcfa31ad89925b319b751fdec95e465037b2d5768f303af11eb2063feb77c31",
+        "filtered_status_sha256": "ada4dffb9169f38e4af4fce95e728af2ec803e92a3e3bc6cc171928fd3b87be2",
+        "matching_nonposition_epochs": 825,
+        "first_fix_used": 5,
+        "all_used_prns": [
+          2,
+          4,
+          5,
+          7,
+          9,
+          16,
+          20,
+          26
+        ],
+        "max_svs": 8,
+        "absent_prns_in_navigation_at_report_epoch": [
+          [
+            141.0,
+            [
+              7
+            ]
+          ]
+        ],
+        "absent_prns_in_tracking_at_report_epoch": [
+          [
+            141.0,
+            [
+              7
+            ]
+          ]
+        ],
+        "allocation_transitions_with_departed_prn_used": [
+          141.0
+        ],
+        "p95_velocity_mps": 0.15560026213940079,
+        "gap_count": 0,
+        "independent_acceptance_passed": true,
+        "position": {
+          "status_epochs": 825,
+          "window_fixes": 100,
+          "window_span_s": 19.8,
+          "first_fix_s": 33.2,
+          "first_raw_error_m": 2.0065125428226946,
+          "first_onboard_error_m": 2.0065125428226946,
+          "all_valid": {
+            "epochs": 660,
+            "first_s": 33.2,
+            "raw_p95_m": 2.414976202228044,
+            "onboard_p95_m": 1.931071461594031
+          },
+          "full_window": {
+            "epochs": 561,
+            "first_s": 53.0,
+            "raw_p95_m": 2.2969167690681327,
+            "onboard_p95_m": 1.2208079612414533
+          },
+          "max_reference_difference_3d_m": 0.0008535649657215339,
+          "max_reference_difference_axis_m": 0.0006205011159181595,
+          "csv_rounding_bound_axis_m": 0.0010495,
+          "matches_reference": true
+        },
+        "common_100_full_epochs": 561,
+        "common_100_full_first_s": 53.0,
+        "common_100_full_p95_m": 1.2208079612414533
+      }
+    ]
+  }
+}

@@ -452,6 +452,39 @@ def orbit_fix_figure(manifest, destination):
     plt.close(fig)
 
 
+def motion_average_figure(manifest, destination):
+    from campaign import EARTH_RADIUS, FS, XYZ, circular
+
+    data = json.loads(manifest.read_text())
+    orbit = data["orbit"]
+    flights = sorted((r for r in data["pico"] if r["release_build"]),
+                     key=lambda r: (r["window_fixes"], r["label"]))
+    fig, axes = plt.subplots(2, 2, sharex=True, sharey=True, figsize=(9, 5.2), layout="constrained")
+    for index, (ax, run) in enumerate(zip(axes.flat, flights, strict=True)):
+        count = run["window_fixes"]
+        rows = np.genfromtxt(manifest.parent / run["status_file"], delimiter=",", names=True)
+        rows = rows[rows["valid"] == 1]
+        t = rows["sample"] / FS
+        truth = circular(EARTH_RADIUS + orbit["altitude_km"] * 1000,
+                         *np.deg2rad([orbit["inclination_deg"], orbit["raan_deg"], orbit["phase_deg"]]), t)[:, :3]
+        for prefix, label, color in (("raw_", "Raw code position", PALETTE[0]), ("", "Onboard average", PALETTE[1])):
+            position = np.column_stack([rows[prefix + k] for k in XYZ[:3]])
+            ax.plot(t, np.linalg.norm(position - truth, axis=1), color=color, linewidth=.9, label=label)
+        first_full = run["paired_score"]["full_window"]["first_s"]
+        ax.axvline(first_full, linestyle=":", color="#bbb", linewidth=1, label="Window full")
+        p95 = run["paired_score"]["full_window"]["onboard_p95_m"]
+        ax.set(title=f"{count} fixes · start {index % 2 + 1} · {p95:.3f} m p95",
+               xlim=(30, data["seconds"]))
+        ax.grid(axis="y", linewidth=.5, alpha=.45)
+    for ax in axes[:, 0]:
+        ax.set(ylabel="3D position error (m)", ylim=(0, None))
+    for ax in axes[-1]:
+        ax.set_xlabel("Seconds from first replay sample")
+    fig.legend(*axes[0, 0].get_legend_handles_labels(), loc="outside lower center", ncol=3, frameon=False)
+    fig.savefig(destination / "motion-average.png", dpi=180)
+    plt.close(fig)
+
+
 def flight_search_figure(data, destination):
     orbits = sorted(data["orbits"], key=lambda run: run["altitude_km"])
     metrics = (("four_locks_s", "Four channels locked"), ("eight_locks_s", "Eight channels locked"),
@@ -513,6 +546,9 @@ if __name__ == "__main__":
     orbit_fix = a.results.with_name("orbit-fix.json")
     if orbit_fix.exists():
         orbit_fix_figure(orbit_fix, a.out)
+    motion = a.results.with_name("motion-average.json")
+    if motion.exists():
+        motion_average_figure(motion, a.out)
     budget = a.results.with_name("position-budget.json")
     controls = a.results.with_name("position-controls.json")
     if budget.exists() and controls.exists():

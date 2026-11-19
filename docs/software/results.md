@@ -1,6 +1,8 @@
 # Receiver measurements
 
-The latest 550 km cold trials measure the time to the first position and to six, seven and eight satellites in a fix. [Orbital fix timing on the Pico](orbit-fix.md)
+The Pico now reports a velocity-corrected position average at 5 Hz. [Motion-corrected 3D error on hardware](motion-average.md)
+
+The 550 km cold trials measure the time to the first position and to six, seven and eight satellites in a fix. [Orbital fix timing on the Pico](orbit-fix.md)
 
 The Pico kept 5 Hz while correcting the height of two real rooftop antennas. [Height against antenna references](height.md)
 
