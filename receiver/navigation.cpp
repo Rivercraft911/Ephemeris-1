@@ -327,6 +327,26 @@ void PositionSmoother::update(Fix& fix, uint64_t sample) {
     initialized_ = true;
 }
 
+void VelocityFit::update(Fix& fix, uint64_t sample) {
+    if (!fix.valid) {
+        count_ = 0;
+        return;
+    }
+    if (sample <= previous_sample_ || sample - previous_sample_ != PositionSmoother::interval_samples)
+        count_ = 0;
+    previous_sample_ = sample;
+    const Vec3 raw = fix.velocity_mps;
+    if (count_ < history_.size()) {
+        history_[count_++] = raw;
+        return;
+    }
+    // The line's endpoint weights on equally spaced epochs are [-1, 0, 1, 2, 3] / 5.
+    for (unsigned i = 0; i < raw.size(); ++i)
+        fix.velocity_mps[i] = (3 * raw[i] + 2 * history_[3][i] + history_[2][i] - history_[0][i]) * 0.2;
+    std::move(history_.begin() + 1, history_.end(), history_.begin());
+    history_.back() = raw;
+}
+
 bool solve_fix(const Observation* obs, std::size_t n, Fix& fix, double receiver_tow_s) {
     fix = {};
     if (!obs || n < 4 || n > 32) return false;

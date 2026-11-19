@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "receiver/signal.hpp"
 #include "receiver/bitplane.hpp"
+#include "receiver/app.hpp"
 
 #include <algorithm>
 #include <array>
@@ -100,6 +101,42 @@ private:
     }
 };
 
+void stale_search(double ramp, bool stays_visible) {
+    ephemeris::Receiver rx;
+    // 47 dB-Hz with unit noise variance in each I/Q arm.
+    const Sat sat{1,137.25,-4610.,ramp,std::sqrt(2*std::pow(10.,4.7)/s::raw_hz)};
+    Source source(sat,1.,1742), noise({1,0.,0.,0.,0.},1.,982);
+    Packed raw{};
+    constexpr int delay_ms=10000;
+    for (int ms=0; ms<4; ++ms) {
+        const auto first=std::uint64_t(ms)*s::raw_per_ms;
+        source.epoch(first,&raw);
+        rx.process(raw.data(),first,false);
+        require(rx.work_acquisition(),"collect original cold dwells");
+    }
+    // The worker owns the four original snapshots during a long scan. No
+    // channel is active and the receiver cannot collect another snapshot yet.
+    for (int ms=4; ms<delay_ms; ++ms)
+        rx.process(raw.data(),std::uint64_t(ms)*s::raw_per_ms,false);
+    while (rx.work_acquisition()) {}
+    for (int ms=delay_ms; ms<delay_ms+52; ++ms) {
+        const auto first=std::uint64_t(ms)*s::raw_per_ms;
+        (stays_visible ? source : noise).epoch(first,&raw);
+        rx.process(raw.data(),first,false);
+        if (ms<delay_ms+12) while (rx.work_acquisition()) {}
+        if (!stays_visible) require(!rx.status().active_mask,"expired satellite never offered");
+    }
+    require(!rx.status().gaps,"slow acquisition leaves capture continuous");
+    if (stays_visible) {
+        const auto& track=rx.channel(0);
+        const double t=(track.first_sample+s::raw_per_ms)/s::raw_hz;
+        const double code=sat.phase+(sat.doppler+0.5*ramp*t)*t/1540.;
+        require(track.locked && track.prn==1 && circular_error(track.code_phase_chips,code)<0.75 &&
+                std::abs(track.doppler_hz-(sat.doppler+ramp*t))<100.,
+                "long-running cold scan tracks the current carrier and code");
+    }
+}
+
 void format_tests() {
     constexpr int levels[]={1,3,-1,-3};
     for (unsigned n=0;n<16;++n) {
@@ -146,6 +183,40 @@ s::Detection search(s::Acquisition& acq, const s::Epoch& e, unsigned prn, float 
     require(!acq.step(0),"search yields");
     while (!acq.step(1)) {}
     return acq.best();
+}
+
+void cross_code_sweep(unsigned spacing_ms) {
+    s::Acquisition acq;
+    unsigned correct=0, wrong=0, absent_candidates=0;
+    for (unsigned prn=1; prn<=32; ++prn) {
+        // A different code phase and carrier for every PRN, plus both slew signs.
+        const Sat sat{prn,3.125+31.72*prn,-63271.+4021.3*prn,prn%2 ? -90. : 90.,1.};
+        Source source(sat,.13,33+prn);
+        std::array<s::Epoch,12> epochs;
+        for (unsigned j=0; j<epochs.size(); ++j)
+            epochs[j]=source.epoch(std::uint64_t(j)*spacing_ms*s::raw_per_ms);
+        for (unsigned trial=1; trial<=32; ++trial) {
+            require(acq.start(epochs[0],trial,-70000,70000),"start strong-signal trial");
+            for (unsigned j=1; j<4; ++j) require(acq.add_dwell(epochs[j]),"strong-signal dwell");
+            while (!acq.step(64)) {}
+            if (!acq.best().detected) continue;
+            absent_candidates += trial!=prn;
+            s::Confirmation verification;
+            verification.start(acq.best());
+            for (unsigned j=4; j<epochs.size(); ++j)
+                if (verification.add(epochs[j])) break;
+            const auto found=verification.best();
+            if (!found.detected) continue;
+            const double t=found.first_sample/s::raw_hz;
+            const double phase=sat.phase+(sat.doppler+.5*sat.ramp*t)*t/1540.;
+            if (trial==prn && std::abs(found.doppler_hz-(sat.doppler+sat.ramp*t))<300 &&
+                circular_error(found.code_phase_chips,phase)<.6) ++correct;
+            else ++wrong;
+        }
+    }
+    std::cout<<"spacing_ms="<<spacing_ms<<" correct="<<correct<<"/32 absent_candidates="
+             <<absent_candidates<<"/992 false_confirmations="<<wrong<<'\n';
+    require(correct==32 && wrong==0,"strong-signal cross-code matrix");
 }
 
 void fft_oracle(s::Acquisition& acq) {
@@ -410,9 +481,16 @@ void benchmark() {
 } // namespace
 
 int main(int argc,char** argv) {
+    if (argc==2 && std::strcmp(argv[1],"--cross-code")==0) {
+        cross_code_sweep(1);cross_code_sweep(9);return 0;
+    }
     if (argc==2 && std::strcmp(argv[1],"--sweep")==0) { sensitivity_run();return 0; }
     if (argc==2 && std::strcmp(argv[1],"--bench")==0) { benchmark();return 0; }
     format_tests();
+    stale_search(-90.,true);
+    stale_search(+90.,true);
+    stale_search(0.,true);
+    stale_search(0.,false);
     test_slipping_epochs(+58000,1020.5,2);
     test_slipping_epochs(-58000,2.5,0);
     s::Acquisition acq;

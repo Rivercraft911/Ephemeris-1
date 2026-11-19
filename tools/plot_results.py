@@ -290,6 +290,34 @@ def ground_figure(data, destination):
     plt.close(fig)
 
 
+def acquisition_figure(pico, replay, destination):
+    fig, (target, ground) = plt.subplots(1, 2, figsize=(7.8, 3.05), layout="constrained")
+    timings = pico["full_band_prn1_s"]
+    seconds = [timings[key] for key in ("baseline", "radix4", "fused")]
+    bars = target.bar(["Radix-2", "Radix-4", "Fused\nradix-4"], seconds, width=0.56,
+                      color=["#aaaaaa", PALETTE[0], PALETTE[2]])
+    target.bar_label(bars, fmt="%.2f", padding=3, fontsize=9)
+    target.set(title="Measured on RP2350B · full-band search", ylabel="Time to PRN 1 tracking lock (s)",
+               ylim=(0, max(seconds) * 1.16))
+
+    phase = replay["lnav_phase_ground_limited"]
+    offsets = phase["cold_powerup_offsets_s"]
+    baseline = phase["baseline_elapsed_ttff_s"]
+    revised = phase["candidate_elapsed_ttff_s"]
+    ground.vlines(offsets, revised, baseline, color="#888888", lw=1)
+    ground.scatter(offsets, baseline, color="#bbbbbb", marker="o", label="Baseline")
+    ground.scatter(offsets, revised, color=PALETTE[2], marker="s", label="Ground-first search")
+    ground.set(title="Simulated ground receiver · fixed work budget",
+               xlabel="Cold-start offset in recording (s)", ylabel="Time to first fix (s)",
+               xticks=offsets, xlim=(min(offsets) - 3, max(offsets) + 3),
+               ylim=(0, max(baseline + revised) * 1.12))
+    ground.legend(frameon=False, loc="lower center", ncol=2, fontsize=8)
+    for ax in (target, ground):
+        ax.grid(axis="y", linewidth=0.45, alpha=0.55)
+    fig.savefig(destination / "acquisition.png", dpi=180)
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--results", type=Path, default=BASE / "baseline.json")
@@ -308,3 +336,7 @@ if __name__ == "__main__":
     ground = a.results.with_name("ground-bias.json")
     if ground.exists():
         ground_figure(json.loads(ground.read_text()), a.out)
+    pico = a.results.with_name("pico-acquisition.json")
+    replay = a.results.with_name("cold-replay.json")
+    if pico.exists() and replay.exists():
+        acquisition_figure(json.loads(pico.read_text()), json.loads(replay.read_text()), a.out)

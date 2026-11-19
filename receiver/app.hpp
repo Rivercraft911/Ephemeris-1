@@ -81,18 +81,22 @@ private:
     std::atomic<bool> offer_ready_{false};
     uint32_t snapshot_generation_{}, offer_generation_{};
     Detection offer_{};
-    // The following five fields belong to the acquisition worker.
+    // Search state belongs to the acquisition worker.
     eph::signal::Acquisition acquisition_{};
     eph::signal::Confirmation confirmation_{};
     Detection candidate_{};
     std::array<float, 32> last_carrier_{};
     uint32_t worker_generation_{}, warm_mask_{};
     uint32_t priority_mask_{};
-    unsigned next_prn_ = 1;
+    unsigned search_index_{}; // low five bits select PRN, bit five alternates Doppler passes
     Search stage_ = Search::select;
+    bool may_refresh_{}; // acquisition worker, one fresh local search per cold or warm candidate
     Status status_{};
 #ifdef EPHEMERIS_DOPPLER_POSITION
     eph::nav::PositionSmoother position_smoother_{};
+#endif
+#ifdef EPHEMERIS_VELOCITY_FIT
+    eph::nav::VelocityFit velocity_fit_{};
 #endif
     bool running_{}, have_clock_{};
     uint64_t next_sample_{}, clock_sample_{}, report_at_{};

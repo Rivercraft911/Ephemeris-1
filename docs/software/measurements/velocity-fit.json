@@ -1,0 +1,142 @@
+{
+  "method": "Paired native release half-chip replays with EPHEMERIS_VELOCITY_FIT OFF and ON. All pairs used 1141/5706 search steps per millisecond. All 16 non-velocity columns matched in all 825 reports per run. The reference convolution operates on the printed five-decimal raw velocities. At full precision a 1.5e-5 m/s comparison tolerance covers the input and output CSV quantization.",
+  "calibration": "The 550 km arc informed the choice of the five-sample endpoint fit. We generated the 400 km and 800 km arcs with new noise seeds and arguments of latitude after committing to the coefficients. Every run uses GPS-SDR-SIM Jan 1 2022 at 02:00:09, gain .012, additive Gaussian noise sigma .8, inclination 97.6 degrees and ascending node 35 degrees. Ground truth ECEF is (6378137,0,0) m.",
+  "binary_sha256": {
+    "ground_off": "7c0584fc910b147e50eb85491f8e14c2f367844b0557325d4c08c44bf1c0aa55",
+    "wide_off": "5cad2165ecd20f87929f0e6d5078c21deaf219d997570646f3cbf644b175a9e5",
+    "ground_on": "5f8c87c0ff4ec273735085e176b267221b14d7e635c61ea00568d77fdfb757f6",
+    "wide_on": "012e2076e20c7de3d5fdbb18a1334ffb8c6382932d6bae63ead4ca2d08844c31"
+  },
+  "runs": {
+    "ground": {
+      "altitude_km": null,
+      "phase_deg": null,
+      "seed": 10209,
+      "eiq_sha256": "81ac5404c39ac5c4410bab20ce096f6ebda777089d843176cd9f08d3e4e904b5",
+      "csv_sha256_raw_fit": [
+        "1b8d5d7c4b5258dc1496faa8ecd1c2b7e06782ed4d763a499286dc92edf13fdf",
+        "8555d3673674c5b179b6c8a293dee01661af291570efcc4db505b8ba4767f97f"
+      ],
+      "first_fix_s": 39.2,
+      "valid_fixes": 630,
+      "p95_position_m": 1.0952,
+      "p95_velocity_mps_raw_fit": [
+        0.16617,
+        0.14121
+      ],
+      "first_truth_streak_s_raw_fit": [
+        40.2,
+        39.2
+      ],
+      "passed_raw_fit": [
+        true,
+        true
+      ],
+      "max_reference_disagreement_mps": 1e-05
+    },
+    "orbit550": {
+      "altitude_km": 550,
+      "phase_deg": 12,
+      "seed": 10209,
+      "eiq_sha256": "f783daaa975a8e9b3c348addaf9f3570ed5a9b1f4ab73c8084f0c14e31e23eae",
+      "csv_sha256_raw_fit": [
+        "ec24fd75adad005831aefc44582c73c125a1f82af42fcb2f6fcc3fcf405cb3fe",
+        "7c7332c474138856331c54f087c944e6c361905c1ce245cdc779b2199b3f3d18"
+      ],
+      "first_fix_s": 69.2,
+      "valid_fixes": 480,
+      "p95_position_m": 1.88,
+      "p95_velocity_mps_raw_fit": [
+        0.23379,
+        0.14544
+      ],
+      "first_truth_streak_s_raw_fit": [
+        74.0,
+        70.0
+      ],
+      "passed_raw_fit": [
+        false,
+        true
+      ],
+      "max_reference_disagreement_mps": 1e-05
+    },
+    "orbit400": {
+      "altitude_km": 400,
+      "phase_deg": 103,
+      "seed": 7411,
+      "eiq_sha256": "e0a4cd27957f37fa7e4bd2568b423d40edc08494f03d7455cbcc84de00c359c0",
+      "csv_sha256_raw_fit": [
+        "f6760339c8e6ba80a23a14b30cc4244bc61f8a523c64a9aeb789f101a146520d",
+        "ef26b518099e67d88cea493e1b10222fd6a37383c0932b660556401256e383c6"
+      ],
+      "first_fix_s": 99.2,
+      "valid_fixes": 330,
+      "p95_position_m": 9.9551,
+      "p95_velocity_mps_raw_fit": [
+        1.58402,
+        0.89524
+      ],
+      "first_truth_streak_s_raw_fit": [
+        118.8,
+        118.6
+      ],
+      "passed_raw_fit": [
+        false,
+        false
+      ],
+      "max_reference_disagreement_mps": 1e-05,
+      "by_satellites_used": {
+        "4": {
+          "epochs": 90,
+          "mean_pdop": 24.633,
+          "p95_velocity_mps_raw_fit": [
+            2.2234,
+            1.3648
+          ]
+        },
+        "6": {
+          "epochs": 60,
+          "mean_pdop": 6.477,
+          "p95_velocity_mps_raw_fit": [
+            0.6631,
+            0.3885
+          ]
+        },
+        "8": {
+          "epochs": 180,
+          "mean_pdop": 2.581,
+          "p95_velocity_mps_raw_fit": [
+            0.2322,
+            0.153
+          ]
+        }
+      }
+    },
+    "orbit800": {
+      "altitude_km": 800,
+      "phase_deg": 211,
+      "seed": 9203,
+      "eiq_sha256": "bf64df944288abc3bfdf6c702055f60419d75510d3398c5c787c3102a247ced5",
+      "csv_sha256_raw_fit": [
+        "89c6406db0483e9577e305fbe9ded6494f6c91d3650549926acce94324d9eac6",
+        "3010a68808ad9c9083dfc03773d91988bfc526690ab1de828d93cea48340ec04"
+      ],
+      "first_fix_s": 69.2,
+      "valid_fixes": 480,
+      "p95_position_m": 2.121,
+      "p95_velocity_mps_raw_fit": [
+        0.29366,
+        0.16798
+      ],
+      "first_truth_streak_s_raw_fit": [
+        69.2,
+        69.2
+      ],
+      "passed_raw_fit": [
+        false,
+        true
+      ],
+      "max_reference_disagreement_mps": 1e-05
+    }
+  }
+}

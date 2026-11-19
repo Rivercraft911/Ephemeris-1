@@ -12,7 +12,13 @@ The native receiver reports status every 200 ms. A lock means a channel tracks t
 
 All times in the table are elapsed **signal time**. The median first valid LEO position across the 12 starts was 31.8 s. In the Pico run four channels had decoded navigation data at 38.6 s. The host and Pico took 926.77 s of wall time to process the 45.404 s stream. [Receiver CSV measurements](measurements/doppler-position.json) · [Target replay](results.md#cold-replay-on-the-physical-rp2350b)
 
-On the physical 150 MHz Pico, two cold searches ran against a continuous internal sample clock with real DMA and no PRN, code-phase or carrier hints. A strong, zero-Doppler PRN 1 took **10.628 s of wall time** to lock. PRN 4 took **42.500 s** on a separate fresh boot. Each search started at PRN 1 and scanned the full Doppler range. The host verified the detected PRN, code phase, Doppler and 20 consecutive locked epochs. Both trials had zero lost blocks. The repeated one-millisecond input exercises acquisition and contains no navigation message. The antenna-to-fix stopwatch starts with the assembled board outdoors. [Bench commands](../../firmware/README.md#cold-first-channel-timing)
+On the 150 MHz Pico, a cold search across ±70 kHz found a strong PRN 1 in **10.628 s** with the original FFT, **6.616 s** with radix-4, and **5.706 s** after combining the spectrum multiplication with the first FFT stage. All three ran the same 1,141 search steps with a real sample clock and DMA. Code phase and Doppler agreed with the input, and all three held lock for 20 consecutive epochs with zero lost blocks. These measurements isolate the FFT change. The repeated millisecond carries a constant navigation bit. [Pico measurements](measurements/pico-acquisition.json) · [Bench commands](../../firmware/README.md#cold-first-channel-timing)
+
+![Measured Pico time to first PRN 1 lock and simulated ground time to first position at four cold-start offsets](measurements/acquisition.png)
+
+The right panel uses independent ground I/Q and the same acquisition budget for both receivers. Starting at four different points in the navigation message, the revised ground search produced a first position in **39.2–50.2 s**. The previous receiver took **99.2–112.2 s**. [Ground and orbital trials](independent.md#cold-search-at-a-fixed-work-rate)
+
+A separate host-paced run sent the original four-bit ground recording through the physical Pico. The baseline half-chip build returned its first position at 39.2 s of recording time, 608.0 s after playback started. All five observed positions used eight satellites. Their 95th-percentile 3D position and velocity errors were 0.82 m and 0.123 m/s. An assembled front end and antenna are needed to measure time from power-on to an outdoor fix. [Target measurements](measurements/pico-acquisition.json) · [Ground procedure](ground.md)
 
 ## Doppler-aided position at 5 Hz
 

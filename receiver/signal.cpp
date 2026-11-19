@@ -78,7 +78,7 @@ constexpr auto make_mixer() {
 constexpr auto mixer = make_mixer();
 
 using Spectrum = std::array<IQf, fft_length>;
-void fft(Spectrum& a, bool inverse) {
+void forward_fft(Spectrum& a) {
     for (unsigned i = 1, j = 0; i < fft_length; ++i) {
         unsigned bit = fft_length/2;
         while (j & bit) { j ^= bit; bit >>= 1; }
@@ -90,7 +90,7 @@ void fft(Spectrum& a, bool inverse) {
         for (unsigned k = 0; k < half; ++k) {
             const unsigned angle = k*(fft_length/width);
             const float c = sine(angle+fft_length/4);
-            const float s = inverse ? sine(angle) : -sine(angle);
+            const float s = -sine(angle);
             for (unsigned p = k; p < fft_length; p += width) {
                 const auto u = a[p], v = a[p+half];
                 const float i = v.i*c - v.q*s, q = v.i*s + v.q*c;
@@ -99,8 +99,74 @@ void fft(Spectrum& a, bool inverse) {
             }
         }
     }
-    // Unnormalized inverse. Peak / mean code-cell power cancels the FFT scale.
 }
+// Inverse radix-4 DIF leaves time samples in base-four digit-reversed order.
+// The caller already folds pairs of time samples, so it can consume that
+// order directly without a separate 4096-element permutation.
+static_assert(fft_length == 4096);
+constexpr auto reverse_three_digits() {
+    std::array<std::uint8_t, 64> out{};
+    for (unsigned n = 0; n < out.size(); ++n)
+        out[n] = ((n & 3) << 4) | (n & 12) | ((n >> 4) & 3);
+    return out;
+}
+constexpr auto reversed = reverse_three_digits();
+unsigned time_index(unsigned n) {
+    return (unsigned(reversed[n & 63]) << 6) | reversed[n >> 6];
+}
+
+IQf twiddle(unsigned angle) {
+    return {sine(angle + fft_length/4), sine(angle)};
+}
+IQf rotated(IQf v, IQf w) {
+    return {v.i*w.i - v.q*w.q, v.i*w.q + v.q*w.i};
+}
+template<bool unity>
+void inverse_butterfly(IQf& a, IQf& b, IQf& c, IQf& d, IQf w1, IQf w2, IQf w3) {
+    const IQf even{a.i+c.i, a.q+c.q}, even_diff{a.i-c.i, a.q-c.q};
+    const IQf odd{b.i+d.i, b.q+d.q}, odd_diff{b.i-d.i, b.q-d.q};
+    a = {even.i+odd.i, even.q+odd.q};
+    b = {even_diff.i-odd_diff.q, even_diff.q+odd_diff.i};
+    c = {even.i-odd.i, even.q-odd.q};
+    d = {even_diff.i+odd_diff.q, even_diff.q-odd_diff.i};
+    if constexpr (!unity) {
+        b = rotated(b,w1);
+        c = rotated(c,w2);
+        d = rotated(d,w3);
+    }
+}
+template<class Product>
+void inverse_fft(Spectrum& a, Product product) {
+    // The first stage consumes the spectrum product in registers, saving a
+    // write/read pass over the 32 KiB transform. Peak/mean cancels its scale.
+    constexpr unsigned quarter = fft_length/4;
+    for (unsigned k = 0; k < quarter; ++k) {
+        auto b0 = product(k), b1 = product(k+quarter);
+        auto b2 = product(k+2*quarter), b3 = product(k+3*quarter);
+        inverse_butterfly<false>(b0,b1,b2,b3,twiddle(k),twiddle(2*k),twiddle(3*k));
+        a[k] = b0;
+        a[k+quarter] = b1;
+        a[k+2*quarter] = b2;
+        a[k+3*quarter] = b3;
+    }
+    for (unsigned quarter_width = fft_length/16, stride = 4; quarter_width > 1;
+         quarter_width /= 4, stride *= 4) {
+        const unsigned width = 4*quarter_width;
+        for (unsigned p = 0; p < fft_length; p += width)
+            inverse_butterfly<true>(a[p],a[p+quarter_width],a[p+2*quarter_width],
+                                    a[p+3*quarter_width],{},{},{});
+        for (unsigned k = 1; k < quarter_width; ++k) {
+            const unsigned angle = k*stride;
+            const auto w1 = twiddle(angle), w2 = twiddle(2*angle), w3 = twiddle(3*angle);
+            for (unsigned p = k; p < fft_length; p += width)
+                inverse_butterfly<false>(a[p],a[p+quarter_width],a[p+2*quarter_width],
+                                         a[p+3*quarter_width],w1,w2,w3);
+        }
+    }
+    for (unsigned p = 0; p < fft_length; p += 4)
+        inverse_butterfly<true>(a[p],a[p+1],a[p+2],a[p+3],{},{},{});
+}
+
 double wrap_chips(double phase) {
     phase = std::fmod(phase, double(code_length));
     return phase < 0 ? phase + code_length : phase;
@@ -175,7 +241,7 @@ bool Acquisition::start(const Epoch& epoch, unsigned prn, float lo_hz, float hi_
         ca_code(prn, code);
         replica_.fill({});
         for (int n = 0; n < acq_length; ++n) replica_[n].i = code[n/2];
-        fft(replica_, false);
+        forward_fft(replica_);
         cached_prn_ = prn;
     }
     bin_ = int(std::floor(lo_hz/bin_hz));
@@ -197,7 +263,7 @@ bool Acquisition::add_dwell(const Epoch& epoch) {
         work_[n] = {i,q};
         energy += i*i+q*q;
     }
-    fft(work_, false);
+    forward_fft(work_);
     float peak = 1;
     for (const auto v : work_) peak = std::max({peak,std::abs(v.i),std::abs(v.q)});
     const float scale = 32766.0f / peak;
@@ -217,22 +283,21 @@ bool Acquisition::step(unsigned max_transforms) {
         const auto& spectral_data = data_[current_dwell_];
         // Wiping off an integer FFT-bin carrier is a rotation of the data spectrum.
         // Only one forward data FFT per dwell is required over the whole sweep.
-        for (unsigned k = 0; k < fft_length; ++k) {
+        inverse_fft(work_, [&](unsigned k) -> IQf {
             const auto a = spectral_data[(k+static_cast<unsigned>(bin_)) & (fft_length-1)];
             const IQf b = replica_[k];
-            work_[k] = {a.i*b.i + a.q*b.q, a.q*b.i - a.i*b.q};
-        }
-        fft(work_, true);
+            return {a.i*b.i + a.q*b.q, a.q*b.i - a.i*b.q};
+        });
         // Align each dwell's code cells to the first sample of the search,
         // including both nonuniform snapshot spacing and carrier-aided code drift.
         const double dt = double(epochs_[current_dwell_]-epochs_[0])/raw_hz;
         const int shift = int(std::llround(2*dt*(chip_hz+bin_*bin_hz/1540.)))%acq_length;
         int aligned = shift;
         for (int k = 0; k < acq_length; ++k) {
-            IQf r = work_[k];
+            IQf r = work_[time_index(k)];
             // Fold *linear* correlation at exactly 2046 samples, not 2048 or 4096.
             if (k) {
-                const auto tail = work_[fft_length-acq_length+k];
+                const auto tail = work_[time_index(fft_length-acq_length+k)];
                 r.i += tail.i; r.q += tail.q;
             }
             power_[aligned] += (r.i*r.i+r.q*r.q)*weights_[current_dwell_];
@@ -265,21 +330,102 @@ void Confirmation::start(const Detection& seed) {
     best_.detected=false;
     best_.metric=0;
     dwells_=0;
+    previous_energy_=0;
+    repeat_sum_=0;
+    repeat_pairs_=0;
+    residual_sum_=0;
     previous_sample_=seed.first_sample;
     power_.fill(0);
     if (!ca_code(seed.prn,code_)) seed_.detected=false;
 }
 
+float Confirmation::residual_power(const Epoch& fresh, int offset, float gain_i, float gain_q, int input_energy) const {
+    // Predict the dominant repeat from the previous epoch. A different carrier
+    // rotates at a different rate and can survive in the prediction residual.
+    const auto carrier_step = repeat_stride * phase_step(best_.doppler_hz);
+    const double chips = (chip_hz + best_.doppler_hz/1540.0) / (samples_per_ms*1000.0);
+    const auto code_step = static_cast<std::uint32_t>(std::llround(repeat_stride*chips*chip_unit));
+    const auto wrap_at = code_period-code_step;
+    const double first_chip = code_at(best_, fresh.first_sample) + (repeat_stride+offset+.375)*chips;
+    auto cp = static_cast<std::uint32_t>(wrap_chips(first_chip)*chip_unit);
+    std::uint32_t carrier = 0;
+    float prompt_i = 0, prompt_q = 0, energy = 0;
+    for (int n = 1; n < static_cast<int>(previous_.size())-1; ++n) {
+        const auto a = previous_[n], b = fresh.samples[n*repeat_stride+offset];
+        const float i = b.i - (gain_i*a.i - gain_q*a.q);
+        const float q = b.q - (gain_i*a.q + gain_q*a.i);
+        energy += i*i + q*q;
+        const auto lo = mixer[carrier>>24];
+        const int chip = code_[cp>>22];
+        prompt_i += chip*(lo.i*i + lo.q*q);
+        prompt_q += chip*(lo.i*q - lo.q*i);
+        carrier += carrier_step;
+        cp = cp >= wrap_at ? cp-wrap_at : cp+code_step;
+    }
+    // An almost identical repeat has too little independent input left to verify.
+    if (energy <= .02f*input_energy) return 0;
+    return (prompt_i*prompt_i + prompt_q*prompt_q)/(127.f*127.f*energy);
+}
+
+void Confirmation::measure_repetition(const Epoch& fresh) {
+    // A strong C/A signal repeats across dwells. Its code can move by
+    // 4*70000/1540 baseband samples per second at the cold-search limit.
+    const auto elapsed = fresh.first_sample-previous_sample_;
+    if (previous_energy_ && elapsed % raw_per_ms == 0) {
+        const int radius = static_cast<int>(std::min(6., .5 + (4.*70000/1540.)*double(elapsed)/raw_hz));
+        float power = 0;
+        int lag = 0, fit_i = 0, fit_q = 0, input_energy = 0;
+        for (int offset = -radius; offset <= radius; ++offset) {
+            int cross_i = 0, cross_q = 0, energy = 0;
+            for (int n = 1; n < static_cast<int>(previous_.size())-1; ++n) {
+                const auto a = previous_[n], b = fresh.samples[n*repeat_stride+offset];
+                cross_i += a.i*b.i + a.q*b.q;
+                cross_q += a.i*b.q - a.q*b.i;
+                energy += b.i*b.i + b.q*b.q;
+            }
+            const float explained = energy ? (float(cross_i)*cross_i+float(cross_q)*cross_q)/energy : 0;
+            if (explained > power) {
+                power = explained;
+                lag = offset;
+                fit_i = cross_i;
+                fit_q = cross_q;
+                input_energy = energy;
+            }
+        }
+        if (dwells_ < 4) {
+            repeat_sum_ += std::sqrt(power/previous_energy_);
+            ++repeat_pairs_;
+        } else if (input_energy) {
+            residual_sum_ += residual_power(fresh, lag, float(fit_i)/previous_energy_,
+                                            float(fit_q)/previous_energy_, input_energy);
+        }
+    }
+    previous_energy_ = 0;
+    for (unsigned n = 1; n+1 < previous_.size(); ++n) {
+        const auto sample = fresh.samples[n*repeat_stride];
+        previous_[n] = sample;
+        previous_energy_ += sample.i*sample.i + sample.q*sample.q;
+    }
+}
+
 bool Confirmation::add(const Epoch& fresh) {
-    if (!seed_.detected || dwells_>=4 || fresh.discontinuity ||
+    if (!seed_.detected || dwells_>=8 || fresh.discontinuity ||
         !valid_epoch(previous_sample_) || fresh.first_sample<previous_sample_+raw_per_ms ||
         !std::isfinite(seed_.doppler_hz) || std::abs(seed_.doppler_hz)>101000 ||
         !std::isfinite(seed_.code_phase_chips)) {
         best_.detected=false;
         return true;
     }
+    measure_repetition(fresh);
     previous_sample_ = fresh.first_sample;
     ++dwells_;
+    if (dwells_>4) {
+        if (dwells_<8) return false;
+        best_.detected=residual_sum_/4 >= 5.25f;
+        best_.code_phase_chips=code_at(best_,fresh.first_sample);
+        best_.first_sample=fresh.first_sample;
+        return true;
+    }
     // Fine carrier spacing and independent incoherent dwells preserve sensitivity
     // through unknown 50 bit/s LNAV inversions. Evaluate every delay in one pass.
     for (int f=0; f<3; ++f) {
@@ -320,8 +466,18 @@ bool Confirmation::add(const Epoch& fresh) {
             }
         }
     }
-    best_.detected=dwells_==4 && best_.metric>=5.25f;
-    return dwells_==4;
+    if (dwells_<4) return false;
+    // Allow three times the 1/sqrt(N) thermal coherence scale before
+    // using the repeat estimate. A -16 dB sidelobe allowance
+    // refers to coherent signal power, in the existing 4092-sample metric.
+    const float repeat = repeat_pairs_ ? repeat_sum_/repeat_pairs_ : 0;
+    const float floor = (samples_per_ms/40.f)*(repeat - 3.f/std::sqrt(float(previous_.size()-2)));
+    best_.detected=best_.metric>=std::max(5.25f,floor);
+    if (best_.detected || best_.metric<5.25f) {
+        dwells_=8;
+        return true;
+    }
+    return false;
 }
 
 bool Tracker::start(const Detection& detection) {

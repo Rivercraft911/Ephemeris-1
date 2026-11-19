@@ -178,10 +178,46 @@ void doppler_position() {
     smoother.update(fix, step);
     assert((fix.position_m == Vec3{20, 40, 60}));
 }
+
+void velocity_fit() {
+    constexpr auto step = PositionSmoother::interval_samples;
+    VelocityFit filter;
+    Fix f;
+    f.valid = true;
+    f.clock_drift_mps = 7;
+    f.rate_rms_mps = 0.13;
+    // A single impulse in x, constant acceleration in y, constant jerk in z.
+    constexpr std::array<double, 5> impulse{{0.6, 0.4, 0.2, 0., -0.2}};
+    for (unsigned i = 0; i < 11; ++i) {
+        double t = i * .2;
+        f.velocity_mps = {i == 5 ? 1. : 0., 7800. - 8. * t, 3. * t * t};
+        filter.update(f, i * step);
+        const double expected = i >= 5 && i <= 9 ? impulse[i - 5] : 0.;
+        assert(std::abs(f.velocity_mps[0] - expected) < 1e-12);
+        assert(std::abs(f.velocity_mps[1] - (7800. - 8. * t)) < 1e-10);
+        assert(std::abs(f.velocity_mps[2] - (3. * t * t - (i >= 4 ? .24 : 0.))) < 1e-12);
+        assert(f.clock_drift_mps == 7 && f.rate_rms_mps == .13);
+    }
+    // Each break discards the old window. Its first four new Doppler epochs pass through.
+    for (auto start : {12 * step, 15 * step, 0 * step}) {
+        for (unsigned i = 0; i < 4; ++i) {
+            const Vec3 raw{double(i*i), 0, 0};
+            f.velocity_mps = raw;
+            filter.update(f, start + i * step);
+            assert(f.velocity_mps == raw);
+        }
+    }
+    f.valid = false;
+    filter.update(f, 4 * step);
+    f.valid = true;
+    f.velocity_mps = {99, 98, 97};
+    filter.update(f, 4 * step);
+    assert((f.velocity_mps == Vec3{99, 98, 97}));
+}
 }
 int main() {
     orbit_reference(); message_test(false); message_test(true);
     parity_and_issue(); independent_fix_at_rollover(); bad_fix_clears_state();
-    doppler_position();
+    doppler_position(); velocity_fit();
     std::puts("LNAV, RTKLIB broadcast state and navigation rejection tests passed");
 }
