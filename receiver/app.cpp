@@ -80,6 +80,9 @@ void Receiver::clear_channels() {
         results_[i] = {};
     }
     prns_.fill(0);
+#ifdef EPHEMERIS_FLIGHT_HEALTH
+    deferred_.store(0, std::memory_order_release);
+#endif
     occupied_.store(0, std::memory_order_release);
     status_.fix = {};
 #ifdef EPHEMERIS_DOPPLER_POSITION
@@ -96,6 +99,9 @@ void Receiver::clear_channels() {
 bool Receiver::seed_channel(const Detection& seed) {
     if (!seed.detected || seed.prn < 1 || seed.prn > 32 ||
         std::find(prns_.begin(), prns_.end(), seed.prn) != prns_.end()) return false;
+#ifdef EPHEMERIS_FLIGHT_HEALTH
+    if (deferred_.load(std::memory_order_relaxed) & mask(seed.prn)) return false;
+#endif
     for (unsigned i = 0; i < channels; ++i) {
         if (prns_[i] || !trackers_[i].start(seed)) continue;
         prns_[i] = seed.prn;
@@ -114,9 +120,10 @@ bool Receiver::work_acquisition() {
         slot_.store(Slot::need_epoch, std::memory_order_release);
     }
     if (offer_ready_.load(std::memory_order_acquire)) return false;
-    if (stage_ == Search::scanning) {
+    if (stage_ == Search::scanning || stage_ == Search::survey) {
         if (acquisition_.step(1)) {
             candidate_ = acquisition_.best();
+            if (stage_ == Search::survey && candidate_.metric < 18.f) candidate_.detected = false;
             stage_ = candidate_.detected ? Search::confirm : Search::select;
             if (candidate_.detected) confirmation_.start(candidate_);
             slot_.store(Slot::need_epoch, std::memory_order_release);
@@ -176,13 +183,18 @@ bool Receiver::work_acquisition() {
         return true;
     }
     const auto used = occupied_.load(std::memory_order_acquire);
-    if (__builtin_popcount(used) >= static_cast<int>(channels)) {
+    auto skip = used;
+#ifdef EPHEMERIS_FLIGHT_HEALTH
+    skip |= deferred_.load(std::memory_order_acquire);
+#endif
+    if (skip == UINT32_MAX || __builtin_popcount(used) >= static_cast<int>(channels)) {
         slot_.store(Slot::need_epoch, std::memory_order_release);
         return false;
     }
     unsigned prn;
+    bool survey = false;
     float span = 70000;
-    if (const auto preferred = priority_mask_ & ~used) {
+    if (const auto preferred = priority_mask_ & ~skip) {
         prn = 1u + static_cast<unsigned>(__builtin_ctz(preferred));
         priority_mask_ &= ~mask(prn);
     } else {
@@ -192,11 +204,21 @@ bool Receiver::work_acquisition() {
             // follows even if the receiver oscillator is outside this window.
             span = (search_index_ & 32u) ? 70000.f : 12000.f;
 #endif
+#ifdef EPHEMERIS_FLIGHT_SURVEY
+            // Alternate full-band surveys and four-dwell passes. Ground mode
+            // inserts a normal narrow pass before each of those wide passes.
+#ifdef EPHEMERIS_GROUND_SEARCH
+            survey = (search_index_ & 96u) == 32u;
+#else
+            survey = !(search_index_ & 32u);
+#endif
+#endif
             prn = 1u + (search_index_++ & 31u);
-        } while (used & mask(prn));
+        } while (skip & mask(prn));
     }
     float low = -span, high = span;
     if (warm_mask_ & mask(prn)) {
+        survey = false;
         low = last_carrier_[prn - 1] - 2500;
         high = last_carrier_[prn - 1] + 2500;
         warm_mask_ &= ~mask(prn); // Rejoin normal cold search after one cached attempt.
@@ -206,12 +228,21 @@ bool Receiver::work_acquisition() {
         return false;
     }
     may_refresh_ = true;
-    stage_ = Search::collect;
-    slot_.store(Slot::need_epoch, std::memory_order_release);
+    stage_ = survey ? Search::survey : Search::collect;
+    slot_.store(survey ? Slot::idle : Slot::need_epoch, std::memory_order_release);
     return true;
 }
 
 void Receiver::navigate(uint64_t sample) {
+#ifdef EPHEMERIS_FLIGHT_HEALTH
+    // The low 16 bits wrap every 13,107 s. Every report is visited, including
+    // reports without a fix, and a capture discontinuity clears the mask.
+    for (auto bits = deferred_.load(std::memory_order_relaxed); bits; bits &= bits-1) {
+        const unsigned n = static_cast<unsigned>(__builtin_ctz(bits));
+        if (static_cast<uint16_t>(status_.sequence) == retry_report_[n])
+            deferred_.fetch_and(~(uint32_t{1} << n), std::memory_order_release);
+    }
+#endif
     std::array<nav::Observation, channels> obs{};
     size_t n = 0;
     status_.valid_nav_mask = 0;
@@ -308,6 +339,20 @@ void Receiver::process(const uint8_t* packed, uint64_t first_sample, bool discon
         if (!prns_[i]) continue;
         auto& result = results_[i];
         if (!parallel) result = trackers_[i].update(live_);
+        if (result.locked) {
+            for (unsigned j = 0; j < result.count; ++j)
+                decoders_[i].push_prompt(result.prompts[j].i, result.prompts[j].start_sample);
+#ifdef EPHEMERIS_FLIGHT_HEALTH
+            if (decoders_[i].broadcast_unhealthy()) {
+                const unsigned prn = prns_[i];
+                // Retry after two 30 s LNAV frames at the 5 Hz reporting rate.
+                retry_report_[prn-1] = static_cast<uint16_t>(status_.sequence + 300);
+                deferred_.fetch_or(mask(prn), std::memory_order_release);
+                trackers_[i].reset();
+                result = {};
+            }
+#endif
+        }
         if (!result.active) {
             decoders_[i].reset();
             occupied_.fetch_and(~mask(prns_[i]), std::memory_order_release);
@@ -319,8 +364,6 @@ void Receiver::process(const uint8_t* packed, uint64_t first_sample, bool discon
             continue;
         }
         status_.locked_mask |= mask(prns_[i]);
-        for (unsigned j = 0; j < result.count; ++j)
-            decoders_[i].push_prompt(result.prompts[j].i, result.prompts[j].start_sample);
     }
     status_.active_mask = occupied_.load(std::memory_order_acquire);
     if (!gap && __builtin_popcount(status_.active_mask) < static_cast<int>(channels) &&

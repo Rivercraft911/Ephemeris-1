@@ -185,7 +185,50 @@ s::Detection search(s::Acquisition& acq, const s::Epoch& e, unsigned prn, float 
     return acq.best();
 }
 
-void cross_code_sweep(unsigned spacing_ms) {
+#if defined(EPHEMERIS_FLIGHT_SURVEY) && !defined(EPHEMERIS_GROUND_SEARCH)
+void survey_weak_fallback() {
+    ephemeris::Receiver rx;
+    const Sat sat{1,77.125,-6320.,55.,std::sqrt(2.e4/s::raw_hz)}; // 40 dB-Hz
+    Source source(sat,1.,3301);
+    Packed raw{};
+    for (unsigned ms=0; ms<110; ++ms) {
+        const auto epoch=source.epoch(std::uint64_t(ms)*s::raw_per_ms,&raw);
+        if (!ms) {
+            s::Acquisition acq;
+            require(search(acq,epoch,1,-70000,70000).metric<18.f,"weak PRN misses survey");
+        }
+        rx.process(raw.data(),epoch.first_sample,false);
+        while (rx.work_acquisition()) {}
+        require(!(rx.status().locked_mask & ~1u),"survey rejects absent PRNs");
+        if (rx.status().locked_mask & 1u) {
+            const auto& tr=rx.channel(0);
+            const double t=(tr.first_sample+s::raw_per_ms)/s::raw_hz;
+            require(ms>=32 && std::abs(tr.doppler_hz-sat.doppler-sat.ramp*t)<125 &&
+                    circular_error(tr.code_phase_chips,sat.phase+(sat.doppler+.5*sat.ramp*t)*t/1540.)<.75,
+                    "full-band four-dwell fallback locks the weak signal");
+            return;
+        }
+    }
+    require(false,"weak PRN never recovered");
+}
+#endif
+
+struct VerifiedSearch { bool candidate; s::Detection hit; };
+
+VerifiedSearch verify_search(s::Acquisition& acq, const std::array<s::Epoch,12>& epochs,
+                             unsigned prn, unsigned dwells) {
+    require(acq.start(epochs[0],prn),"start full-band trial");
+    for (unsigned n=1; n<dwells; ++n) require(acq.add_dwell(epochs[n]),"independent dwell");
+    while (!acq.step(64)) {}
+    auto candidate=acq.best();
+    if (!candidate.detected || (dwells==1 && candidate.metric<18.f)) return {};
+    s::Confirmation confirmation;
+    confirmation.start(candidate);
+    for (unsigned n=4; n<epochs.size(); ++n) if (confirmation.add(epochs[n])) break;
+    return {true, confirmation.best()};
+}
+
+void cross_code_sweep(unsigned spacing_ms, unsigned dwells) {
     s::Acquisition acq;
     unsigned correct=0, wrong=0, absent_candidates=0;
     for (unsigned prn=1; prn<=32; ++prn) {
@@ -196,16 +239,9 @@ void cross_code_sweep(unsigned spacing_ms) {
         for (unsigned j=0; j<epochs.size(); ++j)
             epochs[j]=source.epoch(std::uint64_t(j)*spacing_ms*s::raw_per_ms);
         for (unsigned trial=1; trial<=32; ++trial) {
-            require(acq.start(epochs[0],trial,-70000,70000),"start strong-signal trial");
-            for (unsigned j=1; j<4; ++j) require(acq.add_dwell(epochs[j]),"strong-signal dwell");
-            while (!acq.step(64)) {}
-            if (!acq.best().detected) continue;
-            absent_candidates += trial!=prn;
-            s::Confirmation verification;
-            verification.start(acq.best());
-            for (unsigned j=4; j<epochs.size(); ++j)
-                if (verification.add(epochs[j])) break;
-            const auto found=verification.best();
+            const auto attempt=verify_search(acq,epochs,trial,dwells);
+            absent_candidates += attempt.candidate && trial!=prn;
+            const auto found=attempt.hit;
             if (!found.detected) continue;
             const double t=found.first_sample/s::raw_hz;
             const double phase=sat.phase+(sat.doppler+.5*sat.ramp*t)*t/1540.;
@@ -214,7 +250,7 @@ void cross_code_sweep(unsigned spacing_ms) {
             else ++wrong;
         }
     }
-    std::cout<<"spacing_ms="<<spacing_ms<<" correct="<<correct<<"/32 absent_candidates="
+    std::cout<<"dwells="<<dwells<<" spacing_ms="<<spacing_ms<<" correct="<<correct<<"/32 absent_candidates="
              <<absent_candidates<<"/992 false_confirmations="<<wrong<<'\n';
     require(correct==32 && wrong==0,"strong-signal cross-code matrix");
 }
@@ -355,35 +391,42 @@ void sensitivity_run() {
     // amplitude A before quantization, C/N0 = A^2 Fs /(2 sigma^2).
     // These are idealized baseband measurements, without the analog IF filter.
     s::Acquisition acq;
-    for (double db:{38.,40.,45.}) {
+    for (double db:{0.,38.,40.,45.}) {
         unsigned acquired=0, incorrect=0, false_hits=0;
-        const double amplitude=std::sqrt(2*std::pow(10.,db/10)/s::raw_hz);
-        for (unsigned run=0;run<64;++run) {
-            Sat sat{1+run%32, std::fmod(43.2941*run,1023.), -51000+1631.1*run, 90, amplitude};
+#ifdef EPHEMERIS_FLIGHT_SURVEY
+        unsigned early=0, either=0;
+#endif
+        const double amplitude=db ? std::sqrt(2*std::pow(10.,db/10)/s::raw_hz) : 0.;
+        for (unsigned run=0; run<64; ++run) {
+            Sat sat{1+run%32,std::fmod(43.2941*run,1023.),-51000+1631.1*run,90,amplitude};
             Source src(sat,1.,3301+run);
-            std::array<s::Epoch,8> epochs;
-            for (unsigned n=0;n<8;++n) epochs[n]=src.epoch(std::uint64_t(n)*s::raw_per_ms);
-            auto perform=[&](unsigned prn) {
-                require(acq.start(epochs[0],prn),"multi-dwell init");
-                for (int n=1;n<4;++n) require(acq.add_dwell(epochs[n]),"multi-dwell acquisition");
-                while (!acq.step(16)) {}
-                auto found=acq.best();
-                s::Confirmation verifier;
-                verifier.start(found);
-                for (int n=4;n<8;++n) if (verifier.add(epochs[n])) break;
-                return verifier.best();
-            };
-            auto confirmed=perform(sat.prn);
-            if (confirmed.detected) {
-                const double t=confirmed.first_sample/s::raw_hz;
+            std::array<s::Epoch,12> epochs;
+            for (unsigned n=0; n<epochs.size(); ++n) epochs[n]=src.epoch(std::uint64_t(n)*s::raw_per_ms);
+            auto check=[&](unsigned dwells) {
+                false_hits += verify_search(acq,epochs,sat.prn%32+1,dwells).hit.detected;
+                const auto found=verify_search(acq,epochs,sat.prn,dwells).hit;
+                if (!found.detected) return false;
+                const double t=found.first_sample/s::raw_hz;
                 const double phase=sat.phase+(sat.doppler+0.5*t*sat.ramp)*t/1540.;
-                if (std::abs(confirmed.doppler_hz-sat.doppler)<500 &&
-                    circular_error(confirmed.code_phase_chips,phase)<0.75) ++acquired;
-                else ++incorrect;
-            }
-            false_hits+=perform(sat.prn%32+1).detected;
+                const bool correct=db!=0 && std::abs(found.doppler_hz-(sat.doppler+sat.ramp*t))<500 &&
+                                   circular_error(found.code_phase_chips,phase)<0.75;
+                incorrect += !correct;
+                return correct;
+            };
+            const bool full=check(4);
+            acquired+=full;
+#ifdef EPHEMERIS_FLIGHT_SURVEY
+            const bool quick=check(1);
+            early+=quick;
+            either+=full || quick;
+#endif
         }
-        std::cout<<"model_cn0_db_hz="<<db<<" trials=64 four_plus_four_acquired="<<acquired
+        if (db) std::cout<<"model_cn0_db_hz="<<db;
+        else std::cout<<"noise_only";
+        std::cout<<" trials=64 four_plus_four_acquired="<<acquired
+#ifdef EPHEMERIS_FLIGHT_SURVEY
+                 <<" survey_acquired="<<early<<" either_acquired="<<either
+#endif
                  <<" wrong_cells="<<incorrect<<" absent_prn_confirmed="<<false_hits<<'\n';
         require(incorrect==0 && false_hits==0,"confirmed wrong satellite/code cell");
         if (db>=45) require(acquired>=56,"strong signal sensitivity regression");
@@ -482,7 +525,13 @@ void benchmark() {
 
 int main(int argc,char** argv) {
     if (argc==2 && std::strcmp(argv[1],"--cross-code")==0) {
-        cross_code_sweep(1);cross_code_sweep(9);return 0;
+        for (unsigned spacing:{1u,9u}) {
+            cross_code_sweep(spacing,4);
+#ifdef EPHEMERIS_FLIGHT_SURVEY
+            cross_code_sweep(spacing,1);
+#endif
+        }
+        return 0;
     }
     if (argc==2 && std::strcmp(argv[1],"--sweep")==0) { sensitivity_run();return 0; }
     if (argc==2 && std::strcmp(argv[1],"--bench")==0) { benchmark();return 0; }
@@ -491,6 +540,9 @@ int main(int argc,char** argv) {
     stale_search(+90.,true);
     stale_search(0.,true);
     stale_search(0.,false);
+#if defined(EPHEMERIS_FLIGHT_SURVEY) && !defined(EPHEMERIS_GROUND_SEARCH)
+    survey_weak_fallback();
+#endif
     test_slipping_epochs(+58000,1020.5,2);
     test_slipping_epochs(-58000,2.5,0);
     s::Acquisition acq;

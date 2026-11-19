@@ -21,6 +21,10 @@ To switch images, send the complete line `bootsel` to a CDC-enabled image. The b
 | `ephemeris_profile` | Single-Pico 1/4/6/8-channel replay and timing bench. The default command uses an internal PIO sample clock and real DMA traffic. No RF board or wiring is needed. |
 | `ephemeris_capture` | Receive a finite 10 ms recording, or simultaneously compare the normal packed input with four one-bit PIO lanes. Use the internal pattern generator, an independently clocked fixture, or the live front end. |
 | `ephemeris_pattern` | Independent PRBS data and clock from a **second** Pico. Use only on the transmitting fixture. |
+| `ephemeris_replay_bench` | Receives full-rate I/Q recordings over host-paced USB and reports positions from the Pico. |
+| `ephemeris_clocked_replay` | Experimental device-clocked USB bench for half-chip recordings. |
+
+The `pico-plus-2-experimental-survey` CI artifact builds the live receiver with the full-band strong-signal survey and five-report velocity fit enabled. [Orbital tests and settings](../docs/software/independent.md#full-band-strong-signal-survey)
 
 ## Wiring the live front end
 

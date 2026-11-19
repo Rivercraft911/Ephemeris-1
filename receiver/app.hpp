@@ -60,7 +60,7 @@ private:
     std::atomic<bool> tracking_pending_{false};
     void track_alternating(unsigned first);
     enum class Slot : unsigned { need_epoch, ready, idle };
-    enum class Search : unsigned { select, collect, scanning, confirm };
+    enum class Search : unsigned { select, collect, scanning, survey, confirm };
     std::array<eph::signal::Tracker, channels> trackers_{};
     std::array<eph::signal::TrackingResult, channels> results_{};
     std::array<eph::nav::LnavDecoder, channels> decoders_{};
@@ -75,6 +75,10 @@ private:
     eph::signal::bitplane::Planes live_{};
 #else
     eph::signal::Epoch live_{};
+#endif
+#ifdef EPHEMERIS_FLIGHT_HEALTH
+    std::atomic<uint32_t> deferred_{0}; // capture owner writes, acquisition worker reads
+    std::array<uint16_t, 32> retry_report_{}; // capture owner only
 #endif
     std::atomic<Slot> slot_{Slot::need_epoch};
     std::atomic<uint32_t> generation_{0}, occupied_{0};

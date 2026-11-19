@@ -1,0 +1,445 @@
+{
+  "method": "Paired native half-chip GPS L1 C/A cold replays, full \u00b170 kHz range, five-report velocity fit on. Each independent GPS-SDR-SIM recording is 165 s. Worker budget is 1141 steps per 5706 ms of signal time. Status epochs occur at 5 Hz.",
+  "baseline": "Four disjoint 1 ms acquisition dwells. The survey profile adds a first pass over unoccupied PRNs with one dwell and a peak-to-mean threshold of 18, followed by normal independent confirmation. Remaining unoccupied PRNs get a complete four-dwell pass. The receiver has eight tracking slots.",
+  "replay_sha256": {
+    "baseline": "41c50cd8959c9f2b326f2bd9ebcd698accd62f80f133d333ed5fd00d06168ef1",
+    "survey": "537e30a21d1f71cb0bc3be2d210824abc0357076c3d45801a3542a9a46c00b4f",
+    "survey_before_health_release": "4802d383bdcc9e2656dfe6a79c3d31907bf6513e632ffa87bfae8e30bf49b944"
+  },
+  "work_definition": "A work step can transform a dwell/bin, acquire a snapshot or advance confirmation. Counts include all successful worker steps over the complete input.",
+  "time_basis": "Elapsed sample seconds. First fix is the first receiver-valid PVT. Truth streak is the first of five consecutive reports within 10 m and 0.2 m/s.",
+  "orbits": [
+    {
+      "altitude_km": 400,
+      "phase_deg": 103,
+      "noise_seed": 7411,
+      "input_sha256": "e0a4cd27957f37fa7e4bd2568b423d40edc08494f03d7455cbcc84de00c359c0",
+      "baseline": {
+        "four_locks_s": 75.0,
+        "eight_locks_s": 109.8,
+        "first_fix_s": 99.2,
+        "truth_streak_s": 118.6,
+        "p95_position_m": 9.95514,
+        "p95_velocity_mps": 0.895245,
+        "work_steps": 21936,
+        "passed": false,
+        "status_rows": 825,
+        "valid_rows": 330,
+        "gaps": 0,
+        "absent_locked_prns": [],
+        "locked_prns": [
+          1,
+          10,
+          12,
+          13,
+          14,
+          15,
+          17,
+          19
+        ],
+        "usable_prns": [
+          1,
+          10,
+          12,
+          13,
+          14,
+          15,
+          17,
+          19
+        ],
+        "status_sha256": "ef26b518099e67d88cea493e1b10222fd6a37383c0932b660556401256e383c6"
+      },
+      "survey": {
+        "four_locks_s": 24.8,
+        "eight_locks_s": 35.0,
+        "first_fix_s": 57.2,
+        "truth_streak_s": 57.6,
+        "p95_position_m": 2.63761,
+        "p95_velocity_mps": 0.231458,
+        "work_steps": 9304,
+        "passed": false,
+        "status_rows": 825,
+        "valid_rows": 540,
+        "gaps": 0,
+        "absent_locked_prns": [],
+        "locked_prns": [
+          1,
+          10,
+          14,
+          17,
+          19,
+          21,
+          22,
+          24,
+          28,
+          32
+        ],
+        "usable_prns": [
+          1,
+          10,
+          14,
+          17,
+          19,
+          21,
+          24,
+          32
+        ],
+        "status_sha256": "188ba401b3f1bdaf09f729e65b2fe20d70b45b464ca0c685e39ca7f52a5281c4",
+        "unhealthy_releases": [
+          {
+            "prn": 22,
+            "release_s": 57.082
+          },
+          {
+            "prn": 28,
+            "release_s": 87.069
+          }
+        ],
+        "new_navigation_prns": [
+          {
+            "prn": 32,
+            "first_lock_s": 93.0,
+            "first_ephemeris_used_s": 123.2
+          }
+        ],
+        "eight_satellites_used": {
+          "first_epoch_s": 123.2,
+          "last_epoch_s": 165.0,
+          "valid_rows": 210,
+          "p95_position_m": 2.33269,
+          "p95_velocity_mps": 0.198288
+        }
+      },
+      "survey_before_health_release": {
+        "four_locks_s": 24.8,
+        "eight_locks_s": 35.0,
+        "first_fix_s": 57.2,
+        "truth_streak_s": 57.6,
+        "p95_position_m": 2.53922,
+        "p95_velocity_mps": 0.239415,
+        "work_steps": 6992,
+        "passed": false,
+        "status_rows": 825,
+        "valid_rows": 540,
+        "gaps": 0,
+        "absent_locked_prns": [],
+        "locked_prns": [
+          1,
+          10,
+          14,
+          17,
+          19,
+          21,
+          22,
+          24
+        ],
+        "usable_prns": [
+          1,
+          10,
+          14,
+          17,
+          19,
+          21,
+          24
+        ],
+        "status_sha256": "9539e0e60fa0ffad4cc97c030ab630abc5eab5cbbc193a2ad402a77996be0beb"
+      }
+    },
+    {
+      "altitude_km": 550,
+      "phase_deg": 12,
+      "noise_seed": 10209,
+      "input_sha256": "f783daaa975a8e9b3c348addaf9f3570ed5a9b1f4ab73c8084f0c14e31e23eae",
+      "baseline": {
+        "four_locks_s": 46.4,
+        "eight_locks_s": 127.6,
+        "first_fix_s": 69.2,
+        "truth_streak_s": 70.0,
+        "p95_position_m": 1.88002,
+        "p95_velocity_mps": 0.145435,
+        "work_steps": 25504,
+        "passed": true,
+        "status_rows": 825,
+        "valid_rows": 480,
+        "gaps": 0,
+        "absent_locked_prns": [],
+        "locked_prns": [
+          1,
+          3,
+          4,
+          8,
+          10,
+          16,
+          21,
+          22
+        ],
+        "usable_prns": [
+          1,
+          3,
+          4,
+          8,
+          10,
+          16,
+          21
+        ],
+        "status_sha256": "7c7332c474138856331c54f087c944e6c361905c1ce245cdc779b2199b3f3d18"
+      },
+      "survey": {
+        "four_locks_s": 31.8,
+        "eight_locks_s": 52.2,
+        "first_fix_s": 69.2,
+        "truth_streak_s": 69.2,
+        "p95_position_m": 1.00893,
+        "p95_velocity_mps": 0.106064,
+        "work_steps": 12708,
+        "passed": true,
+        "status_rows": 825,
+        "valid_rows": 480,
+        "gaps": 0,
+        "absent_locked_prns": [],
+        "locked_prns": [
+          1,
+          3,
+          4,
+          8,
+          21,
+          22,
+          27,
+          31,
+          32
+        ],
+        "usable_prns": [
+          1,
+          3,
+          4,
+          8,
+          21,
+          27,
+          31,
+          32
+        ],
+        "status_sha256": "c770049e5078f8cc4ee650a540275942f30479876f7f14aee1721df1833ca775",
+        "unhealthy_releases": [
+          {
+            "prn": 22,
+            "release_s": 57.075
+          }
+        ],
+        "new_navigation_prns": [
+          {
+            "prn": 4,
+            "first_lock_s": 68.8,
+            "first_ephemeris_used_s": 99.2
+          }
+        ],
+        "eight_satellites_used": {
+          "first_epoch_s": 99.2,
+          "last_epoch_s": 165.0,
+          "valid_rows": 330,
+          "p95_position_m": 0.93251,
+          "p95_velocity_mps": 0.103036
+        }
+      },
+      "survey_before_health_release": {
+        "four_locks_s": 31.8,
+        "eight_locks_s": 52.2,
+        "first_fix_s": 69.2,
+        "truth_streak_s": 69.2,
+        "p95_position_m": 1.12387,
+        "p95_velocity_mps": 0.121311,
+        "work_steps": 10400,
+        "passed": true,
+        "status_rows": 825,
+        "valid_rows": 480,
+        "gaps": 0,
+        "absent_locked_prns": [],
+        "locked_prns": [
+          1,
+          3,
+          8,
+          21,
+          22,
+          27,
+          31,
+          32
+        ],
+        "usable_prns": [
+          1,
+          3,
+          8,
+          21,
+          27,
+          31,
+          32
+        ],
+        "status_sha256": "acaf7bc83b57f4bcb59a90b609b230aed3d1a0e864dd24bb3ac72346f9473347"
+      }
+    },
+    {
+      "altitude_km": 800,
+      "phase_deg": 211,
+      "noise_seed": 9203,
+      "input_sha256": "bf64df944288abc3bfdf6c702055f60419d75510d3398c5c787c3102a247ced5",
+      "baseline": {
+        "four_locks_s": 40.8,
+        "eight_locks_s": 75.6,
+        "first_fix_s": 69.2,
+        "truth_streak_s": 69.2,
+        "p95_position_m": 2.12095,
+        "p95_velocity_mps": 0.167982,
+        "work_steps": 15088,
+        "passed": true,
+        "status_rows": 825,
+        "valid_rows": 480,
+        "gaps": 0,
+        "absent_locked_prns": [],
+        "locked_prns": [
+          2,
+          5,
+          6,
+          7,
+          9,
+          11,
+          12,
+          13
+        ],
+        "usable_prns": [
+          2,
+          5,
+          6,
+          7,
+          9,
+          12,
+          13
+        ],
+        "status_sha256": "3010a68808ad9c9083dfc03773d91988bfc526690ab1de828d93cea48340ec04"
+      },
+      "survey": {
+        "four_locks_s": 16.2,
+        "eight_locks_s": 42.2,
+        "first_fix_s": 39.2,
+        "truth_streak_s": 39.8,
+        "p95_position_m": 1.57493,
+        "p95_velocity_mps": 0.147765,
+        "work_steps": 8416,
+        "passed": true,
+        "status_rows": 825,
+        "valid_rows": 630,
+        "gaps": 0,
+        "absent_locked_prns": [],
+        "locked_prns": [
+          2,
+          5,
+          6,
+          11,
+          13,
+          15,
+          20,
+          25,
+          29
+        ],
+        "usable_prns": [
+          2,
+          5,
+          6,
+          13,
+          15,
+          20,
+          25,
+          29
+        ],
+        "status_sha256": "d9d00eeba63e4504949aa93ff50343c71c140a5c1045643f1a3dc4166c7d98ef",
+        "unhealthy_releases": [
+          {
+            "prn": 11,
+            "release_s": 27.066
+          }
+        ],
+        "new_navigation_prns": [
+          {
+            "prn": 29,
+            "first_lock_s": 42.2,
+            "first_ephemeris_used_s": 69.2
+          }
+        ],
+        "eight_satellites_used": {
+          "first_epoch_s": 69.2,
+          "last_epoch_s": 165.0,
+          "valid_rows": 480,
+          "p95_position_m": 1.3555,
+          "p95_velocity_mps": 0.098434
+        }
+      },
+      "survey_before_health_release": {
+        "four_locks_s": 16.2,
+        "eight_locks_s": 36.4,
+        "first_fix_s": 39.2,
+        "truth_streak_s": 39.8,
+        "p95_position_m": 1.7547,
+        "p95_velocity_mps": 0.14986,
+        "work_steps": 7260,
+        "passed": true,
+        "status_rows": 825,
+        "valid_rows": 630,
+        "gaps": 0,
+        "absent_locked_prns": [],
+        "locked_prns": [
+          2,
+          5,
+          6,
+          11,
+          13,
+          15,
+          20,
+          25
+        ],
+        "usable_prns": [
+          2,
+          5,
+          6,
+          13,
+          15,
+          20,
+          25
+        ],
+        "status_sha256": "65c5dc220a9bcd37b4872e398e6c76e14b2a24c870a7788d849146a070589952"
+      }
+    }
+  ],
+  "controls": {
+    "cn0_db_hz": [
+      38,
+      40,
+      45
+    ],
+    "trials_per_level": 64,
+    "one_dwell_correct": [
+      0,
+      0,
+      43
+    ],
+    "four_dwell_correct": [
+      14,
+      49,
+      64
+    ],
+    "either_correct": [
+      14,
+      49,
+      64
+    ],
+    "pure_noise_trials": 64,
+    "wrong_cells": 0,
+    "absent_prn_confirmations": 0,
+    "strong_cross_code": "At 1 ms and 9 ms spacing, one survey dwell confirmed 32/32 correct transmitting PRNs. 47/992 absent coarse candidates crossed the metric threshold at each spacing; confirmation rejected all.",
+    "near_far": "18 dB weaker PRN 7 alongside PRN 4. Both locked with the expected code and Doppler; no other PRN locked.",
+    "weak_fallback": "40 dB-Hz single PRN 1, seed 3301: first dwell metric 13.027. The four-dwell revisit recovered the weak signal at input millisecond 62 with host work drained each epoch. No absent PRN locked."
+  },
+  "prn22_400km": {
+    "last_epoch_good_lnav_subframes": 21,
+    "last_epoch_timed": true,
+    "broadcast_health": 63,
+    "source": "brdc0010.22n, 2022-01-01 02:00 GPS, PRN 22. Seven of eight tracked PRNs had usable navigation data in the survey before health-based release."
+  },
+  "broadcast_health": "In the full-band flight survey, a parity-checked SF1 with nonzero SV health releases its tracking slot. The receiver may search for that PRN again after 60 s. Release timestamps are from a diagnostic build whose three 5 Hz status CSVs were byte-identical to the measured release executable."
+}

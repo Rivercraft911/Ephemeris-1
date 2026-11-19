@@ -50,6 +50,8 @@ public:
     // fractional ADC sample epoch and returns the satellite-clock transmit TOW.
     bool transmit_time(double sample, double& sv_tow_s) const;
     bool can_use_cached(const Ephemeris& saved) const;
+    // The default health field is 63 until the first parity-checked SF1 arrives.
+    bool broadcast_unhealthy() const { return received_[0] >= 0 && pending_.health != 0; }
     unsigned good_subframes() const { return good_; }
 
 private:

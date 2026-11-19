@@ -68,11 +68,16 @@ void handoff(const Packed& packed, Handoff condition) {
     auto publish = [&](bool gap = false) {
         rx->process(packed.data(), origin + uint64_t(epoch++)*sig::raw_per_ms, gap);
     };
-    // Four disjoint search dwells followed by four fresh confirmation dwells.
-    for (unsigned i = 0; i < 7; ++i) { publish(); worker.drain(); }
+    // Hold the last of the four fresh confirmation dwells before handoff.
+#if defined(EPHEMERIS_FLIGHT_SURVEY) && !defined(EPHEMERIS_GROUND_SEARCH)
+    constexpr unsigned search_dwells = 1;
+#else
+    constexpr unsigned search_dwells = 4;
+#endif
+    for (unsigned i = 0; i < search_dwells+3; ++i) { publish(); worker.drain(); }
     publish();
     if (condition == Handoff::expired) {
-        // The eighth snapshot remains claimed while capture advances. Only
+        // The final snapshot remains claimed while capture advances. Only
         // release the worker when the queued snapshot will be exactly 250 ms
         // old at the next owner epoch.
         for (unsigned i = 0; i < 249; ++i) publish();
