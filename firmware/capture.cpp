@@ -47,11 +47,15 @@ void Lane::init(PIO instance, unsigned machine, unsigned pin, unsigned width, bo
     hw_clear_bits(&pio_->input_sync_bypass, ((1u << width) - 1u) << pin | (1u << board::clock_pin));
 }
 
-void Lane::select_bus(unsigned pin, unsigned clock) {
+void Lane::select_bus(unsigned pin, unsigned clock, unsigned width) {
     pin_ = pin;
     // Change the two WAIT operands only while the state machine is disabled.
     pio_->instr_mem[offset_] = pio_encode_wait_gpio(EPHEMERIS_CAPTURE_FALLING, clock);
     pio_->instr_mem[offset_ + 1] = pio_encode_wait_gpio(!EPHEMERIS_CAPTURE_FALLING, clock);
+    if (width) {
+        width_ = width;
+        pio_->instr_mem[offset_ + 2] = pio_encode_in(pio_pins, width);
+    }
     hw_clear_bits(&pio_->input_sync_bypass, ((1u << width_)-1u) << pin | (1u << clock));
 }
 

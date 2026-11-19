@@ -73,6 +73,10 @@ The first command checks the entire decoded pattern and its chronological nibble
 
 Run `python3 firmware/bench.py PORT coarse --internal` to time the experimental one-bit, half-chip correlator on the same type of recording. It times shared preparation and 1/4/8 open-loop early/prompt/late correlations. For each channel count, `worst_margin_us` gives 1,000 µs minus the worst combined preparation and correlation time observed in ten epochs. The remaining work for a complete receiver includes loop updates, acquisition and navigation. The bench checks the parity and range of every sum. Native signal tests check numerical accuracy.
 
+The same run simultaneously captures each GPIO as a bitplane. The Pico computes the sign of each eight-sample sum directly from the sign and magnitude bits, four groups per 32-bit word. The derived I and Q signs must match packed preprocessing for all 20,460 half-chips. `pio_prep_total_us` reports preparation time, and `worst_pio_margin_us` gives the resulting margin for each channel count.
+
+`python3 firmware/bench.py PORT pairs --internal` samples each two-bit ADC axis in its own PIO state machine. Each 16-bit lane field holds eight successive samples. A 128 KiB lookup table gives the alternating sums of even and odd samples. Combining one I lookup and one Q lookup performs the quarter-IF rotation and half-chip integration. The SRAM image reuses the packed snapshot for the table after computing all ten reference epochs. The scored computations exclude one-time table construction.
+
 ## Independent pattern and RF capture
 
 Flash `ephemeris_pattern` on the second Pico and `ephemeris_capture` on the receiving Pico. Wire GP2 through GP6 straight across and connect grounds. These are 3.3 V digital signals. Disconnect the GNSS board's data/clock outputs when the pattern Pico drives the same pins.
@@ -95,3 +99,22 @@ A second PIO state machine latches a stopped-high or stopped-low clock, includin
 On the single Pico, run `python3 firmware/bench.py PORT clocktest` with the profile image. It holds the generated clock low, then high, for 10 µs each. Both times the source resumes before the CPU reads the DMA cursor. The check requires a new gap-marked epoch, monotonic sample indices and exactly one recorded fault for each pulse.
 
 On the live image `warmboot` saves tracked PRNs, carrier estimates and available ephemerides to checksummed uninitialized SRAM before an immediate watchdog reboot. Only the explicit reset cookie and a watchdog reset permit loading that snapshot. `coldboot` clears that cookie and restarts without the hint. Power cycles, normal pin resets and bad checksums start cold. Retention provides no decoded time or previous valid fix. Physical power-cycle tests remain the cold-start qualification procedure.
+
+### Cold I/Q replay on the Pico
+
+The `ephemeris_replay_bench` image receives an EIQ1 recording over USB CDC. The M33 starts with empty channels and no time, PRN, Doppler, or ephemeris hints. Core 0 validates each four-millisecond frame's sample interval, sequence number and CRC32. Core 1 processes the raw samples, performs a bounded number of acquisition steps after each millisecond, decodes LNAV, and emits the receiver's 5 Hz status. Two frames may be in flight. Their acknowledgements include separate tracking and acquisition times.
+
+The prefix-sum build used for the bench can be reproduced with the Pico SDK and the standard board toolchain. Set `PICO_SDK_PATH` first.
+
+```sh
+cmake -S firmware -B build/pico-replay -G Ninja -DCMAKE_BUILD_TYPE=Release \
+  -DPICO_NO_FLASH=1 -DEPHEMERIS_BITPLANE_TRACKING=ON -DEPHEMERIS_PREFIX_SUMS=ON
+cmake --build build/pico-replay --target ephemeris_replay_bench
+picotool load -x build/pico-replay/ephemeris_replay_bench.elf
+python firmware/replay_bench.py PORT leo.eiq receiver.csv --work 2 \
+  --stop-after-fixes 5 --metrics transport.json --truth truth.csv --sample-zero-s 0
+```
+
+The host needs pyserial and Python 3.10+. Truth scoring also uses NumPy. The last two options above use the synthetic fixture's known alignment. The host opens the independent truth file after the USB session closes. It scores the 5 Hz interval actually processed and records the result with transport metrics. Omit `--stop-after-fixes` for the full recording, or use `--max-ms 250` for a transport check. The final CSV contains only statuses reported by the target. An interrupted transfer leaves a `.partial` file with the received rows. Close the serial port to abandon a session. A new `replay` command starts cold, and `bootsel` at the command prompt returns to the boot ROM.
+
+Playback follows the host's backpressure. Recorded time sets the simulated receiver dynamics. The metrics JSON reports input bytes and seconds of recording per wall second. It records first and last valid host arrival offsets on a monotonic clock. During the longest unbroken run of valid reports, the measured wall-clock fix rate is `(reports − 1) / (last arrival − first arrival)`. The recording's scheduled 5 Hz cadence is recorded separately. A 250 ms stock-clock SRAM smoke run with two acquisition steps per millisecond processed 497 search steps in 4.64 s wall time. This mode supports end-to-end testing before RF assembly. The live capture and conducted RF procedures measure timing at the hardware boundary.

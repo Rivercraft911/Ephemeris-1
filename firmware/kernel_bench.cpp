@@ -11,7 +11,6 @@ namespace bench {
 namespace {
 namespace sig = eph::signal;
 namespace bp = sig::bitplane;
-bp::Planes from_pins, from_bytes;
 std::array<sig::Code, 8> codes;
 using Sums = std::array<bp::Correlations, 8>;
 
@@ -22,7 +21,7 @@ uint32_t lane_word(const uint32_t* lane, unsigned first, unsigned count) {
     return result;
 }
 
-void convert_pins(const LaneWords& lanes, unsigned first) {
+void convert_pins(const LaneWords& lanes, unsigned first, bp::Planes& from_pins) {
     from_pins.first_sample = first;
     for (unsigned w = 0; w < bp::words_per_ms; ++w) {
         const unsigned count = std::min(32u, board::samples_per_ms - 32*w);
@@ -46,16 +45,18 @@ unsigned time_batch(const bp::Planes& planes, unsigned n, Sums& sums) {
 }
 }
 
-void time_correlators(const uint32_t* packed, const LaneWords& lanes, bool internal,
+void time_correlators(const uint32_t* packed, const LaneWords& lanes, KernelScratch& scratch, bool internal,
                       unsigned capture_us, char* out, size_t capacity) {
     static Sums pin_sums, byte_sums;
+    auto& from_pins = scratch.pins;
+    auto& from_bytes = scratch.bytes;
     constexpr unsigned counts[] = {1, 4, 8};
     unsigned pin_us[3]{}, byte_us[3]{}, pin_convert = 0, byte_convert = 0, errors = 0;
     for (unsigned i = 0; i < codes.size(); ++i) sig::ca_code(i+1, codes[i]);
     for (unsigned ms = 0; ms < 10; ++ms) {
         const unsigned first = ms * board::samples_per_ms;
         auto start = time_us_32();
-        convert_pins(lanes, first);
+        convert_pins(lanes, first, from_pins);
         pin_convert += time_us_32() - start;
         start = time_us_32();
         bp::from_packed({first, reinterpret_cast<const uint8_t*>(packed) + first/2,

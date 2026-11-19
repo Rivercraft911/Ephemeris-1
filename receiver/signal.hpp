@@ -36,6 +36,13 @@ struct Epoch {
 IQ8 decode_nibble(unsigned nibble);
 bool preprocess(const PackedBlock& block, Epoch& epoch);
 using Code = std::array<std::int8_t, code_length>;
+namespace coarse {
+struct Epoch;
+struct Replica {
+    // Periodic extension for an unaligned 34-bit read at the code boundary.
+    std::array<std::uint32_t,(2*code_length + 96 + 31)/32> words{};
+};
+}
 bool ca_code(unsigned prn, Code& out); // IS-GPS-200 GPS L1 C/A PRNs 1..32
 
 struct Detection {
@@ -108,6 +115,9 @@ class Tracker {
 public:
     bool start(const Detection& detection);
     TrackingResult update(const Epoch& epoch);
+#ifdef EPHEMERIS_COARSE_TRACKING
+    TrackingResult update(const coarse::Epoch& epoch);
+#endif
     TrackingResult update(const bitplane::Planes& epoch);
     TrackingResult update(const bitplane::Prefixes& epoch);
     void reset() { active_ = false; }
@@ -121,6 +131,9 @@ private:
     double measured_doppler(double sample) const;
     struct PhaseMean { double sample{}, turns{}; };
     Code code_{};
+#ifdef EPHEMERIS_COARSE_TRACKING
+    coarse::Replica packed_code_{};
+#endif
     Detection seed_{};
     bool active_{}, initialized_{}, full_period_{}, have_previous_{};
     unsigned weak_{}, good_{};

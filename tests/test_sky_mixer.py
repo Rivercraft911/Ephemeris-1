@@ -8,7 +8,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from iqio import IF_HZ, RATE
-from sky_signal import NativeMixer, generate
+from sky_signal import C, L1, NativeMixer, generate, path_bias_seconds
 from vectors import chips
 
 
@@ -63,6 +63,11 @@ def seeded_rf(mixer):
 
 
 if __name__ == "__main__":
+    # At zero angle, 1 TECU adds 16.24 cm at L1 to the code and advances carrier phase.
+    code, carrier = path_bias_seconds(0, 0, 1, 0.75)
+    np.testing.assert_allclose(
+        [code * C, carrier * C], [0.75 + 40.3e16 / L1**2, 0.75 - 40.3e16 / L1**2]
+    )
     mixer = NativeMixer(sys.argv[1])
     reference(mixer)
     seeded_rf(mixer)

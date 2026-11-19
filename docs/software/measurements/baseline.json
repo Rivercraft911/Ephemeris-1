@@ -376,7 +376,50 @@
       "stopped_high": 1,
       "hold_us": 10
     },
-    "capture_sha256": "fa2ebd8ca95269944d8334495fb4dde22f7fa8d01c3139489f0be052691f705e"
+    "capture_sha256": "fa2ebd8ca95269944d8334495fb4dde22f7fa8d01c3139489f0be052691f705e",
+    "coarse": {
+      "samples": 163680,
+      "errors": 0,
+      "clock": "internal",
+      "sys_hz": 150000000,
+      "epochs": 10,
+      "prep_total_us": 4357,
+      "corr_1_4_8_total_us": [
+        950,
+        3801,
+        7609
+      ],
+      "worst_prep_corr_us": [
+        531,
+        816,
+        1197
+      ],
+      "worst_margin_us": [
+        469,
+        184,
+        -197
+      ],
+      "checksum": "2250.000"
+    },
+    "bitplane": {
+      "samples": 163680,
+      "mismatches": 0,
+      "clock": "internal",
+      "capture_us": 10002,
+      "epochs": 10,
+      "pio_prep_us": 6500,
+      "packed_prep_us": 18678,
+      "pio_1_4_8_us": [
+        17074,
+        68211,
+        136491
+      ],
+      "packed_1_4_8_us": [
+        17071,
+        68210,
+        136498
+      ]
+    }
   },
   "example": {
     "scenario": "leo-550-1",
@@ -467,5 +510,151 @@
         7
       ]
     ]
+  },
+  "stress": [
+    {
+      "scenario": "leo-400-2",
+      "stress": "frequency-high",
+      "result": {
+        "passed": true,
+        "ttff_s": 30.999938000123997,
+        "eligible_epochs": 1146,
+        "valid_epochs": 1146,
+        "availability": 1.0,
+        "p95_position_m": 1.7196712011943787,
+        "p95_velocity_mps": 0.06391731333440755,
+        "p95_abs_rtn_m": [
+          1.5094231557242557,
+          0.7878615125535842,
+          0.5475011490429877
+        ],
+        "faults": []
+      },
+      "truth_sha256": "32398e6b37a630658b1c336496c1b2543ee5651658465ca93f84dc5159266315",
+      "receiver_csv_sha256": "0c49a3fcc4a439148022755f2b4eee6ce759d8e24c2d6e70f7eff030f203f783"
+    },
+    {
+      "scenario": "leo-400-2",
+      "stress": "single-fade",
+      "result": {
+        "pre_fault_truth_checked": 496,
+        "fault_valid": 99,
+        "post_fault_truth_checked": 551,
+        "invalid_seen": false,
+        "recovery_s": 0.0,
+        "false_valid_epochs": [],
+        "faults": [],
+        "passed": true
+      },
+      "truth_sha256": "4ec29e608acbd1576e662c78b87a551e8d7dbcffb1fcb8aac8c647ecd08d78b5",
+      "receiver_csv_sha256": "56ecbfabf471f665f9e94d4d2fa408fb5949efd61fa4e2f72c38c19402f903a5"
+    },
+    {
+      "scenario": "leo-550-1",
+      "stress": "frequency-low",
+      "result": {
+        "passed": true,
+        "ttff_s": 32.6000652001304,
+        "eligible_epochs": 1138,
+        "valid_epochs": 1137,
+        "availability": 0.9991212653778558,
+        "p95_position_m": 1.2523370351400929,
+        "p95_velocity_mps": 0.05010664895548316,
+        "p95_abs_rtn_m": [
+          1.1931309891013993,
+          0.53744132510093,
+          0.510143762549097
+        ],
+        "faults": []
+      },
+      "truth_sha256": "ed06a7f755cb6d7bae1408999371c31886b1ef6ee407f6c00bc76a6afecf7a0e",
+      "receiver_csv_sha256": "e28a3a2d1a34ba3c95cb37924d3f4174305cbf3a528ffe8d2d520060c3d63cca"
+    },
+    {
+      "scenario": "leo-550-1",
+      "stress": "total-outage",
+      "result": {
+        "pre_fault_truth_checked": 488,
+        "fault_valid": 0,
+        "post_fault_truth_checked": 538,
+        "invalid_seen": true,
+        "recovery_s": 12.599999999999994,
+        "false_valid_epochs": [],
+        "faults": [],
+        "passed": true
+      },
+      "truth_sha256": "f0300438ad4b20e3a2cf43baa973b1855efaac222de075dac89f4b250f0fea02",
+      "receiver_csv_sha256": "883bf7184c12e8323dbbeacfbf554b956a52ca261000d2b48db1c2c1fc76f930"
+    },
+    {
+      "scenario": "leo-550-1",
+      "stress": "warm-restart",
+      "result": {
+        "pre_fault_truth_checked": 738,
+        "fault_valid": 0,
+        "post_fault_truth_checked": 238,
+        "invalid_seen": true,
+        "recovery_s": 32.599999999999994,
+        "false_valid_epochs": [],
+        "faults": [],
+        "passed": true
+      },
+      "truth_sha256": "ed06a7f755cb6d7bae1408999371c31886b1ef6ee407f6c00bc76a6afecf7a0e",
+      "receiver_csv_sha256": "b687fae8309d1573289fa3bfcb361f78e93dfb9f240429886704fd0856a7df0d"
+    },
+    {
+      "scenario": "leo-800-3",
+      "stress": "antenna-tumble",
+      "result": {
+        "pre_fault_truth_checked": 469,
+        "fault_valid": 14,
+        "post_fault_truth_checked": 69,
+        "invalid_seen": true,
+        "recovery_s": 16.400000000000006,
+        "false_valid_epochs": [],
+        "faults": [],
+        "passed": true
+      },
+      "truth_sha256": "9513c199278c462cdfbe4e8cc03407c8e675cedc8a872b6fa9e7664cda924b58",
+      "receiver_csv_sha256": "46deed46479d9621006118697df4983a3fb50e47652ec68def0259fa412e2416"
+    },
+    {
+      "scenario": "leo-800-3",
+      "stress": "three-visible",
+      "result": {
+        "pre_fault_truth_checked": 619,
+        "fault_valid": 0,
+        "post_fault_truth_checked": 219,
+        "invalid_seen": true,
+        "recovery_s": 26.400000000000006,
+        "false_valid_epochs": [],
+        "faults": [],
+        "passed": true
+      },
+      "truth_sha256": "ec7fc1fc15aae018392be64baadee34c4a6955fcca17d3f38dd0950a546cd2bb",
+      "receiver_csv_sha256": "b80f3c8cf5874c18d09cd6222cabaf97d79407fcb4ca834ebff639059e4ddb75"
+    }
+  ],
+  "l1_range_errors": {
+    "scenario": "leo-550-1",
+    "mean_slant_tecu": 10.0,
+    "max_broadcast_range_error_m": 1.0,
+    "truth_sha256": "0d2086ca62557bddfe2132a76f3fdec649e2dc5f3bdc29bf00efa0eed559fe63",
+    "receiver_csv_sha256": "5209b014f453e3634ac2cae185782fc51ea5f3575890e4f022004066654e2dad",
+    "result": {
+      "passed": true,
+      "ttff_s": 32.6,
+      "eligible_epochs": 588,
+      "valid_epochs": 588,
+      "availability": 1.0,
+      "p95_position_m": 2.804292882189521,
+      "p95_velocity_mps": 0.046242213251728004,
+      "p95_abs_rtn_m": [
+        2.655207229363738,
+        1.003510170756104,
+        0.7327604042929539
+      ],
+      "faults": []
+    }
   }
 }

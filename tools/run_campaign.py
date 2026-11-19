@@ -98,9 +98,21 @@ def stress_summary(truth, rx, config, rate):
     }
 
 
-def run(replay, outdir, name, seconds, work, stress="nominal", mixer=None):
+def run(
+    replay,
+    outdir,
+    name,
+    seconds,
+    work,
+    stress="nominal",
+    mixer=None,
+    slant_tecu=0,
+    broadcast_error_m=0,
+):
     km, index, start = CASES[name]
     dest = outdir / name / stress
+    if slant_tecu or broadcast_error_m:
+        dest = dest / f"tec-{slant_tecu:g}-broadcast-{broadcast_error_m:g}m"
     dest.mkdir(parents=True, exist_ok=True)
     truth = dest / "truth.csv"
     output = dest / "receiver.csv"
@@ -121,6 +133,13 @@ def run(replay, outdir, name, seconds, work, stress="nominal", mixer=None):
         generate += ["--stress", stress]
     if mixer:
         generate += ["--mixer", str(mixer.resolve())]
+    if slant_tecu or broadcast_error_m:
+        generate += [
+            "--slant-tecu",
+            str(slant_tecu),
+            "--broadcast-error-m",
+            str(broadcast_error_m),
+        ]
     decode = [str(replay.resolve()), "-", "--work", str(work)]
     if stress == "warm-restart":
         reset_s = Stress(stress).config["start_s"]
@@ -186,6 +205,8 @@ def run(replay, outdir, name, seconds, work, stress="nominal", mixer=None):
         "level": "native raw I/Q replay",
         "scenario": name,
         "stress": stress,
+        "slant_tecu": slant_tecu,
+        "broadcast_error_m": broadcast_error_m,
         "seconds": seconds,
         "revision": revision,
         "dirty": dirty,
@@ -219,6 +240,8 @@ if __name__ == "__main__":
         help="extend start 1 at each altitude to its orbital period",
     )
     parser.add_argument("--seconds", type=int, help="diagnostic subset duration")
+    parser.add_argument("--slant-tecu", type=float, default=0)
+    parser.add_argument("--broadcast-error-m", type=float, default=0)
     parser.add_argument(
         "--mixer",
         type=Path,
@@ -258,6 +281,17 @@ if __name__ == "__main__":
             None,
         )
         passed = (
-            run(a.replay, a.out, name, duration, a.work, a.stress, mixer) and passed
+            run(
+                a.replay,
+                a.out,
+                name,
+                duration,
+                a.work,
+                a.stress,
+                mixer,
+                a.slant_tecu,
+                a.broadcast_error_m,
+            )
+            and passed
         )
     raise SystemExit(0 if passed else 1)

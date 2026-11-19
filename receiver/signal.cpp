@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "signal.hpp"
 #include "bitplane.hpp"
+#ifdef EPHEMERIS_COARSE_TRACKING
+#include "coarse.hpp"
+#include <type_traits>
+#endif
 
 #include <algorithm>
 #include <cmath>
@@ -326,6 +330,9 @@ bool Tracker::start(const Detection& detection) {
         !std::isfinite(detection.code_phase_chips) || !std::isfinite(detection.doppler_hz) ||
         std::abs(detection.doppler_hz)>101000 || !ca_code(detection.prn, code_)) return false;
     seed_ = detection;
+#ifdef EPHEMERIS_COARSE_TRACKING
+    packed_code_=coarse::ca_replica(code_);
+#endif
     initialized_ = full_period_ = have_previous_ = false;
     weak_ = good_ = 0;
     epoch_number_ = 0;
@@ -541,7 +548,19 @@ TrackingResult Tracker::update_words(const Input& epoch) {
         const double phase=(code_phase_ - 0.375*code_step_)/chip_unit;
         const double rate=double(code_step_)/(4.0*chip_unit);
         const double turns=carrier_phase_/turns32-1.5*carrier_hz/raw_hz;
-        const auto r=bitplane::track_interval(epoch,code_,4*group,4*groups,phase,rate,carrier_hz,turns);
+        bitplane::Correlations r;
+#ifdef EPHEMERIS_COARSE_TRACKING
+        if constexpr (std::is_same_v<Input,coarse::Epoch>) {
+            // Each eight-sample sign measurement belongs to exactly one period,
+            // even when a code transition splits a pair of four-sample groups.
+            const unsigned first=(group+1)/2, end=(group+groups+1)/2;
+            const double delta=8.0*first+3.5-4.0*group;
+            const auto v=coarse::track_interval(epoch,packed_code_,first,end-first,
+                phase+delta*rate,8*rate,carrier_hz,turns+delta*carrier_hz/raw_hz);
+            r={v.early,v.prompt,v.late,2*int(end-first)};
+        } else
+#endif
+        r=bitplane::track_interval(epoch,code_,4*group,4*groups,phase,rate,carrier_hz,turns);
         // Match the scalar kernel's Q7 oscillator scale before running the
         // common locked-loop discriminators, carrier smoother, and bit clock.
         ei_+=static_cast<int>(std::lround(127.f*r.early.i)); eq_+=static_cast<int>(std::lround(127.f*r.early.q));
@@ -562,6 +581,9 @@ TrackingResult Tracker::update_words(const Input& epoch) {
     end_update(out);
     return out;
 }
+#ifdef EPHEMERIS_COARSE_TRACKING
+TrackingResult Tracker::update(const coarse::Epoch& epoch) { return update_words(epoch); }
+#endif
 TrackingResult Tracker::update(const bitplane::Planes& epoch) { return update_words(epoch); }
 TrackingResult Tracker::update(const bitplane::Prefixes& epoch) { return update_words(epoch); }
 } // namespace eph::signal

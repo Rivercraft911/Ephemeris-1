@@ -112,6 +112,12 @@ void format_tests() {
     for (auto& b:raw) b=static_cast<std::uint8_t>(rng());
     for (unsigned origin=0; origin<4; ++origin) {
         require(s::preprocess({origin,raw.data(),raw.size()},epoch),"preprocess");
+        s::Epoch in_place;
+        std::memcpy(in_place.samples.data(), raw.data(), raw.size());
+        const auto* bytes = reinterpret_cast<const uint8_t*>(in_place.samples.data());
+        require(s::preprocess({origin, bytes, raw.size()}, in_place) &&
+                std::memcmp(in_place.samples.data(), epoch.samples.data(), raw.size()) == 0,
+                "in-place acquisition snapshot");
         for (int k=0;k<s::samples_per_ms;++k) {
             int i=0,q=0;
             for (int m=0;m<4;++m) {

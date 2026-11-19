@@ -45,7 +45,7 @@ def verify_pattern(raw):
 def run(port, action, output, prbs, internal=False):
     port.reset_input_buffer()
     port.write((("self" if internal else "") + action + "\n").encode())
-    if action == "coarse":
+    if action in ("coarse", "pairs"):
         result = port.readline().decode("ascii", errors="replace").strip()
         print(result)
         if not result.startswith("MEASURED samples=163680 errors=0 "):
@@ -163,6 +163,8 @@ if __name__ == "__main__":
     timing.add_argument("--internal", action="store_true", help="use the on-chip PRBS source")
     coarse = sub.add_parser("coarse", help="time one-bit half-chip correlation on a captured 10 ms block")
     coarse.add_argument("--internal", action="store_true", help="use the on-chip PRBS source")
+    pairs = sub.add_parser("pairs", help="time a two-axis PIO capture and half-chip lookup table")
+    pairs.add_argument("--internal", action="store_true", help="use the on-chip PRBS source")
     prof = sub.add_parser("profile")
     prof.add_argument("channels", type=int, choices=(1, 4, 8))
     cadence = prof.add_mutually_exclusive_group()

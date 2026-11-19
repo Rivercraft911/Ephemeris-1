@@ -268,6 +268,15 @@ class NativeMixer:
         )
 
 
+def path_bias_seconds(time_s, prn, slant_tecu, broadcast_error_m):
+    """Illustrative independent range errors for code and carrier, in seconds."""
+    angle = 2 * math.pi * (time_s / 1800 + prn * 0.38196601125)
+    tec = slant_tecu * (1 + 0.5 * math.sin(angle))
+    ionosphere_m = 40.3e16 * tec / L1**2
+    common_m = broadcast_error_m * math.cos(angle)
+    return (common_m + ionosphere_m) / C, (common_m - ionosphere_m) / C
+
+
 def generate(
     output,
     truth,
@@ -279,7 +288,13 @@ def generate(
     scenario=None,
     stress=None,
     mixer=None,
+    slant_tecu=0.0,
+    broadcast_error_m=0.0,
 ):
+    if not all(math.isfinite(x) and x >= 0 for x in (slant_tecu, broadcast_error_m)):
+        raise ValueError(
+            "slant TEC and broadcast error amplitude must be finite and nonnegative"
+        )
     start_tow, week = START, WEEK
     phase = node = 0.0
     if scenario:
@@ -397,13 +412,28 @@ def generate(
                     delay[j] = clock_range(sv, start_tow + start, p)
                 end = clock_range(sv, start_tow + start + span, rx_end)
                 slope = (end - delay[j]) / span
-                tx0 = start_tow - begin + start - delay[j]
+                code_delay, carrier_delay = delay[j], delay[j]
+                code_slope, carrier_slope = slope, slope
+                if slant_tecu or broadcast_error_m:
+                    c0, p0 = path_bias_seconds(
+                        start, sv.prn, slant_tecu, broadcast_error_m
+                    )
+                    c1, p1 = path_bias_seconds(
+                        start + span, sv.prn, slant_tecu, broadcast_error_m
+                    )
+                    code_delay += c0
+                    carrier_delay += p0
+                    code_slope += (c1 - c0) / span
+                    carrier_slope += (p1 - p0) / span
+                tx0 = start_tow - begin + start - code_delay
                 first_chip = 1023000 * tx0
-                chip_hz = 1023000 * (1 - slope)
+                chip_hz = 1023000 * (1 - code_slope)
                 phase0 = (
-                    (anchor[j] - delay[j]) * L1 + 0.13 * j + (if_physical * start) % 1
+                    (anchor[j] - carrier_delay) * L1
+                    + 0.13 * j
+                    + (if_physical * start) % 1
                 ) % 1
-                carrier_hz = if_physical - L1 * slope
+                carrier_hz = if_physical - L1 * carrier_slope
                 if mixer is not None:
                     mixer.add(
                         z,
@@ -461,6 +491,18 @@ if __name__ == "__main__":
     )
     cli.add_argument("--seed", type=int, default=711)
     cli.add_argument(
+        "--slant-tecu",
+        type=float,
+        default=0,
+        help="mean slant TEC in an illustrative per-link variation",
+    )
+    cli.add_argument(
+        "--broadcast-error-m",
+        type=float,
+        default=0,
+        help="amplitude of a slowly varying line-of-sight orbit/clock residual",
+    )
+    cli.add_argument(
         "--cn0", type=float, default=53.0, help="per-SV nominal C/N0 in dB-Hz"
     )
     cli.add_argument(
@@ -480,4 +522,6 @@ if __name__ == "__main__":
         a.scenario,
         a.stress,
         NativeMixer(a.mixer) if a.mixer else None,
+        a.slant_tecu,
+        a.broadcast_error_m,
     )

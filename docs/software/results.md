@@ -12,6 +12,12 @@ In this 550 km start the first truth-checked fix came at 32.6 s. A carrier can l
 
 All 12 starts passed. The first of five consecutive truth-checked fixes arrived in 23.8–36.4 s. Across the runs, 95th-percentile 3D errors were 1.16–1.86 m in position and 0.041–0.060 m/s in velocity. All 7,155 eligible epochs after first fix produced a valid solution. These numbers describe an idealized RF source with a known antenna pattern, broadcast clocks and orbits. Flight adds oscillator, antenna, atmosphere and broadcast-model errors. [Per-run values and hashes](measurements/baseline.json) · [Cases and gates](../../tests/scenarios.json)
 
+### Controlled range errors
+
+On the same 550 km start, imposing a 10 TECU mean slant electron content with a ±50% variation per link and a 1 m peak satellite range bias raised the 95th-percentile position error from 1.36 m to 2.80 m. First fix remained at 32.6 s. At L1, each TECU delays the code by 0.162 m and advances the carrier by the same distance. Each satellite's imposed variation follows a 30-minute sinusoid with its own phase. This experiment isolates sensitivity to those inputs. A flight-condition prediction needs measured topside electron content and broadcast orbit/clock residuals. [First-order ionospheric delay](https://gssc.esa.int/navipedia/index.php/Ionospheric_Delay)
+
+The 260-second fault replays also exercised signal loss. The receiver invalidated its fix during the 10-second total outage and recovered 12.6 s after signal returned. With only three visible satellites it stayed invalid and recovered 26.4 s after visibility returned. A software warm reset at 180 s cleared the fix. A fresh truth-checked fix returned 32.6 s after reset. The archived results include clock offsets of ±2 ppm, a 24 dB fade on one signal and the rotating antenna case. [Fault results](measurements/baseline.json)
+
 ## Bare Pico Plus 2
 
 The RP2350B ran at 150 MHz from SRAM. A PIO pattern generator supplied a nominal 16.368 MHz clock and a known sequence. The digital capture matched all 163,680 samples. A second check compared four parallel one-bit PIO inputs with the packed four-pin input on the same edges and found zero differences. The clock monitor detected 10 µs interruptions at both high and low levels. These measurements use the unwired Pico.

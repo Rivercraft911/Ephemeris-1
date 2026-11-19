@@ -25,11 +25,15 @@ def fixture_bytes():
 
 
 class Port(io.BytesIO):
+    def __init__(self, response, expected_command=b"capture\n"):
+        super().__init__(response)
+        self.expected_command = expected_command
+
     def reset_input_buffer(self):
         pass
 
     def write(self, command):
-        if command != b"capture\n":
+        if command != self.expected_command:
             raise ValueError("unexpected command")
         return len(command)
 
@@ -80,6 +84,50 @@ int main() {
             with self.assertRaises(ValueError):
                 run(Port(frame.getvalue()[:-1]), "capture", dst, False)
             self.assertEqual(dst.read_bytes(), frame.getvalue())
+
+    def test_kernel_reports(self):
+        timing = b"PASS samples=163680 mismatches=0 clock=internal epochs=10\n"
+        run(Port(timing, b"selftiming\n"), "timing", None, False, internal=True)
+        coarse = b"MEASURED samples=163680 errors=0 clock=external worst_margin_us=10,20,30\n"
+        run(Port(coarse, b"coarse\n"), "coarse", None, False)
+        with self.assertRaisesRegex(ValueError, "coarse"):
+            run(Port(coarse.replace(b"errors=0", b"errors=1"), b"coarse\n"), "coarse", None, False)
+
+    def test_axis_lookup(self):
+        # Exhaust every possible eight-sample lane input in both positions,
+        # including ties and byte-lane overflow. Compute the independent truth
+        # one signed sample at a time with four explicit complex rotations.
+        source = r'''#include "axis_capture.hpp"
+#include <cassert>
+#include <initializer_list>
+int main() {
+    const int level[] = {1,3,-1,-3};
+    for (unsigned iw=0; iw<65536; ++iw) {
+        for (unsigned mask : {0u, 1u, 0x5555u, 0xaaaau, 0xffffu}) {
+            unsigned qw = ((iw * 25173u + 13849u) ^ mask) & 65535u;
+            unsigned got = bench::combine_axes(bench::axis_partial(iw), bench::axis_partial(qw));
+            int ri=0, rq=0;
+            for (unsigned n=0; n<8; ++n) {
+                int i=level[(iw>>(2*n))&3], q=level[(qw>>(2*n))&3];
+                switch (n%4) {
+                case 0: ri+=i; rq+=q; break;
+                case 1: ri+=q; rq-=i; break;
+                case 2: ri-=i; rq-=q; break;
+                default: ri-=q; rq+=i; break;
+                }
+            }
+            assert(bool(got&0x80)==(ri>=0) && bool(got&0x8000)==(rq>=0));
+        }
+    }
+}
+'''
+        firmware = Path(__file__).resolve().parent
+        with tempfile.TemporaryDirectory() as temp:
+            exe = Path(temp) / "axes"
+            subprocess.run([os.environ.get("CXX", "c++"), "-std=c++17", "-O2", "-x", "c++",
+                            "-I", str(firmware), "-o", str(exe), "-"],
+                           input=source, text=True, check=True)
+            subprocess.run([str(exe)], check=True)
 
 
 if __name__ == "__main__":

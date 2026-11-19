@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 
 namespace eph::signal::coarse {
 namespace {
@@ -10,28 +11,59 @@ constexpr int frac = 1 << 16;
 constexpr int period = half_chips * frac;
 constexpr double baseband_hz = raw_hz / 8;
 
-// One byte holds two ADC samples. Rotate them by the exact Fs/4 IF and
-// encode both axis sums in separate bytes. Four lookups set bit 7 exactly
-// when the integrated axis is nonnegative, including ties.
-constexpr auto adc_table() {
-    std::array<std::array<std::uint16_t,256>,4> table{};
-    constexpr int voltage[] = {1,3,-1,-3};
-    for (int phase=0; phase<4; ++phase) {
-        for (int pair=0; pair<256; ++pair) {
-            int i=32, q=32;
-            for (int n=0; n<2; ++n) {
-                const int v = pair >> (4*n);
-                const int x = voltage[(v>>2)&3], y = voltage[v&3];
-                const int re[] = {x,y,-x,-y}, im[] = {y,-x,-y,x};
-                i += re[(phase+n)&3]; q += im[(phase+n)&3];
-            }
-            table[phase][pair] = static_cast<std::uint16_t>(i + 256*q);
-        }
+// Four chronological ADC nibbles make one complete Fs/4 turn. The two
+// signed sums plus a bias of 64 fit in separate bytes. Combining two
+// complete turns sets each byte's high bit iff that axis is nonnegative.
+struct RawSums { std::uint16_t lut[65536]; };
+struct Pair { int i,q; };
+constexpr RawSums raw_sums() {
+    constexpr int level[]={1,3,-1,-3};
+    Pair pair[256]{};
+    for(unsigned b=0;b<256;++b)
+        pair[b]={level[(b>>2)&3]+level[(b>>4)&3], level[b&3]-level[(b>>6)&3]};
+    RawSums out{};
+    for(unsigned k=0;k<65536;++k) {
+        const auto a=pair[k&255], b=pair[k>>8];
+        out.lut[k]=std::uint16_t(64+a.i-b.i + 256*(64+a.q-b.q));
     }
-    return table;
+    return out;
 }
-constexpr auto adc = adc_table();
+// Pico SDK copies .time_critical into SRAM on flash boots. This table sees
+// noise-driven indices, so XIP cache locality cannot bound its access time.
+#if defined(__ARM_ARCH_8M_MAIN__)
+__attribute__((section(".time_critical.eph_coarse_lut")))
+#endif
+constexpr auto sums=raw_sums();
 
+template<unsigned phase>
+void pack_epoch(const std::uint8_t* src, Epoch& out) {
+    for(unsigned w=0;w<words_per_epoch;++w) {
+        std::uint32_t i=0,q=0;
+        const unsigned count=std::min(32u,half_chips-32*w);
+        for(unsigned n=0;n<count;n+=8) {
+            unsigned bits=0;
+            const unsigned used=std::min(8u,count-n);
+            for(unsigned k=0;k<used;++k,src+=4) {
+                std::uint16_t a,b;
+                std::memcpy(&a,src,2); std::memcpy(&b,src+2,2);
+#if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+                a=__builtin_bswap16(a); b=__builtin_bswap16(b);
+#endif
+                const unsigned xy=sums.lut[a]+sums.lut[b];
+                unsigned negative;
+                if constexpr (phase==0) negative=~xy;
+                if constexpr (phase==1) negative=((~xy>>8)&255u)|((xy-0x0101u)<<8);
+                if constexpr (phase==2) negative=xy-0x0101u;
+                if constexpr (phase==3) negative=((xy-0x0101u)>>8)|(~xy<<8);
+                bits=(bits>>1)|(negative&0x8080u);
+            }
+            // Eight iterations pack both axes into independent byte lanes.
+            bits>>=8-used;
+            i|=(bits&255u)<<n; q|=((bits>>8)&255u)<<n;
+        }
+        out.i[w]=i; out.q[w]=q;
+    }
+}
 // Only the intra-group carrier slope is quantized (1/1024 turn/sample).
 // Re-evaluate each group origin from the 32-bit phase accumulator. The
 // two masks implement a complex conjugate quarter-turn without a multiply.
@@ -74,8 +106,8 @@ inline void add_mismatches(Counts& sum, std::uint32_t i, std::uint32_t q,
     sum.i += ones((i^replica)&valid);
     sum.q += ones((q^replica)&valid);
 }
-IQf signed_sum(Counts n) {
-    return {float(int(half_chips)-2*n.i), float(int(half_chips)-2*n.q)};
+IQf signed_sum(Counts n,unsigned count) {
+    return {float(int(count)-2*n.i), float(int(count)-2*n.q)};
 }
 }
 
@@ -90,41 +122,38 @@ bool preprocess(const PackedBlock& block, Epoch& out) {
     if (!block.bytes || block.size!=bytes_per_ms) return false;
     out.first_sample=block.first_sample;
     out.discontinuity=block.discontinuity;
-    const auto& a=adc[block.first_sample&3], &b=adc[(block.first_sample+2)&3];
-    const std::uint8_t* in=block.bytes;
-    for (unsigned w=0; w<words_per_epoch; ++w) {
-        const unsigned count=std::min(32u,half_chips-32*w);
-        std::uint32_t i=0, q=0;
-        for (unsigned n=0; n<count; ++n, in+=4) {
-            const unsigned xy = a[in[0]] + b[in[1]] + a[in[2]] + b[in[3]];
-            i = (i>>1) | ((~xy&0x80u)<<24);
-            q = (q>>1) | ((~xy&0x8000u)<<16);
-        }
-        out.i[w]=i>>(32-count);
-        out.q[w]=q>>(32-count);
+    switch (block.first_sample&3) {
+        case 0: pack_epoch<0>(block.bytes,out); break;
+        case 1: pack_epoch<1>(block.bytes,out); break;
+        case 2: pack_epoch<2>(block.bytes,out); break;
+        default: pack_epoch<3>(block.bytes,out); break;
     }
     return true;
 }
 
-Sums correlate(const Epoch& epoch, const Replica& code, double cp, double fd, double turns) {
-    if (!std::isfinite(cp) || !std::isfinite(fd) || !std::isfinite(turns) || std::abs(fd)>101000)
+Sums track_interval(const Epoch& epoch, const Replica& code, unsigned first, unsigned count,
+                    double cp, double chips_per_half, double fd, double turns) {
+    if (!count || first>=half_chips || count>half_chips-first ||
+        !std::isfinite(cp) || !std::isfinite(turns) || !std::isfinite(fd) ||
+        std::abs(fd)>101000 || !(chips_per_half>=.49 && chips_per_half<=.51))
         return {};
+    const unsigned skip=first%32, end=first+count;
     constexpr double one_turn = 4294967296.;
-    const double carrier = std::remainder(turns,1.) + fd*(3.5/raw_hz);
+    const double carrier = std::remainder(turns,1.) - fd*skip/baseband_hz;
     auto phase = static_cast<std::uint32_t>(std::llround(carrier*one_turn)) + (1u<<25);
     const auto step = static_cast<std::uint32_t>(std::llround(8*fd/baseband_hz*one_turn));
     const auto& rotate = rotation[max_slope + int(std::lround(fd/baseband_hz*1024))];
 
     // Track the first late half-chip index in Q16.16. Dither the aperture
     // within each half chip; early and late use exactly the same choice.
-    const double phase0 = std::remainder(cp,double(code_length))*2
-                        + (3.5/8 + 15.5*fd/l1_hz) - 1.5;
+    const double phase0 = std::remainder(cp-skip*chips_per_half,double(code_length))*2
+                        + 15.5*(2*chips_per_half-1) - 1.5;
     int index = static_cast<int>(std::llround(phase0*frac))%period;
     if (index<0) index+=period;
-    const int advance = static_cast<int>(std::lround(32*frac*(1+fd/l1_hz)));
-    auto dither=std::uint32_t(epoch.first_sample/8)*0x9e3779b9u;
+    const int advance = static_cast<int>(std::lround(32*frac*(2*chips_per_half)));
+    auto dither=(std::uint32_t(epoch.first_sample/8)+first/32)*0x9e3779b9u;
     Counts e{}, p{}, l{};
-    for (unsigned w=0; w<words_per_epoch; ++w) {
+    for (unsigned w=first/32; 32*w<end; ++w) {
         unsigned bit=unsigned(index + int(dither>>16))>>16;
         if (bit>=half_chips) bit-=half_chips;
         dither+=0x9e3779b9u;
@@ -147,12 +176,18 @@ Sums correlate(const Epoch& epoch, const Replica& code, double cp, double fd, do
         const auto select = (epoch.i[w]^epoch.q[w])&swap;
         const auto i=(epoch.i[w]^select)^inv;
         const auto q=(epoch.q[w]^select)^(inv^swap);
-        constexpr unsigned tail=half_chips%32;
-        const std::uint32_t valid = w==words_per_epoch-1 ? (1u<<tail)-1 : ~0u;
+        const auto lo=w==first/32 ? skip : 0;
+        const auto hi=std::min(32u,end-32*w);
+        const auto valid=(~0u<<lo)&(~0u>>(32-hi));
         add_mismatches(l,i,q,late,valid);
         add_mismatches(p,i,q,prompt,valid);
         add_mismatches(e,i,q,early,valid);
     }
-    return {signed_sum(e),signed_sum(p),signed_sum(l)};
+    return {signed_sum(e,count),signed_sum(p,count),signed_sum(l,count)};
+}
+
+Sums correlate(const Epoch& epoch,const Replica& code,double cp,double fd,double turns) {
+    const double rate=.5*(1+fd/l1_hz);
+    return track_interval(epoch,code,0,half_chips,cp+3.5*rate/8,rate,fd,turns+3.5*fd/raw_hz);
 }
 }

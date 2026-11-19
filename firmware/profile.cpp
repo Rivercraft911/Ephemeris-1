@@ -80,9 +80,11 @@ void check_clock_faults() {
                   good[0] && good[1] ? "PASS" : "FAIL", unsigned(good[0]), unsigned(good[1]));
     reply(line);
 }
-void measure_kernels(unsigned& prepare_us, unsigned& tracker_us) {
+bool measure_kernels(unsigned& prepare_us, unsigned& tracker_us) {
     namespace sig = eph::signal;
-#if defined(EPHEMERIS_PREFIX_SUMS)
+#if defined(EPHEMERIS_COARSE_TRACKING)
+    static sig::coarse::Epoch epoch;
+#elif defined(EPHEMERIS_PREFIX_SUMS)
     static sig::bitplane::Prefixes epoch;
 #elif defined(EPHEMERIS_BITPLANE_TRACKING)
     static sig::bitplane::Planes epoch;
@@ -95,18 +97,22 @@ void measure_kernels(unsigned& prepare_us, unsigned& tracker_us) {
     seed.prn = 1;
     seed.detected = true;
     tracker.start(seed);
+    bool locked = false;
     for (unsigned n = 0; n < count + settle; ++n) {
         sig::PackedBlock block{uint64_t(n) * board::samples_per_ms,
                                reinterpret_cast<const uint8_t*>(replay), sizeof(replay)};
         uint32_t begin = time_us_32();
-#ifdef EPHEMERIS_BITPLANE_TRACKING
+#if defined(EPHEMERIS_COARSE_TRACKING)
+        sig::coarse::preprocess(block, epoch);
+#elif defined(EPHEMERIS_BITPLANE_TRACKING)
         sig::bitplane::from_packed(block, epoch);
 #else
         sig::preprocess(block, epoch);
 #endif
         uint32_t middle = time_us_32();
-        tracker.update(epoch);
+        const auto result = tracker.update(epoch);
         uint32_t end = time_us_32();
+        locked = result.locked;
         if (n >= settle) {
             prepare_us += middle - begin;
             tracker_us += end - middle;
@@ -115,6 +121,7 @@ void measure_kernels(unsigned& prepare_us, unsigned& tracker_us) {
     }
     prepare_us = (prepare_us + count/2)/count;
     tracker_us = (tracker_us + count/2)/count;
+    return locked;
 }
 
 enum class Mode { internal, external, offline };
@@ -132,6 +139,7 @@ void profile(unsigned channels, Mode mode) {
     const bool offline = mode == Mode::offline;
     uint32_t work_start = 0, worst = 0, maximum_active = 0;
     unsigned prepare_us = 0, tracker_us = 0, full_epochs = 0;
+    bool kernel_locked = false;
     uint64_t total_us = 0;
     uint32_t expected_mask = (1u << channels) - 1, locked_at_end = 0, full_lock_epochs = 0;
     capture::Statistics before{};
@@ -141,7 +149,7 @@ void profile(unsigned channels, Mode mode) {
     if (offline) {
         while (!search_idle.load(std::memory_order_acquire)) tight_loop_contents();
         stream.stop();
-        measure_kernels(prepare_us, tracker_us);
+        kernel_locked = measure_kernels(prepare_us, tracker_us);
     } else {
         stream.select_clock(mode == Mode::external ? board::clock_pin : internal_clock);
     }
@@ -193,7 +201,7 @@ void profile(unsigned channels, Mode mode) {
     uint32_t work = work_count.load() - work_start;
     std::sort(durations, durations + full_epochs);
     const unsigned p95 = full_epochs ? durations[(95*full_epochs+99)/100-1] : 0;
-    bool passed = n == epoch_target && (offline || (!lost && !stalls && !timeouts && worst < 1000))
+    bool passed = n == epoch_target && (offline ? kernel_locked : (!lost && !stalls && !timeouts && worst < 1000))
                && locked_at_end == expected_mask && maximum_active == channels
                && full_lock_epochs == epoch_target - hot_start
                && (offline || channels == receiver.channels || work > 0);
@@ -201,12 +209,12 @@ void profile(unsigned channels, Mode mode) {
     std::snprintf(line, sizeof(line),
         "%s clock=%s channels=%u epochs=%u first=%llu max_us=%u p95_us=%u steady_mean_us=%u missed=%llu "
         "stalls=%u clock_timeouts=%u max_active=%u locked_mask=%u full_lock_epochs=%u work_steps=%u "
-        "isolated_prepare_mean_us=%u isolated_tracker_mean_us=%u sys_hz=%u\n",
+        "isolated_prepare_mean_us=%u isolated_tracker_mean_us=%u isolated_locked=%u sys_hz=%u\n",
         passed ? "PASS" : "FAIL", offline ? "offline" : mode == Mode::external ? "external" : "internal",
         channels, n, (unsigned long long)first_epoch, unsigned(worst), p95,
         full_epochs ? unsigned(total_us/full_epochs) : 0, (unsigned long long)lost, unsigned(stalls),
         unsigned(timeouts), unsigned(maximum_active), unsigned(locked_at_end), unsigned(full_lock_epochs),
-        unsigned(work), prepare_us, tracker_us, unsigned(clock_get_hz(clk_sys)));
+        unsigned(work), prepare_us, tracker_us, unsigned(kernel_locked), unsigned(clock_get_hz(clk_sys)));
     reply(line);
     for (unsigned i = 0; i < receiver.channels; ++i) {
         const auto& result = receiver.channel(i);

@@ -3,7 +3,9 @@
 
 #include "navigation.hpp"
 #include "signal.hpp"
-#ifdef EPHEMERIS_BITPLANE_TRACKING
+#ifdef EPHEMERIS_COARSE_TRACKING
+#include "coarse.hpp"
+#elif defined(EPHEMERIS_BITPLANE_TRACKING)
 #include "bitplane.hpp"
 #endif
 
@@ -56,7 +58,9 @@ private:
     std::array<eph::nav::Ephemeris, 32> cache_{};
     std::array<unsigned, channels> prns_{};
     eph::signal::Epoch snapshot_{};
-#if defined(EPHEMERIS_PREFIX_SUMS)
+#if defined(EPHEMERIS_COARSE_TRACKING)
+    eph::signal::coarse::Epoch live_{};
+#elif defined(EPHEMERIS_PREFIX_SUMS)
     eph::signal::bitplane::Prefixes live_{};
 #elif defined(EPHEMERIS_BITPLANE_TRACKING)
     eph::signal::bitplane::Planes live_{};

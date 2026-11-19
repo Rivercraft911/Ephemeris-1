@@ -14,7 +14,7 @@ public:
     bool finished() const;
     uint32_t remaining() const;
     void stop();
-    void select_bus(unsigned pin, unsigned clock);
+    void select_bus(unsigned pin, unsigned clock, unsigned width = 0);
 private:
     PIO pio_{};
     unsigned sm_{}, dma_{}, offset_{}, width_{}, pin_{};

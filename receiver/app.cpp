@@ -122,6 +122,12 @@ bool Receiver::work_acquisition() {
         slot_.store(Slot::need_epoch, std::memory_order_release);
         return false;
     }
+#if defined(EPHEMERIS_BITPLANE_TRACKING) || defined(EPHEMERIS_COARSE_TRACKING)
+    // Acquisition owns this slot until it asks for another epoch. Each input
+    // byte pair becomes one IQ8, so it can downconvert in the same storage.
+    const auto* raw = reinterpret_cast<const uint8_t*>(snapshot_.samples.data());
+    sig::preprocess({snapshot_.first_sample, raw, sig::bytes_per_ms, false}, snapshot_);
+#endif
     if (stage_ == Search::collect) {
         if (!acquisition_.add_dwell(snapshot_)) stage_ = Search::select;
         else if (acquisition_.dwells() == sig::Acquisition::max_dwells) stage_ = Search::scanning;
@@ -165,7 +171,10 @@ bool Receiver::work_acquisition() {
         high = last_carrier_[prn - 1] + 2500;
         warm_mask_ &= ~mask(prn); // Fall back to full search if this narrow attempt misses.
     }
-    if (!acquisition_.start(snapshot_, prn, low, high)) return false;
+    if (!acquisition_.start(snapshot_, prn, low, high)) {
+        slot_.store(Slot::need_epoch, std::memory_order_release);
+        return false;
+    }
     stage_ = Search::collect;
     slot_.store(Slot::need_epoch, std::memory_order_release);
     return true;
@@ -218,7 +227,9 @@ void Receiver::process(const uint8_t* packed, uint64_t first_sample, bool discon
             seed_channel(offer_);
         offer_ready_.store(false, std::memory_order_release);
     }
-#ifdef EPHEMERIS_BITPLANE_TRACKING
+#ifdef EPHEMERIS_COARSE_TRACKING
+    if (occupied_.load(std::memory_order_relaxed)) sig::coarse::preprocess(block,live_);
+#elif defined(EPHEMERIS_BITPLANE_TRACKING)
     if (occupied_.load(std::memory_order_relaxed)) sig::bitplane::from_packed(block,live_);
 #else
     sig::preprocess(block,live_);
@@ -244,8 +255,10 @@ void Receiver::process(const uint8_t* packed, uint64_t first_sample, bool discon
     status_.active_mask = occupied_.load(std::memory_order_acquire);
     if (!gap && __builtin_popcount(status_.active_mask) < static_cast<int>(channels) &&
         slot_.load(std::memory_order_acquire) == Slot::need_epoch) {
-#ifdef EPHEMERIS_BITPLANE_TRACKING
-        sig::preprocess(block,snapshot_);
+#if defined(EPHEMERIS_BITPLANE_TRACKING) || defined(EPHEMERIS_COARSE_TRACKING)
+        static_assert(sizeof(snapshot_.samples) == sig::bytes_per_ms);
+        snapshot_.first_sample = first_sample;
+        std::memcpy(snapshot_.samples.data(), packed, sig::bytes_per_ms);
 #else
         snapshot_ = live_;
 #endif
