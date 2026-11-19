@@ -14,7 +14,7 @@ from iqio import RATE
 from campaign import Q
 
 
-def check(path, trajectory=None, seconds=65):
+def check(path, trajectory=None, seconds=65, start_tow_s=525609):
     if seconds <= 0:
         raise ValueError("recording duration must be positive")
     open_csv = gzip.open if path.suffix == ".gz" else open
@@ -47,7 +47,7 @@ def check(path, trajectory=None, seconds=65):
     dp = np.linalg.norm(positions - ref_position, axis=1)
     dv = np.linalg.norm(velocity - ref_velocity, axis=1)
     time_error = max(
-        abs(float(r["tow_s"]) - 525609 - int(r["sample"]) / RATE) for r in fixes
+        abs(float(r["tow_s"]) - start_tow_s - int(r["sample"]) / RATE) for r in fixes
     )
     accurate = np.zeros(len(t), bool)
     accurate[flags == 1] = (dp <= Q["max_p95_position_m"]) & (dv <= Q["max_p95_velocity_mps"])
@@ -72,6 +72,12 @@ def check(path, trajectory=None, seconds=65):
         status_epochs=len(t),
         valid_epochs=len(fixes),
         first_valid_s=float(t[flags == 1][0]),
+        satellites_at_first_fix=int(fixes[0]["sv"]),
+        first_fix_position_error_m=float(dp[0]),
+        first_used_s={
+            str(n): next((int(r["sample"]) / RATE for r in fixes if int(r["sv"]) >= n), None)
+            for n in (6, 7, 8)
+        },
         first_five_truth_checked_s=first,
         availability_after_streak=availability,
         p95_position_m=p,
