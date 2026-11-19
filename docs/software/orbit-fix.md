@@ -33,6 +33,8 @@ Five native cold replays at 400–800 km reached seven usable satellites by 39.2
 
 ## Does lowering the output rate buy accuracy?
 
+The flight firmware now runs this average on the Pico. [Paired hardware measurements](motion-average.md)
+
 On the first production run, the recorder received 630 valid 5 Hz fixes. We compared the raw position with a causal average of the last 40 positions, moving each position forward to the current epoch by integrating the receiver’s measured ECEF velocity. The simulated receiver was moving at 7.67 km/s in ECEF at first fix. Even a plain average of five 5 Hz positions would lag the latest position by about 3.1 km (0.4 s at that speed). The motion-corrected window below spans 7.8 s. Every filtered position uses only data already received. No orbital truth enters the filter.
 
 | Output cadence after the window fills | Compared epochs | Raw 3D error, p95 | Motion-corrected average, p95 |

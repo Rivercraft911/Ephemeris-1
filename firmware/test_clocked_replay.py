@@ -1,6 +1,7 @@
 """Verify the half-chip USB fixture against direct complex mixing. SPDX-License-Identifier: Apache-2.0"""
 
 import io
+import csv
 from pathlib import Path
 import queue
 import zlib
@@ -8,7 +9,7 @@ import random
 import tempfile
 import unittest
 
-from clocked_replay import BYTES_MS, COMPACT_BYTES, HALF_CHIPS, convert, expand_block, pack_block, run
+from clocked_replay import BYTES_MS, COMPACT_BYTES, HALF_CHIPS, MOTION_FIELDS, convert, expand_block, pack_block, run
 from replay_bench import FIELDS, HEADER, IF_HZ, RATE, SAMPLES_MS
 
 
@@ -67,12 +68,15 @@ class ClockedReplay(unittest.TestCase):
 
 
 class FakePort:
-    def __init__(self, defect=None, used=4):
+    def __init__(self, defect=None, used=4, paired=False, valid=(False, False, True), motion_window=None):
         self.defect = defect
         self.used = used
         self.lines = queue.Queue()
         self.received = bytearray()
-        self.epochs = 600
+        self.paired = paired
+        self.motion_window = motion_window
+        self.valid = valid
+        self.epochs = 200 * len(valid)
         self.closed = False
 
     def reset_input_buffer(self):
@@ -85,20 +89,27 @@ class FakePort:
         if chunk.startswith(b"clocked "):
             command, epochs, expected = chunk.decode().split()
             self.assert_command = (command, int(epochs), int(expected, 16))
-            self.lines.put("READY CLK1")
-            self.lines.put("H " + FIELDS)
+            suffix = "" if self.motion_window is None else f" motion_window={self.motion_window}"
+            self.lines.put("READY CLK1" + suffix)
+            self.lines.put("H " + (MOTION_FIELDS if self.paired else FIELDS))
             return len(chunk)
         self.received.extend(chunk)
         if len(self.received) == self.epochs*COMPACT_BYTES:
-            for n in (1, 2, 3):
+            window = 0
+            for n, valid in enumerate(self.valid, 1):
                 sample = (n + (self.defect == "sample" and n == 2)) * (RATE//5)
-                mask = 1 if n == 1 else (1 << self.used) - 1
-                row = [n, sample, 0, mask, mask, mask if n == 3 else 0, int(n == 3), 1, 0,
-                       1, 2, 3, 0, 0, 0, 0, 0, self.used if n == 3 else 0, 1]
+                mask = 1 if n == 1 and not valid else (1 << self.used) - 1
+                row = [n, sample, 0, mask, mask, mask if valid else 0, int(valid), 1, 0,
+                       1, 2, 3, 0, 0, 0, 0, 0, self.used if valid else 0, 1]
+                if self.paired:
+                    window = min(self.motion_window or 40, window + 1) if valid else 0
+                    raw_x = float("nan") if self.defect == "raw_position" else 1.25
+                    row.extend([raw_x, 2.5, 3.75, window + (self.defect == "window")])
                 time_us = 200000*n + (10000 if self.defect == "cadence" and n == 2 else 0)
                 self.lines.put(f"S {time_us} " + ",".join(map(str, row)))
             crc = zlib.crc32(self.received) ^ (self.defect == "crc")
-            self.lines.put(f"PASS epochs=600 elapsed_us=600010 late_us=6 starved=0 peak_backlog=10 crc={crc:08x}")
+            self.lines.put(f"PASS epochs={self.epochs} elapsed_us={self.epochs*1000+10} "
+                           f"late_us=6 starved=0 peak_backlog=10 crc={crc:08x}")
         return len(chunk)
 
 
@@ -131,12 +142,45 @@ class ClockedSerial(unittest.TestCase):
                 self.assertEqual(events["seven_used"], events["first_valid"] if used == 7 else None)
 
     def test_corrupt_status_or_device_checksum(self):
-        for defect in ("sample", "cadence", "crc"):
+        for defect in ("sample", "cadence", "crc", "raw_position", "window"):
             with tempfile.TemporaryFile() as f:
                 f.write(bytes(COMPACT_BYTES) * 600)
                 f.seek(0)
                 with self.assertRaises(ValueError):
-                    run(FakePort(defect), f, io.StringIO())
+                    run(FakePort(defect, paired=True, motion_window=40), f, io.StringIO())
+
+    def test_paired_positions_and_window_fill(self):
+        port = FakePort(paired=True, motion_window=40, valid=[False] + [True]*41 + [False, True])
+        with tempfile.TemporaryFile() as f:
+            f.write(bytes(COMPACT_BYTES * port.epochs))
+            f.seek(0)
+            out = io.StringIO()
+            result = run(port, f, out)
+        out.seek(0)
+        reader = csv.DictReader(out)
+        self.assertEqual(reader.fieldnames, MOTION_FIELDS.split(","))
+        rows = list(reader)
+        self.assertEqual([int(r["motion_samples"]) for r in rows], [0, *range(1, 41), 40, 0, 1])
+        self.assertEqual(float(rows[-1]["x_m"]), 1.0)
+        self.assertEqual(float(rows[-1]["raw_x_m"]), 1.25)
+        self.assertEqual(result["valid_rows"], 42)
+        self.assertEqual(result["motion_window"], 40)
+
+    def test_window_from_firmware(self):
+        port = FakePort(paired=True, motion_window=100, valid=[True]*101)
+        with tempfile.TemporaryFile() as f:
+            f.write(bytes(COMPACT_BYTES * port.epochs))
+            f.seek(0)
+            out = io.StringIO()
+            self.assertEqual(run(port, f, out)["motion_window"], 100)
+        out.seek(0)
+        self.assertEqual([int(r["motion_samples"]) for r in csv.DictReader(out)], [*range(1, 101), 100])
+        for bad in (FakePort(paired=True, motion_window=101), FakePort(motion_window=40), FakePort(paired=True)):
+            with tempfile.TemporaryFile() as f:
+                f.write(bytes(COMPACT_BYTES * bad.epochs))
+                f.seek(0)
+                with self.assertRaises(ValueError):
+                    run(bad, f, io.StringIO())
 
 
 if __name__ == "__main__":

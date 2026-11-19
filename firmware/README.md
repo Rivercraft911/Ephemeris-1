@@ -24,7 +24,7 @@ To switch images, send the complete line `bootsel` to a CDC-enabled image. The b
 | `ephemeris_replay_bench` | Receives full-rate I/Q recordings over host-paced USB and reports positions from the Pico. |
 | `ephemeris_clocked_replay` | Experimental device-clocked USB bench for half-chip recordings. |
 
-The `pico-plus-2-experimental-survey` CI artifact builds the live receiver with the compact orbital survey and five-report velocity fit enabled. [Cold-start measurements and build flags](../docs/software/orbit-fix.md)
+The `pico-plus-2-experimental-survey` CI artifact builds the live receiver with the compact orbital survey, five-report velocity fit and 100-fix motion-corrected position average enabled. [Smoothing settings and hardware results](../docs/software/motion-average.md). [Cold-start measurements and build flags](../docs/software/orbit-fix.md)
 
 ## Wiring the live front end
 

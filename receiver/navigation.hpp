@@ -116,6 +116,25 @@ private:
     bool initialized_{};
 };
 
+// Mean of consecutive code positions transported to the newest reported epoch
+// by trapezoidal integration of the reported ECEF velocities (5 Hz).
+class MotionAverage {
+public:
+#ifdef EPHEMERIS_MOTION_WINDOW
+    static constexpr unsigned window = EPHEMERIS_MOTION_WINDOW;
+#else
+    static constexpr unsigned window = 40;
+#endif
+    static_assert(window >= 2 && window <= 100);
+    unsigned update(Fix& fix, uint64_t sample); // number of contributing fixes
+    void reset() { count_ = 0; }
+private:
+    std::array<std::array<float, 3>, window-1> innovations_{};
+    Vec3 previous_position_{}, previous_velocity_{};
+    uint64_t previous_sample_{};
+    unsigned next_{}, count_{};
+};
+
 // Five-sample causal least-squares line evaluated at the newest Doppler epoch.
 class VelocityFit {
 public:

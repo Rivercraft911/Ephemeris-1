@@ -16,48 +16,108 @@ def trajectory(t, altitude_km=550, phase_deg=12):
     )
 
 
-def rate_trial(path, motion, seconds):
-    """Compare output decimation and causal position averaging at identical epochs."""
-    data = np.genfromtxt(path, delimiter=",", names=True)
+def read_fixes(path, seconds):
+    data = np.atleast_1d(np.genfromtxt(path, delimiter=",", names=True))
     n = seconds * Q["hz"]
-    samples = np.arange(1, n + 1) * (FS // Q["hz"])
-    if data.size != n or not np.array_equal(data["sample"], samples):
+    expected = np.arange(1, n + 1) * (FS // Q["hz"])
+    if data.size != n or not np.array_equal(data["sample"], expected):
         raise ValueError("expected the complete 5 Hz status stream")
-    times = samples / FS
-    truth = motion(times)[:, :3]
-    pos = np.column_stack([data[k] for k in XYZ[:3]])
-    vel = np.column_stack([data[k] for k in XYZ[3:]])
-    if not np.isin(data["valid"], [0, 1]).all() or np.any(np.diff(data["gaps"]) < 0):
+    gaps = data["gaps"]
+    if (not np.isin(data["valid"], [0, 1]).all() or not np.isfinite(gaps).all()
+            or np.any(gaps < 0) or np.any(gaps != np.floor(gaps)) or np.any(np.diff(gaps) < 0)):
         raise ValueError("invalid fix flag or gap counter")
     valid = data["valid"] == 1
-    if not np.isfinite(pos[valid]).all() or not np.isfinite(vel[valid]).all():
+    # Paired firmware reports its filtered position in x_m/y_m/z_m. Use its
+    # independent raw columns as the input whenever they are present.
+    raw_keys = tuple("raw_" + k for k in XYZ[:3])
+    if any(k in data.dtype.names for k in raw_keys) and not all(k in data.dtype.names for k in raw_keys):
+        raise ValueError("incomplete raw position columns")
+    keys = raw_keys if raw_keys[0] in data.dtype.names else XYZ[:3]
+    raw = np.column_stack([data[k] for k in keys])
+    vel = np.column_stack([data[k] for k in XYZ[3:]])
+    if not np.isfinite(raw[valid]).all() or not np.isfinite(vel[valid]).all():
         raise ValueError("nonfinite valid solution")
+    return data, valid, raw, vel
+
+
+def motion_average(raw, vel, valid, gaps, count):
+    """Direct weighted trapezoidal integration from the raw window at each fix."""
+    if count < 1:
+        raise ValueError("window must contain at least one fix")
+    reference = np.full_like(raw, np.nan)
+    filled = np.zeros(len(raw), dtype=int)
+    for i in np.flatnonzero(valid):
+        n = 1
+        if i and gaps[i] == gaps[i-1]:
+            n = min(count, filled[i-1] + 1)
+        filled[i] = n
+        window = slice(i - n + 1, i + 1)
+        # The oldest displacement enters one prediction, the next enters
+        # two, and the newest enters n-1. Rebuild the window from scratch.
+        v = vel[window]
+        steps = (v[1:] + v[:-1]) / (2 * Q["hz"])
+        reference[i] = raw[window].mean(axis=0) + np.arange(1, n) @ steps / n
+    return reference, filled
+
+
+def rate_trial(path, motion, seconds):
+    """Compare output decimation and causal position averaging at identical epochs."""
+    data, valid, pos, vel = read_fixes(path, seconds)
+    truth = motion(data["sample"] / FS)[:, :3]
     raw = np.linalg.norm(pos - truth, axis=1)
     result = []
     for count in (5, 25, 40):
-        errors, indices = [], []
-        for i in range(count - 1, n):
-            window = slice(i - count + 1, i + 1)
-            if not valid[window].all() or data["gaps"][window.start] != data["gaps"][i]:
-                continue
-            # Under trapezoidal integration the oldest displacement enters one
-            # prediction, the next enters two, and the newest enters count-1.
-            velocities = vel[window]
-            steps = (velocities[1:] + velocities[:-1]) / (2 * Q["hz"])
-            current = pos[window].mean(axis=0) + np.arange(1, count) @ steps / count
-            indices.append(i)
-            errors.append(np.linalg.norm(current - truth[i]))
-        idx = np.asarray(indices, dtype=int)
-        whole = samples[idx] % FS == 0
+        reference, filled = motion_average(pos, vel, valid, data["gaps"], count)
+        mature = filled == count
+        whole = mature & (data["sample"] % FS == 0)
         if not whole.any():
             continue
-        filtered = np.asarray(errors)
+        filtered = np.linalg.norm(reference - truth, axis=1)
         result.append(dict(samples_per_window=count, span_s=(count - 1) / Q["hz"],
-                           epochs_5hz=len(idx), epochs_1hz=int(whole.sum()),
-                           raw_5hz_p95_m=float(np.percentile(raw[idx], 95)),
-                           filtered_5hz_p95_m=float(np.percentile(filtered, 95)),
-                           raw_1hz_p95_m=float(np.percentile(raw[idx[whole]], 95)),
+                           epochs_5hz=int(mature.sum()), epochs_1hz=int(whole.sum()),
+                           raw_5hz_p95_m=float(np.percentile(raw[mature], 95)),
+                           filtered_5hz_p95_m=float(np.percentile(filtered[mature], 95)),
+                           raw_1hz_p95_m=float(np.percentile(raw[whole], 95)),
                            filtered_1hz_p95_m=float(np.percentile(filtered[whole], 95))))
+    return result
+
+
+def score_smoothing(path, motion, seconds, count=40):
+    """Score raw and device-filtered positions at the same epochs against truth."""
+    data, valid, raw, vel = read_fixes(path, seconds)
+    if "raw_x_m" not in data.dtype.names or "motion_samples" not in data.dtype.names:
+        raise ValueError("expected paired raw position and motion_samples columns")
+    if not valid.any():
+        raise ValueError("no valid paired position")
+    filtered = np.column_stack([data[k] for k in XYZ[:3]])
+    if not np.isfinite(filtered[valid]).all():
+        raise ValueError("nonfinite onboard position")
+    reference, filled = motion_average(raw, vel, valid, data["gaps"], count)
+    if not np.array_equal(filled, data["motion_samples"]):
+        raise ValueError("onboard motion_samples differs from the contiguous valid window")
+    diff = filtered - reference
+    first = np.flatnonzero(valid)[0]
+    t = data["sample"] / FS
+    truth = motion(t)[:, :3]
+    raw_error = np.linalg.norm(raw - truth, axis=1)
+    filtered_error = np.linalg.norm(filtered - truth, axis=1)
+    result = dict(status_epochs=len(data), window_fixes=count, window_span_s=(count-1)/Q["hz"],
+                  first_fix_s=float(t[first]), first_raw_error_m=float(raw_error[first]),
+                  first_onboard_error_m=float(filtered_error[first]))
+    for label, mask in (("all_valid", valid), ("full_window", filled == count)):
+        stats = {"epochs": int(mask.sum())}
+        if mask.any():
+            stats.update(first_s=float(t[mask][0]),
+                         raw_p95_m=float(np.percentile(raw_error[mask], 95)),
+                         onboard_p95_m=float(np.percentile(filtered_error[mask], 95)))
+        result[label] = stats
+    # Both positions are rounded to 1 mm and each velocity component to
+    # 10 µm/s on USB. The mean propagation time is half the filled window span.
+    bounds = 0.001 + 0.000005 * (filled[valid] - 1) / (2 * Q["hz"])
+    result["max_reference_difference_3d_m"] = float(np.linalg.norm(diff[valid], axis=1).max())
+    result["max_reference_difference_axis_m"] = float(np.abs(diff[valid]).max())
+    result["csv_rounding_bound_axis_m"] = float(bounds.max())
+    result["matches_reference"] = bool(np.all(np.abs(diff[valid]) <= bounds[:, None] + 1e-8))
     return result
 
 
@@ -100,9 +160,11 @@ if __name__ == "__main__":
         "--motion", type=Path, help="write upstream ECEF motion CSV (10 Hz)"
     )
     opts.add_argument("--score", type=Path, help="score the receiver status CSV")
+    opts.add_argument("--score-smoothing", type=Path, help="score the paired raw and filtered positions from one replay")
     opts.add_argument("--rate-trial", type=Path, help="compare 1 Hz and 5 Hz outputs on Pico fix records")
     opts.add_argument("--compare-position", nargs=2, type=Path, metavar=("REFERENCE", "CANDIDATE"),
                       help="compare positions when every valid epoch uses the same satellites")
+    cli.add_argument("--window-fixes", type=int, default=40, help="expected smoother window length for --score-smoothing")
     cli.add_argument("--seconds", type=int, default=90, help="recording duration")
     cli.add_argument("--offset-s", type=int, default=0, help="seconds discarded before a cold start on this recording")
     cli.add_argument("--altitude-km", type=float, default=550, help="circular orbit altitude")
@@ -122,6 +184,10 @@ if __name__ == "__main__":
             np.savetxt(
                 f, np.column_stack((t, motion(t)[:, :3])), fmt="%.9f", delimiter=","
             )
+    elif args.score_smoothing:
+        result = score_smoothing(args.score_smoothing, motion, args.seconds, args.window_fixes)
+        print(json.dumps(result, indent=2))
+        raise SystemExit(0 if result["matches_reference"] else 1)
     elif args.rate_trial:
         print(json.dumps(rate_trial(args.rate_trial, motion, args.seconds), indent=2))
     elif args.compare_position:

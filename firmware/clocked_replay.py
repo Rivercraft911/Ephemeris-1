@@ -26,6 +26,8 @@ HALF_CHIPS = SAMPLES_MS // 8
 COMPACT_BYTES = (HALF_CHIPS + 3) // 4
 BATCH_MS = 128
 MAX_CLOCKED_MS = 600000
+RAW_POSITION_FIELDS = ("raw_x_m", "raw_y_m", "raw_z_m")
+MOTION_FIELDS = ",".join((FIELDS, *RAW_POSITION_FIELDS, "motion_samples"))
 
 
 def pack_block(raw):
@@ -120,7 +122,14 @@ def run(port, source, out):
     epochs, crc, sha = inspect_payload(source)
     port.reset_input_buffer()
     send(port, f"clocked {epochs} {crc:08x}\n".encode("ascii"))
-    if read_line(port) != "READY CLK1":
+    ready = read_line(port)
+    motion_window = None
+    if ready.startswith("READY CLK1 motion_window="):
+        digits = ready.split("=", 1)[1]
+        if not digits.isdigit() or not 2 <= int(digits) <= 100:
+            raise ValueError("unsupported clocked motion window")
+        motion_window = int(digits)
+    elif ready != "READY CLK1":
         raise ValueError("unexpected clocked-replay handshake")
     started = time.monotonic()
     stop = threading.Event()
@@ -144,9 +153,15 @@ def run(port, source, out):
     arrivals = FixArrivals()
     events = {k: None for k in ("first_lock", "four_locks", "first_valid", "six_used", "seven_used")}
     try:
-        if read_line(port) != "H " + FIELDS:
+        header = read_line(port)
+        if header not in ("H " + FIELDS, "H " + MOTION_FIELDS):
             raise ValueError("unexpected 5 Hz status header")
-        out.write(FIELDS + "\n")
+        fields = header[2:].split(",")
+        paired = header == "H " + MOTION_FIELDS
+        if paired != (motion_window is not None):
+            raise ValueError("clocked motion window and paired position header disagree")
+        window_count = 0
+        out.write(header[2:] + "\n")
         while True:
             if errors:
                 raise errors[0]
@@ -158,7 +173,7 @@ def run(port, source, out):
                 raise ValueError(f"clocked replay failed: {line}")
             _, device_time, status = line.split(" ", 2)
             device_us = int(device_time)
-            row = dict(zip(FIELDS.split(","), next(csv.reader([status])), strict=True))
+            row = dict(zip(fields, next(csv.reader([status])), strict=True))
             rows += 1
             sample = int(row["sample"])
             delay_us = device_us - rows * 200000
@@ -179,6 +194,14 @@ def run(port, source, out):
                     and navigation & ~locked == 0 and previous_gaps <= gaps):
                 raise ValueError("invalid channel masks or gap counter")
             valid = row["valid"] == "1"
+            if paired:
+                if not valid or gaps != previous_gaps:
+                    window_count = 0
+                if valid:
+                    window_count = min(motion_window, window_count + 1)
+                if (int(row["motion_samples"]) != window_count
+                        or not all(math.isfinite(float(row[k])) for k in RAW_POSITION_FIELDS)):
+                    raise ValueError("invalid raw position or motion window")
             arrivals.observe(valid, host_offset)
             if valid:
                 coordinates = [float(row[k]) for k in ("x_m", "y_m", "z_m", "vx_mps", "vy_mps", "vz_mps",
@@ -215,6 +238,7 @@ def run(port, source, out):
         "compact_sha256": sha, "compact_crc32": f"{crc:08x}",
         "origin": "device elapsed starts after prefill; host elapsed starts at READY",
         "events": events, "status_rows": rows, "valid_rows": valid_rows, "gaps": gaps,
+        "motion_window": motion_window,
         "device_elapsed_s": int(summary["elapsed_us"])/1e6, "host_elapsed_s": host_offset,
         "min_device_status_interval_us": min_interval, "max_device_status_interval_us": max_interval,
         "late_us": int(summary["late_us"]), "worst_epoch": worst_epoch, "starved": int(summary["starved"]),
