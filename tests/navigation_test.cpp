@@ -6,6 +6,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdio>
+#include <deque>
 
 using namespace eph::nav;
 namespace {
@@ -179,6 +180,79 @@ void doppler_position() {
     assert((fix.position_m == Vec3{20, 40, 60}));
 }
 
+void motion_average() {
+    constexpr auto step = PositionSmoother::interval_samples;
+    constexpr unsigned window = MotionAverage::window;
+    MotionAverage filter;
+    Fix fix;
+    fix.valid = true;
+    fix.satellites = 7;
+    fix.clock_bias_m = 18;
+    // Constant acceleration transports exactly. One noisy initial height must
+    // disappear entirely when it leaves the rectangular observation window.
+    for (unsigned i = 0; i < 2*window; ++i) {
+        const double t = .2 * i, x = 6.9e6 + 7800*t - 4*t*t;
+        fix.position_m = {x, -250*t, i == 0 ? 42. : 0.};
+        fix.velocity_mps = {7800-8*t, -250, 0};
+        const unsigned count = filter.update(fix, i*step);
+        assert(count == std::min(i+1, window));
+        assert(std::abs(fix.position_m[0] - x) < 2e-8);
+        assert(std::abs(fix.position_m[1] + 250*t) < 2e-8);
+        assert(std::abs(fix.position_m[2] - (i < window ? 42./count : 0.)) < 8e-6);
+        assert(fix.valid && fix.clock_bias_m == 18 && fix.satellites == 7);
+        assert(fix.velocity_mps[0] == 7800-8*t);
+    }
+
+    // Gap, duplicate timestamp, backwards timestamp, invalid solution, and
+    // invalid floating point inputs must all start a new window.
+    for (const auto sample : {3*window*step, 3*window*step, 0*step}) {
+        fix.position_m = {20, 30, 40};
+        assert(filter.update(fix, sample) == 1);
+        assert((fix.position_m == Vec3{20, 30, 40}));
+    }
+    Fix bad;
+    assert(filter.update(bad, step) == 0);
+    assert(filter.update(fix, 2*step) == 1);
+    for (unsigned i = 0; i < 2; ++i) {
+        bad = fix;
+        if (i) bad.velocity_mps[2] = std::numeric_limits<double>::infinity();
+        else bad.position_m[0] = std::numeric_limits<double>::quiet_NaN();
+        assert(filter.update(bad, (3+2*i)*step) == 0 && !bad.valid);
+        assert(filter.update(fix, (4+2*i)*step) == 1);
+    }
+}
+
+void motion_average_long_run() {
+    // Current raw fix is the independent integration endpoint. Walk each
+    // earlier fix forwards by its own trapezoidal Doppler displacement.
+    constexpr auto step = PositionSmoother::interval_samples;
+    constexpr unsigned window = MotionAverage::window;
+    MotionAverage filter;
+    std::deque<Fix> history;
+    for (unsigned i = 0; i < 300000; ++i) { // 16 h 40 min at 5 Hz
+        const double phase = i * .00022, noise = std::sin(1.31 * i);
+        const double x = 6.9e6*std::cos(phase), y = 6.9e6*std::sin(phase);
+        Fix raw;
+        raw.valid = true;
+        raw.position_m = {x+3*noise, y-noise, .7*y + 1.1*noise};
+        raw.velocity_mps = {-.0011*y + .12*noise, .0011*x, .00077*x - .05*noise};
+        history.push_back(raw);
+        if (history.size() > window) history.pop_front();
+        Fix reported = raw;
+        assert(filter.update(reported, (uint64_t{1} << 40) + i*step) == history.size());
+        if (i >= 2*window && i % 797) continue;
+        Vec3 carried{}, sum = history.back().position_m;
+        for (std::size_t j = history.size()-1; j; --j) {
+            for (unsigned axis = 0; axis < 3; ++axis) {
+                carried[axis] += .1 * (history[j].velocity_mps[axis] + history[j-1].velocity_mps[axis]);
+                sum[axis] += history[j-1].position_m[axis] + carried[axis];
+            }
+        }
+        for (unsigned axis = 0; axis < 3; ++axis)
+            assert(std::abs(reported.position_m[axis] - sum[axis] / history.size()) < 3e-5);
+    }
+}
+
 void velocity_fit() {
     constexpr auto step = PositionSmoother::interval_samples;
     VelocityFit filter;
@@ -218,6 +292,6 @@ void velocity_fit() {
 int main() {
     orbit_reference(); message_test(false); message_test(true);
     parity_and_issue(); independent_fix_at_rollover(); bad_fix_clears_state();
-    doppler_position(); velocity_fit();
+    doppler_position(); motion_average(); motion_average_long_run(); velocity_fit();
     std::puts("LNAV, RTKLIB broadcast state and navigation rejection tests passed");
 }

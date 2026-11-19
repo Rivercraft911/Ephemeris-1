@@ -118,6 +118,11 @@ void Receiver::clear_channels() {
 #endif
     occupied_.store(0, std::memory_order_release);
     status_.fix = {};
+#ifdef EPHEMERIS_MOTION_AVERAGE
+    motion_average_.reset();
+    status_.raw_position_m = {};
+    status_.motion_samples = 0;
+#endif
 #ifdef EPHEMERIS_DOPPLER_POSITION
     position_smoother_ = {};
 #endif
@@ -304,6 +309,11 @@ void Receiver::navigate(uint64_t sample) {
 #endif
 #ifdef EPHEMERIS_VELOCITY_FIT
     velocity_fit_.update(status_.fix, sample);
+#endif
+#ifdef EPHEMERIS_MOTION_AVERAGE
+    const auto raw_position = status_.fix.position_m;
+    status_.motion_samples = motion_average_.update(status_.fix, sample);
+    status_.raw_position_m = status_.fix.valid ? raw_position : nav::Vec3{};
 #endif
     status_.sample = sample;
     ++status_.sequence;

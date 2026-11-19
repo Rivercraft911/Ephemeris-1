@@ -89,8 +89,16 @@ void emit(const ephemeris::Status& status, uint64_t now) {
     const int length = ephemeris::format_status(line.text + prefix, sizeof(line.text) - prefix,
                                                status);
     if (length < 0 || prefix + length + 1 >= int(sizeof(line.text))) { ++dropped_status; return; }
-    line.length = prefix + length + 1;
-    line.text[line.length - 1] = '\n';
+    unsigned used = prefix + length;
+#ifdef EPHEMERIS_MOTION_AVERAGE
+    const auto& raw_m = status.raw_position_m;
+    const int extra = std::snprintf(line.text + used, sizeof(line.text) - used, ",%.3f,%.3f,%.3f,%u",
+                                    raw_m[0], raw_m[1], raw_m[2], unsigned(status.motion_samples));
+    if (extra < 0 || used + extra + 1 >= sizeof(line.text)) { ++dropped_status; return; }
+    used += extra;
+#endif
+    line.text[used] = '\n';
+    line.length = used + 1;
     queued.store(w + 1, std::memory_order_release);
 }
 void process() {
@@ -132,7 +140,13 @@ bool write_line(const char* text) {
 }
 void run(uint32_t expected_crc) {
     char header[384];
+#ifdef EPHEMERIS_MOTION_AVERAGE
+    std::snprintf(header, sizeof(header),
+                  "READY CLK1 motion_window=%u\nH %s,raw_x_m,raw_y_m,raw_z_m,motion_samples\n",
+                  eph::nav::MotionAverage::window, ephemeris::status_header);
+#else
     std::snprintf(header, sizeof(header), "READY CLK1\nH %s\n", ephemeris::status_header);
+#endif
     if (!write_line(header)) return;
     const unsigned prefill = std::min(epochs*epoch_bytes, ring_bytes);
     const auto timeout = make_timeout_time_ms(5000);

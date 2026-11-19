@@ -25,6 +25,10 @@ struct Status {
     uint32_t sequence{}, gaps{}, active_mask{}, locked_mask{}, valid_nav_mask{};
     uint64_t sample{}; // common measurement epoch, in raw ADC samples
     eph::nav::Fix fix{};
+#ifdef EPHEMERIS_MOTION_AVERAGE
+    eph::nav::Vec3 raw_position_m{};
+    unsigned motion_samples{};
+#endif
 };
 inline constexpr char status_header[] =
     "sequence,sample,gaps,active_mask,locked_mask,nav_mask,valid,week_mod1024,tow_s,"
@@ -96,6 +100,9 @@ private:
     Search stage_ = Search::select;
     bool may_refresh_{}; // acquisition worker, one fresh local search per cold or warm candidate
     Status status_{};
+#ifdef EPHEMERIS_MOTION_AVERAGE
+    eph::nav::MotionAverage motion_average_{};
+#endif
 #ifdef EPHEMERIS_DOPPLER_POSITION
     eph::nav::PositionSmoother position_smoother_{};
 #endif

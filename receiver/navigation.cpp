@@ -344,6 +344,54 @@ void PositionSmoother::update(Fix& fix, uint64_t sample) {
     initialized_ = true;
 }
 
+unsigned MotionAverage::update(Fix& fix, uint64_t sample) {
+    if (!fix.valid) {
+        reset();
+        return 0;
+    }
+    for (unsigned axis = 0; axis < 3; ++axis) {
+        if (!std::isfinite(fix.position_m[axis]) || !std::isfinite(fix.velocity_mps[axis])) {
+            fix = {};
+            reset();
+            return 0;
+        }
+    }
+    constexpr auto interval = PositionSmoother::interval_samples;
+    const Vec3 raw = fix.position_m;
+    if (count_ && sample > previous_sample_ && sample - previous_sample_ == interval) {
+        // Innovation is the previous code position transported to this epoch,
+        // minus today's raw position. Subtract ECEF coordinates in double;
+        // the difference between measured and Doppler motion fits in float.
+        constexpr double half_dt = 0.5 * interval / sample_rate;
+        for (unsigned axis = 0; axis < 3; ++axis) {
+            const double move = half_dt * (previous_velocity_[axis] + fix.velocity_mps[axis]);
+            innovations_[next_][axis] = static_cast<float>(move - (raw[axis] - previous_position_[axis]));
+        }
+        if (++next_ == innovations_.size()) next_ = 0;
+        count_ = std::min(count_ + 1, window);
+
+        // Each innovation transports every older fix. The newest carries
+        // weight count-1, descending to one for the oldest interval.
+        std::array<float, 3> correction{};
+        unsigned slot = next_;
+        for (unsigned weight = count_-1; weight; --weight) {
+            if (!slot) slot = innovations_.size();
+            const auto& delta = innovations_[--slot];
+            for (unsigned axis = 0; axis < 3; ++axis)
+                correction[axis] += static_cast<float>(weight) * delta[axis];
+        }
+        for (unsigned axis = 0; axis < 3; ++axis)
+            fix.position_m[axis] += correction[axis] / static_cast<float>(count_);
+    } else {
+        count_ = 1;
+        next_ = 0;
+    }
+    previous_position_ = raw;
+    previous_velocity_ = fix.velocity_mps;
+    previous_sample_ = sample;
+    return count_;
+}
+
 void VelocityFit::update(Fix& fix, uint64_t sample) {
     if (!fix.valid) {
         count_ = 0;
