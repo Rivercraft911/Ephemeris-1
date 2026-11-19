@@ -1,5 +1,7 @@
 # Find the antenna on the ground
 
+The Pico found the CTTC rooftop antenna in Castelldefels 55.24 s into a cold, device-clocked replay of real GPS signals. [Recording, coordinates and independent comparison](real-sky.md)
+
 The Pico solves its own position. The laptop reads the 5 Hz USB status stream and displays WGS 84 latitude, longitude and ellipsoid height. Each valid row includes the satellite count and PDOP. During acquisition the display shows how many satellites are locked and how many have usable navigation data. [Receiver status format](receiver.md#output-and-time) · [WGS 84 ellipsoid](https://earth-info.nga.mil/?action=wgs84&dir=wgs84)
 
 1. With power off, wire J2 to the Pico, then power the assembled front end. Use the `ephemeris_pico.uf2` from the `pico-plus-2-ground-receiver` workflow artifact for the outdoor trial. It first searches ±12 kHz across PRNs 1–32, then retries at ±70 kHz. It also enables terrestrial neutral-atmosphere correction and Doppler-aided position smoothing. Use an L1 antenna with open sky and keep it still. Rev 1 has antenna bias disabled. An active antenna needs its own bias supply. [Firmware builds](https://github.com/Rivercraft911/Ephemeris-1/actions/workflows/receiver.yml) · [Power and pinout](../../firmware/README.md#wiring-the-live-front-end) · [RF path](../design.md)
