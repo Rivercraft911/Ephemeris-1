@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "board.hpp"
 #include "capture.hpp"
+#include "kernel_bench.hpp"
 #include "pattern_source.hpp"
 #include "usb.hpp"
 #include "pico/stdlib.h"
@@ -72,7 +73,8 @@ int main() {
         plane[i].init(pio0, i, board::data_base + i, 1, true);
     const uint8_t* output = nullptr;
     size_t remaining = 0;
-    char response[120], cmd[40];
+    static char response[320];
+    char cmd[40];
     for (;;) {
         usb::poll();
         if (!usb::connected()) { remaining = 0; continue; }
@@ -84,13 +86,19 @@ int main() {
         if (!usb::command(cmd, sizeof(cmd))) continue;
         bool internal = std::strncmp(cmd, "self", 4) == 0;
         const char* mode = internal ? cmd + 4 : cmd;
-        bool compare = std::strcmp(mode, "compare") == 0;
-        if (!compare && std::strcmp(mode, "capture") != 0) {
-            std::snprintf(response, sizeof(response), "ERR expected capture or compare\n");
+        bool timing = std::strcmp(mode, "timing") == 0;
+        bool coarse = std::strcmp(mode, "coarse") == 0;
+        bool compare = timing || std::strcmp(mode, "compare") == 0;
+        if (!coarse && !compare && std::strcmp(mode, "capture") != 0) {
+            std::snprintf(response, sizeof(response), "ERR expected capture, compare, coarse or timing\n");
         } else {
             uint32_t elapsed;
             if (!take(compare, internal, elapsed)) {
                 std::snprintf(response, sizeof(response), "ERR clock timeout or FIFO stall\n");
+            } else if (coarse) {
+                bench::time_coarse(snapshot.words, internal, response, sizeof(response));
+            } else if (timing) {
+                bench::time_correlators(snapshot.words, planes, internal, elapsed, response, sizeof(response));
             } else if (compare) {
                 unsigned errors = compare_planes();
                 std::snprintf(response, sizeof(response),

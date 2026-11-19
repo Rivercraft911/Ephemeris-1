@@ -17,7 +17,7 @@ uint64_t little(const uint8_t* p, unsigned n) {
     return v;
 }
 int run(int argc, char** argv) {
-    if (argc < 2) throw std::runtime_error("usage: eph-replay INPUT.eiq [--work bins-per-ms] [--channels file.csv] [--seed PRN,DOPPLER_HZ,PHASE_CHIPS]");
+    if (argc < 2) throw std::runtime_error("usage: eph-replay INPUT.eiq [--work bins-per-ms] [--channels file.csv] [--warm-reset-ms ms] [--seed PRN,DOPPLER_HZ,PHASE_CHIPS]");
     std::ifstream file;
     if (std::strcmp(argv[1], "-") != 0) file.open(argv[1], std::ios::binary);
     std::istream& input = std::strcmp(argv[1], "-") == 0 ? std::cin : file;
@@ -32,6 +32,7 @@ int run(int argc, char** argv) {
     auto rx = std::make_unique<ephemeris::Receiver>();
     std::ofstream channels;
     unsigned work = 8;
+    uint64_t reset_ms = 0;
     for (int i = 2; i < argc; ++i) {
         std::string arg = argv[i];
         if (++i == argc) throw std::runtime_error("missing option value for " + arg);
@@ -39,6 +40,11 @@ int run(int argc, char** argv) {
             const int parsed = std::stoi(argv[i]);
             if (parsed < 0 || parsed > 4096) throw std::runtime_error("work must be in [0,4096]");
             work = unsigned(parsed);
+        } else if (arg == "--warm-reset-ms") {
+            size_t consumed = 0;
+            reset_ms = std::stoull(argv[i], &consumed);
+            if (argv[i][consumed] || !reset_ms || reset_ms >= count / eph::signal::raw_per_ms)
+                throw std::runtime_error("warm reset must fall inside the recording");
         } else if (arg == "--channels") {
             channels.open(argv[i]);
             if (!channels) throw std::runtime_error("cannot open channel output");
@@ -63,6 +69,14 @@ int run(int argc, char** argv) {
     for (uint64_t offset = 0; offset < count; offset += eph::signal::raw_per_ms) {
         if (!input.read(reinterpret_cast<char*>(bytes.data()), bytes.size()))
             throw std::runtime_error("truncated capture");
+        if (reset_ms && offset / eph::signal::raw_per_ms == reset_ms) {
+            ephemeris::WarmState saved;
+            rx->save_warm(saved);
+            rx = std::make_unique<ephemeris::Receiver>();
+            if (!rx->restore_warm(saved)) throw std::runtime_error("warm restore failed");
+            sequence = 0;
+            std::cerr << "warm reset at sample " << start + offset << '\n';
+        }
         const auto tick = Clock::now();
         rx->process(bytes.data(), start + offset, false);
         const double us = std::chrono::duration<double, std::micro>(Clock::now()-tick).count();

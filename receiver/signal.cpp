@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "signal.hpp"
+#include "bitplane.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -254,46 +255,6 @@ bool Acquisition::step(unsigned max_transforms) {
     return done;
 }
 
-Detection confirm(const Detection& candidate, const Epoch& fresh) {
-    Detection result = candidate;
-    result.detected = false;
-    result.metric = 0;
-    if (!candidate.detected || fresh.discontinuity || !valid_epoch(candidate.first_sample) ||
-        fresh.first_sample < candidate.first_sample+raw_per_ms ||
-        !std::isfinite(candidate.doppler_hz) || std::abs(candidate.doppler_hz)>101000 ||
-        !std::isfinite(candidate.code_phase_chips)) return result;
-    Code code;
-    if (!ca_code(candidate.prn, code)) return result;
-    const double predicted = code_at(candidate, fresh.first_sample);
-    const auto step = phase_step(candidate.doppler_hz);
-    const double inc = (chip_hz+candidate.doppler_hz/1540.0)/(samples_per_ms*1000.0);
-    // A half-chip acquisition grid and accumulated bin error permit a small neighborhood.
-    for (int offset=-2; offset<=2; ++offset) {
-        double cp = wrap_chips(predicted + 0.25*offset + inc*0.375);
-        std::uint32_t phase = 0;
-        std::int32_t si=0, sq=0, energy=0;
-        for (const auto x : fresh.samples) {
-            const auto lo = mixer[phase>>24];
-            const int sign = code[static_cast<unsigned>(cp)];
-            si += sign*(x.i*lo.i+x.q*lo.q);
-            sq += sign*(x.q*lo.i-x.i*lo.q);
-            energy += x.i*x.i+x.q*x.q;
-            cp += inc;
-            if (cp >= code_length) cp -= code_length;
-            phase += step;
-        }
-        const float power = float(si)*si+float(sq)*sq;
-        const float metric = energy ? power/(127.f*127.f*energy) : 0;
-        if (metric > result.metric) {
-            result.metric = metric;
-            result.code_phase_chips = wrap_chips(predicted + 0.25*offset);
-        }
-    }
-    result.first_sample = fresh.first_sample;
-    result.detected = result.metric >= 9.0f;
-    return result;
-}
-
 void Confirmation::start(const Detection& seed) {
     seed_=seed;
     best_=seed;
@@ -506,18 +467,28 @@ void Tracker::finish_period(double boundary, TrackingResult& result) {
     ei_=eq_=pi_=pq_=li_=lq_=energy_=0;
 }
 
+bool Tracker::begin_update(std::uint64_t first, bool gap, TrackingResult& out) {
+    out.prn=seed_.prn;
+    out.first_sample=first;
+    if (!active_ || gap || !valid_epoch(first) || first<seed_.first_sample ||
+        (initialized_ && first!=next_sample_)) {
+        active_=false;
+        return false;
+    }
+    if (!initialized_) initialize_phase(first);
+    next_sample_=first+raw_per_ms;
+    out.code_phase_chips=wrap_chips((code_phase_ - 0.375*code_step_)/chip_unit);
+    return true;
+}
+void Tracker::end_update(TrackingResult& out) const {
+    out.active=active_; out.locked=active_ && good_>=4;
+    out.code_epochs=epoch_number_;
+    out.doppler_hz=static_cast<float>(measured_doppler(double(next_sample_)));
+}
+
 TrackingResult Tracker::update(const Epoch& epoch) {
     TrackingResult out{};
-    out.prn = seed_.prn;
-    out.first_sample = epoch.first_sample;
-    if (!active_ || epoch.discontinuity || !valid_epoch(epoch.first_sample) ||
-        epoch.first_sample < seed_.first_sample || (initialized_ && epoch.first_sample != next_sample_)) {
-        active_ = false;
-        return out;
-    }
-    if (!initialized_) initialize_phase(epoch.first_sample);
-    next_sample_ = epoch.first_sample + raw_per_ms;
-    out.code_phase_chips = wrap_chips((code_phase_ - 0.375*code_step_)/chip_unit);
+    if (!begin_update(epoch.first_sample,epoch.discontinuity,out)) return out;
     for (int n = 0; n < samples_per_ms; ++n) {
         const auto x = epoch.samples[n];
         const auto lo = mixer[carrier_phase_>>24];
@@ -551,9 +522,46 @@ TrackingResult Tracker::update(const Epoch& epoch) {
             if (!active_) break;
         }
     }
-    out.active=active_; out.locked=active_ && good_>=4;
-    out.code_epochs=epoch_number_;
-    out.doppler_hz=static_cast<float>(measured_doppler(double(next_sample_)));
+    end_update(out);
     return out;
 }
+
+template<class Input>
+TrackingResult Tracker::update_words(const Input& epoch) {
+    TrackingResult out{};
+    if (!begin_update(epoch.first_sample,epoch.discontinuity,out)) return out;
+    unsigned group=0;
+    while (group<samples_per_ms) {
+        // Use the same four-sample centers and fractional code boundaries as
+        // the scalar loop. A period can start or end inside a 32-sample word.
+        const unsigned to_edge=(code_period-code_phase_-1)/code_step_+1;
+        const auto groups=std::min(to_edge,samples_per_ms-group);
+        const double carrier_hz=(carrier_step_<0x80000000u ? double(carrier_step_) :
+                                 double(carrier_step_)-turns32)*(samples_per_ms*1000./turns32);
+        const double phase=(code_phase_ - 0.375*code_step_)/chip_unit;
+        const double rate=double(code_step_)/(4.0*chip_unit);
+        const double turns=carrier_phase_/turns32-1.5*carrier_hz/raw_hz;
+        const auto r=bitplane::track_interval(epoch,code_,4*group,4*groups,phase,rate,carrier_hz,turns);
+        // Match the scalar kernel's Q7 oscillator scale before running the
+        // common locked-loop discriminators, carrier smoother, and bit clock.
+        ei_+=static_cast<int>(std::lround(127.f*r.early.i)); eq_+=static_cast<int>(std::lround(127.f*r.early.q));
+        pi_+=static_cast<int>(std::lround(127.f*r.prompt.i)); pq_+=static_cast<int>(std::lround(127.f*r.prompt.q));
+        li_+=static_cast<int>(std::lround(127.f*r.late.i)); lq_+=static_cast<int>(std::lround(127.f*r.late.q));
+        energy_+=r.energy;
+        integrated_+=groups;
+        carrier_phase_+=groups*carrier_step_;
+        code_phase_+=groups*code_step_;
+        group+=groups;
+        if (groups==to_edge) {
+            code_phase_-=code_period;
+            const double center=double(epoch.first_sample)+4.0*group+1.5;
+            finish_period(center-4.0*code_phase_/code_step_,out);
+            if (!active_) break;
+        }
+    }
+    end_update(out);
+    return out;
+}
+TrackingResult Tracker::update(const bitplane::Planes& epoch) { return update_words(epoch); }
+TrackingResult Tracker::update(const bitplane::Prefixes& epoch) { return update_words(epoch); }
 } // namespace eph::signal

@@ -3,6 +3,9 @@
 
 #include "navigation.hpp"
 #include "signal.hpp"
+#ifdef EPHEMERIS_BITPLANE_TRACKING
+#include "bitplane.hpp"
+#endif
 
 #include <array>
 #include <atomic>
@@ -52,7 +55,14 @@ private:
     std::array<eph::nav::LnavDecoder, channels> decoders_{};
     std::array<eph::nav::Ephemeris, 32> cache_{};
     std::array<unsigned, channels> prns_{};
-    eph::signal::Epoch live_{}, snapshot_{};
+    eph::signal::Epoch snapshot_{};
+#if defined(EPHEMERIS_PREFIX_SUMS)
+    eph::signal::bitplane::Prefixes live_{};
+#elif defined(EPHEMERIS_BITPLANE_TRACKING)
+    eph::signal::bitplane::Planes live_{};
+#else
+    eph::signal::Epoch live_{};
+#endif
     std::atomic<Slot> slot_{Slot::need_epoch};
     std::atomic<uint32_t> generation_{0}, occupied_{0};
     std::atomic<bool> offer_ready_{false};

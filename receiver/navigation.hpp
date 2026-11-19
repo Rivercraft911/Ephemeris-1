@@ -34,6 +34,7 @@ struct Satellite {
 
 // t is GPS transmit time, in seconds of week. Healthy LNAV with a fresh
 // toe/toc is required. The conservative four-hour fit also covers longer fits.
+bool usable_at(const Ephemeris& ephemeris, double t);
 bool propagate(const Ephemeris& ephemeris, double t, Satellite& sat);
 
 class LnavDecoder {

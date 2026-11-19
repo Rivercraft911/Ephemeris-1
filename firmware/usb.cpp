@@ -2,6 +2,7 @@
 #include "usb.hpp"
 #include "tusb.h"
 #include "pico/unique_id.h"
+#include "pico/bootrom.h"
 #include <algorithm>
 #include <cstring>
 
@@ -62,6 +63,7 @@ bool command(char* buffer, size_t capacity) {
             bool good = !discard && used && used < capacity;
             if (good) { std::memcpy(buffer, input, used); buffer[used] = 0; }
             used = 0; discard = false;
+            if (good && std::strcmp(buffer, "bootsel") == 0) reset_usb_boot(0, 0);
             if (good) return true;
         } else if (c >= 32 && c <= 126 && used < sizeof(input)) {
             input[used++] = char(c);

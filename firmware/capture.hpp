@@ -29,6 +29,7 @@ struct Statistics {
 class Stream {
 public:
     void start();
+    void stop();
     void select_clock(unsigned pin);
     bool read(uint32_t* words, uint64_t& first_sample, bool& gap);
     const Statistics& stats() const { return stats_; }
@@ -39,7 +40,9 @@ private:
     uint64_t base_ = 0, produced_ = 0, consumed_ = 0;
     uint64_t last_poll_us_ = 0, last_progress_us_ = 0;
     uint32_t previous_ = 0;
+    unsigned clock_watch_sm_{}, clock_watch_offset_{}, clock_pin_ = board::clock_pin;
     bool clock_alive_ = false, discontinuity_ = true;
+    void arm_clock_watch();
     void restart();
     bool update();
 };

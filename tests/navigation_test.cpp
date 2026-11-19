@@ -94,10 +94,25 @@ void parity_and_issue() {
     decoder.reset(); sample=0;
     feed(1);feed(2);feed(3);
     assert(decoder.ephemeris() && decoder.ephemeris()->iodc==91);
+    const auto saved = *decoder.ephemeris();
+    decoder.reset();
+    sample=0;
+    assert(!decoder.can_use_cached(saved));
+    feed(1);
+    assert(decoder.can_use_cached(saved));
+    auto old = saved;
+    old.week_mod1024 = (saved.week_mod1024+1023)%1024;
+    assert(!decoder.can_use_cached(old)); // repeated IODC in a previous week
+    old = saved; old.toc -= 16;
+    assert(!decoder.can_use_cached(old));
+    feed(2);
+    old = saved; old.toe -= 16;
+    assert(!decoder.can_use_cached(old)); // orbit issue also repeats eventually
+    feed(3);
     // Artificial data transition: provide intervening bits to maintain
     // continuous bit timing, then switch to a fresh, correctly parity-coded issue.
     for(int bit=0;bit<600;++bit) { decoder.push_bit(false,sample); sample+=.02*sample_rate; }
-    feed(4); assert(!decoder.ephemeris());
+    feed(4); assert(!decoder.ephemeris() && !decoder.can_use_cached(saved));
     feed(5); assert(!decoder.ephemeris());
     feed(6); assert(decoder.ephemeris() && decoder.ephemeris()->iodc==92);
 }

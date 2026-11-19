@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "receiver/signal.hpp"
+#include "receiver/bitplane.hpp"
 
 #include <algorithm>
 #include <array>
@@ -49,7 +50,7 @@ class Source {
 public:
     explicit Source(const Sat& sat, double sigma = 0.7, unsigned seed = 1701) :
         sat_(sat), code_(reference_code(sat.prn)), sigma_(sigma), rng_(seed) {}
-    s::Epoch epoch(std::uint64_t first) {
+    s::Epoch epoch(std::uint64_t first, Packed* saved = nullptr) {
         Packed packed{};
         for (unsigned n=0;n<s::raw_per_ms;++n) {
             const double t=(first+n)/s::raw_hz;
@@ -59,10 +60,13 @@ public:
             const int nav=(static_cast<int>(std::floor(chips/(20*1023))) & 1) ? -1 : 1;
             const double angle=tau*(0.213+(first+n)%4*0.25+doppler_cycles);
             const double a = sat_.amplitude*nav*code_[chip];
-            const int nibble=4*encode(a*std::cos(angle)+sigma_*noise_(rng_))+
-                               encode(a*std::sin(angle)+sigma_*noise_(rng_));
+            // Draw in an explicit order; C++ does not order the operands of +.
+            const double ni=gaussian(), nq=gaussian();
+            const int nibble=4*encode(a*std::cos(angle)+sigma_*ni)+
+                               encode(a*std::sin(angle)+sigma_*nq);
             packed[n/2] |= nibble << (4*(n%2));
         }
+        if (saved) *saved=packed;
         s::Epoch out;
         require(s::preprocess({first,packed.data(),packed.size()},out),"valid capture block");
         return out;
@@ -72,7 +76,28 @@ private:
     s::Code code_;
     double sigma_;
     std::mt19937 rng_{1701};
-    std::normal_distribution<double> noise_{0,1};
+    bool spare_ready_{};
+    double spare_{};
+    double gaussian() {
+        if (spare_ready_) {
+            spare_ready_=false;
+            return spare_;
+        }
+        // Polar Box-Muller with a specified MT19937-to-double mapping. This
+        // avoids normal_distribution's implementation-dependent test sequence.
+        auto uniform=[this] {
+            const double low=rng_(), high=rng_();
+            return 2.0*std::ldexp(low+std::ldexp(high,32),-64)-1.0;
+        };
+        double x,y,r2;
+        do {
+            x=uniform(); y=uniform(); r2=x*x+y*y;
+        } while (r2>1.0 || r2==0.0);
+        const double scale=std::sqrt(-2.0*std::log(r2)/r2);
+        spare_=y*scale;
+        spare_ready_=true;
+        return x*scale;
+    }
 };
 
 void format_tests() {
@@ -147,19 +172,52 @@ void tracking_tests(s::Acquisition& acq, Sat sat) {
     auto d=search(acq,e,sat.prn,-70000,70000);
     require(d.detected && std::abs(d.doppler_hz-sat.doppler)<251,"LEO Doppler acquired without hint");
     require(circular_error(d.code_phase_chips,sat.phase)<0.6,"acquisition phase convention");
-    require(!s::confirm(d,e).detected,"same dwell cannot confirm");
-    e=source.epoch(s::raw_per_ms);
-    d=s::confirm(d,e);
+    s::Confirmation confirmation;
+    confirmation.start(d);
+    require(confirmation.add(e) && !confirmation.best().detected,"same dwell cannot confirm");
+    confirmation.start(d);
+    for (unsigned n=1;n<=4;++n)
+        require(confirmation.add(source.epoch(n*s::raw_per_ms))==(n==4),"fresh confirmation dwell");
+    d=confirmation.best();
     require(d.detected,"fresh confirmation");
     s::Tracker tr;
     require(tr.start(d),"start tracking");
     std::uint64_t previous_epoch=0;
     double previous_end=0;
-    unsigned count=0;
-    int stable_polarity=0;
-    for (int ms=2;ms<105;++ms) {
-        e=source.epoch(std::uint64_t(ms)*s::raw_per_ms);
+    s::Tracker population,prefix;
+    require(population.start(d) && prefix.start(d),"start word trackers");
+    s::bitplane::Planes planes;
+    s::bitplane::Prefixes prefixes;
+    Packed raw;
+    unsigned count=0,word_count=0;
+    int stable_polarity=0,word_polarity=0;
+    for (int ms=5;ms<108;++ms) {
+        e=source.epoch(std::uint64_t(ms)*s::raw_per_ms,&raw);
+        const s::PackedBlock packed{e.first_sample,raw.data(),raw.size()};
+        require(s::bitplane::from_packed(packed,planes) && s::bitplane::from_packed(packed,prefixes),
+                "prepare both word layouts");
         const auto t=tr.update(e);
+        const auto w=population.update(planes), p=prefix.update(prefixes);
+        require(w.active && p.active && w.locked==p.locked && w.count==p.count &&
+                w.doppler_hz==p.doppler_hz,"word backends use the same carrier and period decisions");
+        for (unsigned j=0;j<w.count;++j) {
+            const auto& a=w.prompts[j]; const auto& b=p.prompts[j];
+            require(a.i==b.i && a.q==b.q && a.start_sample==b.start_sample && a.end_sample==b.end_sample,
+                    "code-run prefix sums reproduce popcount coherent prompts exactly");
+            if (ms>30) {
+                const double ts=a.start_sample/s::raw_hz,center=(a.start_sample+a.end_sample)/(2*s::raw_hz);
+                const double edge=sat.phase+s::chip_hz*ts+(sat.doppler+0.5*sat.ramp*ts)*ts/1540.;
+                const double code=sat.phase+s::chip_hz*center+(sat.doppler+0.5*sat.ramp*center)*center/1540.;
+                const int bit=(int(code/(20*1023))&1) ? -1 : 1;
+                if (!word_polarity) word_polarity=a.symbol*bit;
+                require(a.symbol*word_polarity==bit && circular_error(edge,0)<0.23,
+                        "complete word-backend code periods and navigation bit signs");
+            }
+            ++word_count;
+        }
+        if (ms>30) require(w.locked && std::abs(t.doppler_hz-w.doppler_hz)<12 &&
+                           circular_error(t.code_phase_chips,w.code_phase_chips)<0.14,
+                           "scalar and word trackers agree on independently synthesized IF");
         require(t.active,"channel survives data flips");
         if (ms>20) require(t.locked,"confident lock");
         for (unsigned k=0;k<t.count;++k) {
@@ -183,7 +241,17 @@ void tracking_tests(s::Acquisition& acq, Sat sat) {
             previous_epoch=p.epoch; previous_end=p.end_sample; ++count;
         }
     }
-    require(count>=100,"full period count");
+    require(count>=100 && word_count==count,"full code period counts");
+    planes.discontinuity=prefixes.discontinuity=true;
+    require(!population.update(planes).active && !prefix.update(prefixes).active,"word trackers invalidate a gap");
+    require(population.start(d) && prefix.start(d),"word trackers reacquire from a fresh detection");
+    for (unsigned n=0;n<7;++n) {
+        const auto block=source.epoch((n+110ull)*s::raw_per_ms,&raw);
+        const s::PackedBlock packed{block.first_sample,raw.data(),raw.size()};
+        s::bitplane::from_packed(packed,planes); s::bitplane::from_packed(packed,prefixes);
+        const auto w=population.update(planes),p=prefix.update(prefixes);
+        if (n==6) require(w.locked && p.locked,"both word trackers lock again after a discontinuity");
+    }
     auto gap=e;
     gap.first_sample+=s::raw_per_ms*2;
     require(!tr.update(gap).active,"unmarked sample gap invalidates tracker");
@@ -247,23 +315,34 @@ void sensitivity_run() {
     for (double fd:{-51157.,0.,22244.}) {
         Sat sat{3,50.375,fd,72,std::sqrt(2.0e4/s::raw_hz)};
         Source src(sat,1.0);
-        s::Tracker channel;
-        require(channel.start({sat.prn,0,sat.phase,float(sat.doppler),40,true}),"tracking sweep seed");
-        std::vector<double> frequency,code;
+        s::Tracker scalar,word;
+        const s::Detection seed{sat.prn,0,sat.phase,float(sat.doppler),40,true};
+        require(scalar.start(seed) && word.start(seed),"tracking sweep seed");
+        s::bitplane::Prefixes prefixes;
+        Packed raw;
+        std::array<std::vector<double>,2> frequency,code;
         for (unsigned n=0;n<1000;n++) {
-            const auto state=channel.update(src.epoch(std::uint64_t(n)*s::raw_per_ms));
-            require(state.active,"40 dB-Hz tracking continuity");
-            if (n<550) continue;
-            frequency.push_back(std::abs(state.doppler_hz-(fd+sat.ramp*(n+1)/1000.)));
-            for (unsigned j=0;j<state.count;++j) {
-                const double t=state.prompts[j].start_sample/s::raw_hz;
-                code.push_back(circular_error(sat.phase+s::chip_hz*t+(fd+0.5*sat.ramp*t)*t/1540.,0));
+            const auto e=src.epoch(std::uint64_t(n)*s::raw_per_ms,&raw);
+            s::bitplane::from_packed({e.first_sample,raw.data(),raw.size()},prefixes);
+            const std::array<s::TrackingResult,2> states{scalar.update(e),word.update(prefixes)};
+            for (unsigned i=0;i<states.size();++i) {
+                const auto& state=states[i];
+                require(state.active,"40 dB-Hz tracking continuity");
+                if (n<550) continue;
+                frequency[i].push_back(std::abs(state.doppler_hz-(fd+sat.ramp*(n+1)/1000.)));
+                for (unsigned j=0;j<state.count;++j) {
+                    const double t=state.prompts[j].start_sample/s::raw_hz;
+                    code[i].push_back(circular_error(sat.phase+s::chip_hz*t+(fd+0.5*sat.ramp*t)*t/1540.,0));
+                }
             }
         }
-        const auto hz=p95(frequency), chips=p95(code);
-        std::cout<<"model_cn0_db_hz=40 initial_doppler_hz="<<fd<<" rate_hz_per_s=72 p95_error_hz="
-                 <<hz<<" p95_code_chips="<<chips<<'\n';
-        require(hz<2.5 && chips<0.09,"weak-signal tracking observable regression");
+        for (unsigned i=0;i<2;++i) {
+            const auto hz=p95(frequency[i]),chips=p95(code[i]);
+            std::cout<<"model_cn0_db_hz=40 kernel="<<(i ? "word" : "scalar")
+                     <<" initial_doppler_hz="<<fd<<" rate_hz_per_s=72 p95_error_hz="
+                     <<hz<<" p95_code_chips="<<chips<<'\n';
+            require(hz<2.5 && chips<0.09,"weak-signal tracking observable regression");
+        }
     }
 }
 
@@ -279,6 +358,21 @@ void test_slipping_epochs(double fd,double initial_phase,unsigned expected_count
         require(t.active,"epoch boundary test stays active");
     }
     require(seen,"zero/two complete code periods handled in one nominal DMA epoch");
+}
+
+void multiple_dwell_timing(s::Acquisition& acq) {
+    Sat sat{7,1021.75,-65432,-40,1.3};
+    Source src(sat,0.4);
+    const auto first=src.epoch(0);
+    require(acq.start(first,sat.prn,-66100,-64700),"multiple-dwell search");
+    require(!acq.add_dwell(first),"overlapping dwell rejected");
+    for (unsigned t:{9u,37u,91u}) require(acq.add_dwell(src.epoch(t*s::raw_per_ms)),"irregular dwell spacing");
+    require(!acq.add_dwell(src.epoch(95*s::raw_per_ms)),"fifth dwell rejected");
+    while (!acq.step(3)) {}
+    auto d=acq.best();
+    require(d.detected && circular_error(d.code_phase_chips,sat.phase)<0.6,
+            "carrier-aided delay aligns cells across unequal dwell spacing");
+    require(!acq.add_dwell(first),"cannot add after FFT search starts");
 }
 
 void benchmark() {
@@ -317,13 +411,16 @@ int main(int argc,char** argv) {
     test_slipping_epochs(-58000,2.5,0);
     s::Acquisition acq;
     fft_oracle(acq);
+    multiple_dwell_timing(acq);
     tracking_tests(acq,{3,888.375,48072,72,1.5});
     tracking_tests(acq,{22,71.6,-51157,-85,1.5});
     Source noise({1,0,0,0,0},0.8);
     auto e=noise.epoch(0);
     auto d=search(acq,e,1,-70000,70000);
-    auto fresh=noise.epoch(s::raw_per_ms);
-    require(!s::confirm(d,fresh).detected,"noise fails two-dwell acquisition");
+    s::Confirmation verifier;
+    verifier.start(d);
+    for (int n=1;n<=4;++n) if (verifier.add(noise.epoch(n*s::raw_per_ms))) break;
+    require(!verifier.best().detected,"noise fails fresh verification");
     require(!acq.start(e,0) && acq.step(),"bad PRN clears search");
     require(!acq.start(e,1,300,-300),"reversed Doppler range");
     std::cout<<"Signal format, direct oracle, search, tracking, LNAV polarity and dropout passed\n";

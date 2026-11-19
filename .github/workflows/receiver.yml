@@ -15,23 +15,27 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        sanitize: ['OFF', 'ON']
+        include:
+          - { backend: scalar, sanitize: 'OFF', bitplane: 'OFF', prefix: 'OFF' }
+          - { backend: scalar, sanitize: 'ON', bitplane: 'OFF', prefix: 'OFF' }
+          - { backend: bitplane, sanitize: 'OFF', bitplane: 'ON', prefix: 'OFF' }
+          - { backend: prefix, sanitize: 'OFF', bitplane: 'ON', prefix: 'ON' }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: python -m pip install 'numpy>=1.26,<3'
-      - run: cmake -S . -B build/native -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DEPHEMERIS_SANITIZE=${{ matrix.sanitize }}
+      - run: cmake -S . -B build/native -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DEPHEMERIS_SANITIZE=${{ matrix.sanitize }} -DEPHEMERIS_BITPLANE_TRACKING=${{ matrix.bitplane }} -DEPHEMERIS_PREFIX_SUMS=${{ matrix.prefix }}
       - run: cmake --build build/native --parallel 2
       - run: ctest --test-dir build/native --output-on-failure -j 2
-      - if: github.event_name == 'schedule' && matrix.sanitize == 'OFF'
+      - if: github.event_name == 'schedule' && matrix.backend == 'scalar' && matrix.sanitize == 'OFF'
         run: |
           mkdir -p build/evidence
           build/native/signal_test --sweep > build/evidence/sensitivity.txt
           python tests/leo_observables.py build/native/geometry_probe --full > build/evidence/leo-observables.json
           python tools/run_campaign.py build/native/eph-replay build/evidence/raw --scenario leo-550-1
-      - if: always() && github.event_name == 'schedule' && matrix.sanitize == 'OFF'
+      - if: always() && github.event_name == 'schedule' && matrix.backend == 'scalar' && matrix.sanitize == 'OFF'
         uses: actions/upload-artifact@v4
         with:
           name: native-replay-evidence

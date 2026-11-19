@@ -9,11 +9,15 @@ cmake --build build/current/pico
 
 Each target produces a UF2 and a matching ELF/map in that directory. Use normal BOOTSEL drag-and-drop on the intended Pico. Connect a serial terminal to the live image for 5 Hz status CSV. USB enumeration and host reads are optional. Send `stats` followed by a newline for DMA loss, FIFO stalls, clock timeouts, maximum backlog, processing time, dropped USB records and watchdog-retention status. Timing histogram bins are 50 µs wide. The final bin includes everything at or above 3,150 µs.
 
+Send `observables` for one snapshot, or `observables on` for a batch with each status update. Send `observables off` to stop. Each active channel emits `#obs,sample,prn,locked,doppler_hz,sv_tx_tow_s`. The sample index is the common block end. The last field stays empty until the decoder has transmit time. Each batch ends with `#obs_end,sample,count`, including zero-channel batches. Backpressure drops superseded rows and increments the USB loss count. Unplugging USB turns off streaming.
+
+To switch images, send the complete line `bootsel` to a CDC-enabled image. The board enters the ROM USB bootloader.
+
 | Image | Use |
 | --- | --- |
 | `ephemeris_pico` | Autonomous single-chip receiver. The tracking/PVT worker owns capture and USB on core 1 with a dedicated 16 KiB stack. Core 0 runs the interruptible acquisition search. Both stacks have hardware guards. |
 | `ephemeris_profile` | Single-Pico 1/4/8-channel replay and timing bench. The default command uses an internal PIO sample clock and real DMA traffic. No RF board or wiring is needed. |
-| `ephemeris_capture` | Receive a finite 10 ms recording, or simultaneously compare the normal packed input with four one-bit PIO lanes. Use a live front end or an independent digital pattern source. |
+| `ephemeris_capture` | Receive a finite 10 ms recording, or simultaneously compare the normal packed input with four one-bit PIO lanes. Use the internal pattern generator, an independently clocked fixture, or the live front end. |
 | `ephemeris_pattern` | Independent PRBS data and clock from a **second** Pico. Use only on the transmitting fixture. |
 
 ## Wiring the live front end
@@ -51,6 +55,24 @@ Each command uploads an independently generated, repeating one-millisecond GPS c
 
 By default, the clock is generated on the same chip. To measure an independently clocked DMA workload, supply GP6 from the external pattern fixture and append `--external`. Only that run should be labeled externally clocked. Hardware timing results require a connected Pico.
 
+Use `profile 8 --offline --reference build/current/native/eph-replay` to measure lossless arithmetic on the Pico even when the live deadline fails. Offline mode stops capture DMA, pauses the search core and runs 1,000 consecutive epochs in sample order. Its pass checks lock continuity. The deadline applies to the live modes. The report gives mean and p95 receiver time over the last 990 epochs and worst time over all 999 updates. Offline mode also times input preparation and one active tracker separately, averaging 48 updates after eight warm-up epochs. Commands for 1 and 4 channels use the same syntax. For the experimental closed-loop bitplane path, build firmware and native replay in separate directories with `-DEPHEMERIS_BITPLANE_TRACKING=ON`, then use those artifacts together.
+
+## Single-Pico digital capture
+
+Load `ephemeris_capture.uf2` on an unwired Pico. These commands generate a PRBS on an isolated GP8–GP12 bus using PIO2 and read the pad states back through PIO0/PIO1. Leave GP8–GP12 free when using the internal source.
+
+```sh
+python3 firmware/bench.py PORT capture build/current/pattern-internal.eiq --internal --prbs
+python3 firmware/bench.py PORT compare --internal
+python3 firmware/bench.py PORT timing --internal
+```
+
+The first command checks the entire decoded pattern and its chronological nibble order. The second compares the four bitplane state machines with the nibble state machine on identical edges. Both paths share the Pico system clock. The independent-clock check below adds off-board timing and wiring. Only the assembled RF test exercises MAX2769B levels, clock/data skew, and mixer response.
+
+`timing` captures both representations simultaneously and runs the experimental early/prompt/late correlator on each. It compares every converted word and all six output components per channel. The reported microseconds are totals over ten 1 ms epochs, with separate input-conversion and 1/4/8-channel correlation times. Divide each total by ten for mean time per epoch. Odd milliseconds start halfway through a bitplane DMA word. This bench times computation after capture. Use `profile` for live receiver deadlines. Omit `--internal` to use the external bus.
+
+Run `python3 firmware/bench.py PORT coarse --internal` to time the experimental one-bit, half-chip correlator on the same type of recording. It times shared preparation and 1/4/8 open-loop early/prompt/late correlations. For each channel count, `worst_margin_us` gives 1,000 µs minus the worst combined preparation and correlation time observed in ten epochs. The remaining work for a complete receiver includes loop updates, acquisition and navigation. The bench checks the parity and range of every sum. Native signal tests check numerical accuracy.
+
 ## Independent pattern and RF capture
 
 Flash `ephemeris_pattern` on the second Pico and `ephemeris_capture` on the receiving Pico. Wire GP2 through GP6 straight across and connect grounds. These are 3.3 V digital signals. Disconnect the GNSS board's data/clock outputs when the pattern Pico drives the same pins.
@@ -67,5 +89,9 @@ For real RF, remove the pattern source, connect the powered Ephemeris J2 bus, an
 ## Capture integrity and restarts
 
 The continuous DMA channel writes 32-bit words into a 32 KiB hardware-wrapped SRAM ring. Its self-reloading transfer count spans a ring boundary without an IRQ handoff. The consumer copies 8,184-byte epochs and rechecks the completed-write cursor after the copy. An overwritten or torn epoch is dropped, counted and signaled to the receiver. A sticky RX FIFO stall or prolonged clock loss starts a new segment and invalidates tracking. The sample index is monotonic across segments; missing clock edges across a stall have unknown absolute time. Re-anchor using the marker before scoring post-fault timing. TP1 is a physical test point and is not wired to a Pico status input.
+
+A second PIO state machine latches a stopped-high or stopped-low clock, including a pause that ends before the CPU next polls. At 150 MHz the threshold is about 1 µs on either level. Shorter disturbances require checking the source waveform or the independent PRBS reference. Exercise each clock level during bench fault injection and check `clock_timeouts`, the next GP7 segment edge and the invalid status.
+
+On the single Pico, run `python3 firmware/bench.py PORT clocktest` with the profile image. It holds the generated clock low, then high, for 10 µs each. Both times the source resumes before the CPU reads the DMA cursor. The check requires a new gap-marked epoch, monotonic sample indices and exactly one recorded fault for each pulse.
 
 On the live image `warmboot` saves tracked PRNs, carrier estimates and available ephemerides to checksummed uninitialized SRAM before an immediate watchdog reboot. Only the explicit reset cookie and a watchdog reset permit loading that snapshot. `coldboot` clears that cookie and restarts without the hint. Power cycles, normal pin resets and bad checksums start cold. Retention provides no decoded time or previous valid fix. Physical power-cycle tests remain the cold-start qualification procedure.

@@ -147,7 +147,10 @@ bool Receiver::work_acquisition() {
         return true;
     }
     const auto used = occupied_.load(std::memory_order_acquire);
-    if (__builtin_popcount(used) >= static_cast<int>(channels)) return false;
+    if (__builtin_popcount(used) >= static_cast<int>(channels)) {
+        slot_.store(Slot::need_epoch, std::memory_order_release);
+        return false;
+    }
     unsigned prn = next_prn_;
     if (const auto preferred = priority_mask_ & ~used) {
         prn = 1u + static_cast<unsigned>(__builtin_ctz(preferred));
@@ -179,7 +182,7 @@ void Receiver::navigate(uint64_t sample) {
         else if (decoders_[i].can_use_cached(cache_[prns_[i]-1])) ephem = &cache_[prns_[i]-1];
         else continue;
         double tx;
-        if (ephem->iodc < 0 || !decoders_[i].transmit_time(static_cast<double>(sample), tx)) continue;
+        if (!decoders_[i].transmit_time(static_cast<double>(sample), tx) || !nav::usable_at(*ephem, tx)) continue;
         obs[n++] = {ephem, tx, results_[i].doppler_hz, prns_[i]};
         status_.valid_nav_mask |= mask(prns_[i]);
     }
@@ -208,13 +211,18 @@ void Receiver::process(const uint8_t* packed, uint64_t first_sample, bool discon
     running_ = packed != nullptr;
     if (!running_) return;
     next_sample_ = first_sample + sig::raw_per_ms;
-    sig::preprocess({first_sample, packed, sig::bytes_per_ms, gap}, live_);
+    const sig::PackedBlock block{first_sample, packed, sig::bytes_per_ms, gap};
     if (offer_ready_.load(std::memory_order_acquire)) {
         if (offer_generation_ == generation_.load(std::memory_order_acquire) &&
             first_sample >= offer_.first_sample && first_sample - offer_.first_sample < sig::raw_hz / 4)
             seed_channel(offer_);
         offer_ready_.store(false, std::memory_order_release);
     }
+#ifdef EPHEMERIS_BITPLANE_TRACKING
+    if (occupied_.load(std::memory_order_relaxed)) sig::bitplane::from_packed(block,live_);
+#else
+    sig::preprocess(block,live_);
+#endif
     status_.locked_mask = 0;
     for (unsigned i = 0; i < channels; ++i) {
         if (!prns_[i]) continue;
@@ -234,8 +242,13 @@ void Receiver::process(const uint8_t* packed, uint64_t first_sample, bool discon
             decoders_[i].push_prompt(result.prompts[j].i, result.prompts[j].start_sample);
     }
     status_.active_mask = occupied_.load(std::memory_order_acquire);
-    if (!gap && slot_.load(std::memory_order_acquire) == Slot::need_epoch) {
+    if (!gap && __builtin_popcount(status_.active_mask) < static_cast<int>(channels) &&
+        slot_.load(std::memory_order_acquire) == Slot::need_epoch) {
+#ifdef EPHEMERIS_BITPLANE_TRACKING
+        sig::preprocess(block,snapshot_);
+#else
         snapshot_ = live_;
+#endif
         snapshot_generation_ = generation_.load(std::memory_order_relaxed);
         slot_.store(Slot::ready, std::memory_order_release);
     }

@@ -9,6 +9,7 @@ SPDX-License-Identifier: Apache-2.0
 import argparse
 from contextlib import nullcontext
 import csv
+import ctypes
 import math
 import sys
 from pathlib import Path
@@ -221,8 +222,63 @@ def geometry(seed, n, height):
     return chosen
 
 
+class NativeMixer:
+    """Optional fused source mixer. Arrays are native contiguous NumPy buffers."""
+
+    def __init__(self, path):
+        self.lib = ctypes.CDLL(str(Path(path).resolve()))
+        self.call = self.lib.eph_sky_mix
+        vector = np.ctypeslib.ndpointer
+        self.call.argtypes = [
+            ctypes.c_size_t,
+            vector(np.float64, ndim=1, flags="C_CONTIGUOUS"),
+            *([ctypes.c_double] * 5),
+            vector(np.int8, ndim=1, flags="C_CONTIGUOUS"),
+            vector(np.int8, ndim=1, flags="C_CONTIGUOUS"),
+            vector(np.complex64, ndim=1, flags="C_CONTIGUOUS"),
+            vector(np.complex64, ndim=1, flags=("C_CONTIGUOUS", "WRITEABLE")),
+        ]
+        self.call.restype = None
+
+    def add(
+        self, z, local, chip0, code_hz, phase, if_hz, amplitude, code, data, oscillator
+    ):
+        # The mixer directly indexes caller-owned buffers, including the final chip.
+        if len(z) != len(local) or len(code) != 1023 or len(oscillator) != 2048:
+            raise ValueError("invalid mixer buffer lengths")
+        if (
+            not len(z)
+            or chip0 < 0
+            or code_hz <= 0
+            or not chip0 + code_hz * local[-1] < 20460 * len(data)
+        ):
+            raise ValueError("navigation bits do not cover the mixing span")
+        self.call(
+            len(z),
+            local,
+            chip0,
+            code_hz,
+            phase,
+            if_hz,
+            amplitude,
+            code,
+            data,
+            oscillator,
+            z,
+        )
+
+
 def generate(
-    output, truth, seconds, count, height, seed, cn0, scenario=None, stress=None
+    output,
+    truth,
+    seconds,
+    count,
+    height,
+    seed,
+    cn0,
+    scenario=None,
+    stress=None,
+    mixer=None,
 ):
     start_tow, week = START, WEEK
     phase = node = 0.0
@@ -269,13 +325,13 @@ def generate(
     nav = [sv.nav(week, begin, start_tow - begin + seconds + 1) for sv in satellites]
     sigma = 0.7
     table = np.exp(2j * np.pi * np.arange(2048) / 2048).astype(np.complex64)
-    t = np.arange(10 * SAMPLES_MS) / RATE
     initial = receiver(0, height, phase, node)[0]
     anchor = np.array([clock_range(sv, start_tow, initial) for sv in satellites])
     sink = nullcontext(sys.stdout.buffer) if output == Path("-") else output.open("wb")
 
     effects = Stress(stress)
     clock_scale = effects.clock_scale
+    t = np.arange(10 * SAMPLES_MS) / RATE / clock_scale
     if_physical = L1 - (L1 - IF_HZ) * clock_scale
     prns = np.array([sv.prn for sv in satellites])
     threshold = math.sqrt(
@@ -320,7 +376,7 @@ def generate(
         delay = anchor.copy()
         for ms in range(0, ms_total, 10):
             size = min(10, ms_total - ms) * SAMPLES_MS
-            local = t[:size] / clock_scale
+            local = t[:size]
             start = ms / (1000 * clock_scale)
             span = size / (RATE * clock_scale)
             p, v = receiver(start, height, phase, node)
@@ -342,21 +398,37 @@ def generate(
                 end = clock_range(sv, start_tow + start + span, rx_end)
                 slope = (end - delay[j]) / span
                 tx0 = start_tow - begin + start - delay[j]
-                chip = np.floor(1023000 * tx0 + (1023000 * (1 - slope)) * local).astype(
-                    np.int64
-                )
-                bit = chip // 20460
+                first_chip = 1023000 * tx0
+                chip_hz = 1023000 * (1 - slope)
                 phase0 = (
                     (anchor[j] - delay[j]) * L1 + 0.13 * j + (if_physical * start) % 1
                 ) % 1
-                index = (
-                    np.floor(
-                        2048 * (phase0 + (if_physical - L1 * slope) * local)
-                    ).astype(np.int64)
-                    & 2047
-                )
-                amp = amplitudes[j]
-                z += amp * sv.code[chip % 1023] * nav[j][bit] * table[index]
+                carrier_hz = if_physical - L1 * slope
+                if mixer is not None:
+                    mixer.add(
+                        z,
+                        local,
+                        first_chip,
+                        chip_hz,
+                        phase0,
+                        carrier_hz,
+                        amplitudes[j],
+                        sv.code,
+                        nav[j],
+                        table,
+                    )
+                else:
+                    chip = np.floor(first_chip + chip_hz * local).astype(np.int64)
+                    oscillator_index = (
+                        np.floor(2048 * (phase0 + carrier_hz * local)).astype(np.int64)
+                        & 2047
+                    )
+                    z += (
+                        amplitudes[j]
+                        * sv.code[chip % 1023]
+                        * nav[j][chip // 20460]
+                        * table[oscillator_index]
+                    )
                 delay[j] = end
             delay[~visible] = np.nan
             out.write(pack(z))
@@ -391,6 +463,9 @@ if __name__ == "__main__":
     cli.add_argument(
         "--cn0", type=float, default=53.0, help="per-SV nominal C/N0 in dB-Hz"
     )
+    cli.add_argument(
+        "--mixer", type=Path, help="optional compiled host-only sky mixer library"
+    )
     a = cli.parse_args()
     if a.output.resolve() == a.truth.resolve():
         cli.error("truth and EIQ must have distinct paths")
@@ -404,4 +479,5 @@ if __name__ == "__main__":
         a.cn0,
         a.scenario,
         a.stress,
+        NativeMixer(a.mixer) if a.mixer else None,
     )

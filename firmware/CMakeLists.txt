@@ -14,7 +14,7 @@ target_include_directories(ephemeris_io PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 target_compile_definitions(ephemeris_io PRIVATE EPHEMERIS_CAPTURE_FALLING=$<BOOL:${EPHEMERIS_CAPTURE_FALLING}>)
 target_link_libraries(ephemeris_io PUBLIC pico_stdlib hardware_pio hardware_dma hardware_spi pico_unique_id tinyusb_device)
 
-add_executable(ephemeris_capture bench.cpp pattern_source.cpp)
+add_executable(ephemeris_capture bench.cpp kernel_bench.cpp coarse_bench.cpp pattern_source.cpp)
 target_link_libraries(ephemeris_capture PRIVATE ephemeris_io)
 pico_add_extra_outputs(ephemeris_capture)
 
@@ -23,6 +23,7 @@ target_link_libraries(ephemeris_pattern PRIVATE pico_stdlib hardware_pio hardwar
 pico_add_extra_outputs(ephemeris_pattern)
 
 add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/.. ${CMAKE_CURRENT_BINARY_DIR}/core)
+target_link_libraries(ephemeris_capture PRIVATE ephemeris)
 target_compile_options(ephemeris PRIVATE -fstack-usage)
 function(ephemeris_receiver_image target source)
   add_executable(${target} ${source})

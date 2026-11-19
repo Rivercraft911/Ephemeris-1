@@ -50,10 +50,54 @@ public:
         used_ = size_t(n) + 1;
     }
     void clear() { used_ = offset_ = 0; }
+    bool busy() const { return used_ != 0; }
     static constexpr unsigned capacity = 512;
 private:
     char buf_[capacity]{};
     size_t used_{}, offset_{};
+};
+struct Measurements {
+    struct Row {
+        double tow_s;
+        float doppler_hz;
+        unsigned prn;
+        bool locked, timed;
+    };
+    Row rows[ephemeris::Receiver::channels]{};
+    uint64_t sample{};
+    unsigned count{}, cursor{};
+    bool pending{};
+
+    void capture(uint64_t end, bool clock_alive) {
+        if (pending) timing.dropped_lines += count - cursor + 1;
+        sample = end;
+        count = cursor = 0;
+        if (clock_alive) for (unsigned i = 0; i < receiver.channels; ++i) {
+            const auto& channel = receiver.channel(i);
+            if (!channel.active || channel.first_sample + board::samples_per_ms != end) continue;
+            auto& row = rows[count++];
+            row.prn = channel.prn;
+            row.locked = channel.locked;
+            row.doppler_hz = channel.doppler_hz;
+            row.timed = row.locked && receiver.channel_tx_tow(i, double(end), row.tow_s);
+        }
+        pending = true;
+    }
+    void service(SerialLine& line) {
+        if (!pending || line.busy()) return;
+        char* text = line.begin();
+        if (cursor == count) {
+            line.finish(std::snprintf(text, line.capacity, "#obs_end,%llu,%u",
+                                      (unsigned long long)sample, count));
+            pending = false;
+            return;
+        }
+        const auto& row = rows[cursor++];
+        char time[32] = "";
+        if (row.timed) std::snprintf(time, sizeof(time), "%.9f", row.tow_s);
+        line.finish(std::snprintf(text, line.capacity, "#obs,%llu,%u,%u,%.4f,%s",
+            (unsigned long long)sample, row.prn, unsigned(row.locked), double(row.doppler_hz), time));
+    }
 };
 // Keep both hardware guards enabled. Navigation's on-stack least-squares workspace,
 // call chain and USB interrupts require more space than a default scratch bank.
@@ -63,19 +107,24 @@ void tracking_worker() {
     usb::init();
     stream.start();
     static SerialLine line;
+    static Measurements measurements;
     uint32_t last_receiver_seq = 0, output_sequence = 0;
-    uint64_t last_status_us = time_us_64();
-    bool attached = false;
+    uint64_t last_status_us = time_us_64(), end_sample = 0;
+    bool attached = false, stream_measurements = false;
     for (;;) {
         uint64_t first{};
         bool gap{};
         if (stream.read(block, first, gap)) {
             uint64_t start = time_us_64();
             receiver.process(reinterpret_cast<const uint8_t*>(block), first, gap);
+            end_sample = first + board::samples_per_ms;
             timing.record(uint32_t(time_us_64() - start));
         }
         usb::poll();
-        if (!usb::connected()) { attached = false; line.clear(); }
+        if (!usb::connected()) {
+            attached = stream_measurements = measurements.pending = false;
+            line.clear();
+        }
         else if (!attached) {
             char* text = line.begin();
             line.finish(std::snprintf(text, line.capacity, "%s", ephemeris::status_header));
@@ -85,6 +134,12 @@ void tracking_worker() {
 
         char cmd[24];
         const bool command = usb::command(cmd, sizeof(cmd));
+        bool measure_now = false;
+        if (command) {
+            measure_now = !std::strcmp(cmd, "observables") || !std::strcmp(cmd, "observables on");
+            if (!std::strcmp(cmd, "observables on")) stream_measurements = true;
+            if (!std::strcmp(cmd, "observables off")) stream_measurements = measurements.pending = false;
+        }
         if (command && (!std::strcmp(cmd, "warmboot") || !std::strcmp(cmd, "coldboot"))) {
             watchdog_hw->scratch[0] = 0;
             if (!std::strcmp(cmd, "warmboot")) {
@@ -117,6 +172,7 @@ void tracking_worker() {
             last_status_us = now;
             ++output_sequence;
             if (attached) {
+                measure_now |= stream_measurements;
                 if (char* text = line.begin()) {
                     auto outgoing = status;
                     if (!updated) {
@@ -128,6 +184,8 @@ void tracking_worker() {
                 }
             }
         }
+        if (measure_now) measurements.capture(end_sample, stream.clock_alive());
+        measurements.service(line);
     }
 }
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Collect an Ephemeris bring-up capture or compare the four bitplane lanes. SPDX-License-Identifier: Apache-2.0"""
+"""Capture I/Q, verify digital timing, or profile receiver kernels on the Pico. SPDX-License-Identifier: Apache-2.0"""
 import argparse
 import csv
 import math
@@ -45,7 +45,13 @@ def verify_pattern(raw):
 def run(port, action, output, prbs, internal=False):
     port.reset_input_buffer()
     port.write((("self" if internal else "") + action + "\n").encode())
-    if action == "compare":
+    if action == "coarse":
+        result = port.readline().decode("ascii", errors="replace").strip()
+        print(result)
+        if not result.startswith("MEASURED samples=163680 errors=0 "):
+            raise ValueError("coarse correlator timing failed")
+        return
+    if action in ("compare", "timing"):
         result = port.readline().decode("ascii", errors="replace").strip()
         if not result.startswith("PASS samples=163680 mismatches=0 "):
             raise ValueError(result or "no bitplane comparison response")
@@ -72,7 +78,8 @@ def run(port, action, output, prbs, internal=False):
         os.replace(name, output)
     finally:
         Path(name).unlink(missing_ok=True)
-    print(f"{output}: {len(raw)} packed sample bytes")
+    source = "on-chip PRBS" if internal else "external GP2-GP6 bus"
+    print(f"{output}: {len(raw)} packed sample bytes from {source}")
 
 
 
@@ -109,7 +116,7 @@ def compare_native(executable, channels, raw, summary, observed):
     print(f"All {channels} final tracking epochs matched the native receiver tolerances.")
 
 
-def profile(port, channels, external, reference=None):
+def profile(port, channels, external, reference=None, offline=False):
     # All code epochs repeat in exactly 1 ms at zero Doppler. Seed phase agrees
     # with the waveform generator at its first raw sample. Live builds have no seed command.
     from vectors import waveform
@@ -118,7 +125,7 @@ def profile(port, channels, external, reference=None):
     if len(raw) != BYTES_MS:
         raise ValueError("bad replay vector length")
     port.reset_input_buffer()
-    mode = "external" if external else "profile"
+    mode = "offline" if offline else "external" if external else "profile"
     port.write(f"{mode} {channels}\n".encode())
     ready = port.readline().strip()
     if ready != b"READY 8184":
@@ -144,7 +151,7 @@ def profile(port, channels, external, reference=None):
 
 if __name__ == "__main__":
     cli = argparse.ArgumentParser(description=__doc__)
-    cli.add_argument("port", help="serial device for ephemeris_capture.uf2")
+    cli.add_argument("port", help="CDC serial device for the capture or profile image")
     sub = cli.add_subparsers(dest="action", required=True)
     snap = sub.add_parser("capture")
     snap.add_argument("output", type=Path)
@@ -152,16 +159,31 @@ if __name__ == "__main__":
     snap.add_argument("--internal", action="store_true", help="capture an internal PIO PRBS source without wiring")
     cmp = sub.add_parser("compare")
     cmp.add_argument("--internal", action="store_true", help="compare all five PIO receive lanes on the internal source")
+    timing = sub.add_parser("timing", help="measure bitplane conversion and 1/4/8-channel correlations")
+    timing.add_argument("--internal", action="store_true", help="use the on-chip PRBS source")
+    coarse = sub.add_parser("coarse", help="time one-bit half-chip correlation on a captured 10 ms block")
+    coarse.add_argument("--internal", action="store_true", help="use the on-chip PRBS source")
     prof = sub.add_parser("profile")
     prof.add_argument("channels", type=int, choices=(1, 4, 8))
-    prof.add_argument("--external", action="store_true", help="use an independently clocked fixture on GP6")
+    cadence = prof.add_mutually_exclusive_group()
+    cadence.add_argument("--external", action="store_true", help="use an independently clocked fixture on GP6")
+    cadence.add_argument("--offline", action="store_true", help="measure lossless compute cost without real-time pacing")
     prof.add_argument("--reference", type=Path, help="native eph-replay executable for numerical comparison")
+    sub.add_parser("clocktest", help="use the profile image to verify recovered high/low clock pauses")
     args = cli.parse_args()
     import serial  # pyserial is only required for the physical bench
     try:
-        with serial.Serial(args.port, 115200, timeout=9, write_timeout=2) as device:
+        with serial.Serial(args.port, 115200, timeout=130 if getattr(args, "offline", False) else 9,
+                           write_timeout=2) as device:
             if args.action == "profile":
-                profile(device, args.channels, args.external, args.reference)
+                profile(device, args.channels, args.external, args.reference, args.offline)
+            elif args.action == "clocktest":
+                device.reset_input_buffer()
+                device.write(b"clocktest\n")
+                line = device.readline().decode("ascii", errors="replace").strip()
+                print(line)
+                if not line.startswith("PASS stopped_low=1 stopped_high=1 "):
+                    raise ValueError("clock discontinuity check failed")
             else:
                 run(device, args.action, getattr(args, "output", None), getattr(args, "prbs", False), args.internal)
     except (OSError, ValueError, serial.SerialException) as exc:

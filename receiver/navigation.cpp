@@ -259,15 +259,19 @@ bool LnavDecoder::transmit_time(double sample, double& sv_tow_s) const {
     return true;
 }
 
-bool propagate(const Ephemeris& e, double t, Satellite& sat) {
-    // IS-GPS-200N Tables 20-IV and 20-V, including the eccentric-orbit
-    // relativistic correction in the transmitted satellite clock.
+bool usable_at(const Ephemeris& e, double t) {
     if (e.week_mod1024 < 0 || e.week_mod1024 > 1023 || e.iodc < 0 || e.health ||
         e.ura >= 15 || !(e.sqrt_a >= 2530 && e.sqrt_a <= 8192) ||
         !(e.ecc >= 0 && e.ecc <= .03) || !(e.toe >= 0 && e.toe < week_seconds) ||
         !(e.toc >= 0 && e.toc < week_seconds) || !std::isfinite(t)) return false;
+    return std::abs(week_diff(t, e.toe)) <= 7200 && std::abs(week_diff(t, e.toc)) <= 7200;
+}
+
+bool propagate(const Ephemeris& e, double t, Satellite& sat) {
+    // IS-GPS-200N Tables 20-IV and 20-V, including the eccentric-orbit
+    // relativistic correction in the transmitted satellite clock.
+    if (!usable_at(e, t)) return false;
     const double tk = week_diff(t, e.toe), tc = week_diff(t, e.toc);
-    if (std::abs(tk) > 7200 || std::abs(tc) > 7200) return false;
     const double a = e.sqrt_a*e.sqrt_a, n = std::sqrt(gm/(a*a*a)) + e.delta_n;
     const double m = e.m0 + n*tk;
     double E = m;

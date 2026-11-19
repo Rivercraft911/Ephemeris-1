@@ -6,6 +6,7 @@
 #include <cstdint>
 
 namespace eph::signal {
+namespace bitplane { struct Planes; struct Prefixes; }
 
 inline constexpr int raw_per_ms = 16368;
 inline constexpr int bytes_per_ms = raw_per_ms / 2;
@@ -70,10 +71,7 @@ private:
     unsigned cached_prn_{};
 };
 
-// Recheck the same PRN on an independent, later dwell at predicted code phase.
-// A confirmed detection is timestamped in the fresh epoch; rejected results have detected=false.
-Detection confirm(const Detection& candidate, const Epoch& fresh);
-
+// Four independent fresh dwells refine the candidate code phase and carrier.
 class Confirmation {
 public:
     void start(const Detection& seed);
@@ -110,8 +108,13 @@ class Tracker {
 public:
     bool start(const Detection& detection);
     TrackingResult update(const Epoch& epoch);
+    TrackingResult update(const bitplane::Planes& epoch);
+    TrackingResult update(const bitplane::Prefixes& epoch);
     void reset() { active_ = false; }
 private:
+    template<class Input> TrackingResult update_words(const Input&);
+    bool begin_update(std::uint64_t first, bool gap, TrackingResult&);
+    void end_update(TrackingResult&) const;
     void initialize_phase(std::uint64_t sample);
     void finish_period(double boundary, TrackingResult& result);
     void observe_phase(double sample, double turns, bool good);
