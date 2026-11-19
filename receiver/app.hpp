@@ -92,7 +92,7 @@ private:
     std::array<float, 32> last_carrier_{};
     uint32_t worker_generation_{}, warm_mask_{};
     uint32_t priority_mask_{};
-    unsigned search_index_{}; // low five bits select PRN, bit five alternates Doppler passes
+    unsigned search_index_{}; // index in the cold acquisition schedule
     Search stage_ = Search::select;
     bool may_refresh_{}; // acquisition worker, one fresh local search per cold or warm candidate
     Status status_{};

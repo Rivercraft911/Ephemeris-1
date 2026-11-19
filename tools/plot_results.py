@@ -430,6 +430,28 @@ def position_error_figure(budget, controls, destination):
     plt.close(fig)
 
 
+def orbit_fix_figure(manifest, destination):
+    from campaign import FS
+
+    data = json.loads(manifest.read_text())
+    fig, ax = plt.subplots(figsize=(8.4, 3.15), layout="constrained")
+    styles = {"previous": iter(("-", "--", ":")), "selected": iter(("-", "--", ":"))}
+    for run in data["runs"]:
+        if run["group"] not in styles:
+            continue
+        rows = np.genfromtxt(manifest.parent / run["status_file"], delimiter=",", names=True)
+        used = np.where(rows["valid"] == 1, rows["sv"], 0)
+        ax.step(np.r_[0, rows["sample"] / FS], np.r_[0, used], where="post",
+                label=run["label"], color=PALETTE[0 if run["group"] == "previous" else 1],
+                linestyle=next(styles[run["group"]], "-."), linewidth=1.8, alpha=0.9)
+    ax.set(xlabel="Seconds from first replay sample", ylabel="GPS satellites used in a valid fix",
+           xlim=(0, data["seconds"]), ylim=(-0.25, 8.5), yticks=[0, 4, 5, 6, 7, 8])
+    ax.grid(axis="y", linewidth=.5, alpha=.45)
+    ax.legend(frameon=False, loc="lower right", fontsize=8)
+    fig.savefig(destination / "orbit-fix.png", dpi=180)
+    plt.close(fig)
+
+
 def flight_search_figure(data, destination):
     orbits = sorted(data["orbits"], key=lambda run: run["altitude_km"])
     metrics = (("four_locks_s", "Four channels locked"), ("eight_locks_s", "Eight channels locked"),
@@ -488,6 +510,9 @@ if __name__ == "__main__":
     survey = a.results.with_name("flight-survey.json")
     if survey.exists():
         flight_search_figure(json.loads(survey.read_text()), a.out)
+    orbit_fix = a.results.with_name("orbit-fix.json")
+    if orbit_fix.exists():
+        orbit_fix_figure(orbit_fix, a.out)
     budget = a.results.with_name("position-budget.json")
     controls = a.results.with_name("position-controls.json")
     if budget.exists() and controls.exists():

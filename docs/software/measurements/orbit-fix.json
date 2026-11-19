@@ -1,0 +1,1014 @@
+{
+  "seconds": 165,
+  "altitude_km": 550,
+  "phase_deg": 12,
+  "clock_hz": 150000000,
+  "firmware_commit": "41f7e98",
+  "original_commit": "18cc08e",
+  "input_compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+  "target": "Pimoroni Pico Plus 2, RP2350B, two Cortex-M33, SRAM, SDK 2.2.0, Arm GNU 14.2 Rel1",
+  "input": "GPS-SDR-SIM 2022-01-01 at 02:00:09 GPS, independent circular ECEF trajectory, compact half-chip USB replay. Input CRC 87a51e97.",
+  "gates": "All 825 reports, max epoch lateness < 4000 us, no input underruns or gaps. Independent thresholds 10 m position and 0.2 m/s velocity at p95. PRN masks checked against transmitter allocation each epoch, unhealthy PRN 22 excluded from navigation.",
+  "timing": "Elapsed input time at 200 ms reports. Six, seven and eight require valid=1 and sv >= N. Host time starts at READY. Scores are independent ECEF norms. Common window starts at the original seventh satellite.",
+  "runs": [
+    {
+      "label": "Original, archived",
+      "group": "previous",
+      "status_file": "clocked/orbit_165_aligned.csv.gz",
+      "status_csv_sha256": "11a756eb2bd848885c84daaf7fb1ef8620e1f04e4f7853f62c2d8968b1235b24",
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 390,
+        "first_valid_s": 87.2,
+        "satellites_at_first_fix": 4,
+        "first_fix_position_error_m": 0.4371223272705507,
+        "first_used_s": {
+          "6": 99.2,
+          "7": 99.2,
+          "8": null
+        },
+        "first_five_truth_checked_s": 88.8,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.2208871953879783,
+        "p95_velocity_mps": 0.11141846815531023,
+        "max_time_error_s": 4.051258883919218e-09,
+        "gaps": 0
+      },
+      "common_window": {
+        "from_s": 99.2,
+        "valid_epochs": 330,
+        "p95_position_m": 1.0698410946395496,
+        "p95_velocity_mps": 0.08096441544048527
+      },
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 165000,
+        "compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+        "compact_crc32": "87a51e97",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 5.0,
+            "device_s": 5.000416,
+            "host_s": 5.039027416030876
+          },
+          "four_locks": {
+            "sample_s": 40.6,
+            "device_s": 40.600653,
+            "host_s": 40.63840633298969
+          },
+          "first_valid": {
+            "sample_s": 87.2,
+            "device_s": 87.202426,
+            "host_s": 87.23998583300272
+          }
+        },
+        "status_rows": 825,
+        "valid_rows": 390,
+        "gaps": 0,
+        "device_elapsed_s": 165.003124,
+        "host_elapsed_s": 165.04272912500892,
+        "min_device_status_interval_us": 199941,
+        "max_device_status_interval_us": 201470,
+        "late_us": 3076,
+        "starved": 0,
+        "peak_backlog": 3,
+        "first_valid_host_offset_s": 87.23998583300272,
+        "last_valid_host_offset_s": 165.0395488750073,
+        "longest_valid_streak_reports": 390,
+        "longest_valid_streak_wall_s": 77.79956304200459,
+        "longest_valid_streak_wall_hz": 5.000028082291103
+      },
+      "uf2_sha256": "92c1068034e4cc0ecef311b9578f86c1bee3d2718f2c24b68e0dc44ce4d5f06d",
+      "rate_trial": [
+        {
+          "samples_per_window": 5,
+          "span_s": 0.8,
+          "epochs_5hz": 386,
+          "epochs_1hz": 78,
+          "raw_5hz_p95_m": 1.2223062636474438,
+          "filtered_5hz_p95_m": 1.1567597891354569,
+          "raw_1hz_p95_m": 1.1899088116094945,
+          "filtered_1hz_p95_m": 1.1292681972825092
+        },
+        {
+          "samples_per_window": 25,
+          "span_s": 4.8,
+          "epochs_5hz": 366,
+          "epochs_1hz": 74,
+          "raw_5hz_p95_m": 1.2250917536489538,
+          "filtered_5hz_p95_m": 1.0684669171987278,
+          "raw_1hz_p95_m": 1.2272553359918565,
+          "filtered_1hz_p95_m": 1.0505477734751636
+        },
+        {
+          "samples_per_window": 40,
+          "span_s": 7.8,
+          "epochs_5hz": 351,
+          "epochs_1hz": 71,
+          "raw_5hz_p95_m": 1.2046487501070884,
+          "filtered_5hz_p95_m": 0.9815478921564319,
+          "raw_1hz_p95_m": 1.2552652292786286,
+          "filtered_1hz_p95_m": 0.9562791674322662
+        }
+      ]
+    },
+    {
+      "label": "Original, fresh",
+      "group": "previous",
+      "status_file": "clocked/orbit_fix_base1.csv.gz",
+      "status_csv_sha256": "3781155b985423c356c84f31ae9a10c5d89ba8e341a75abd521167ef05d20c1f",
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 480,
+        "first_valid_s": 69.2,
+        "satellites_at_first_fix": 4,
+        "first_fix_position_error_m": 0.4938600448276139,
+        "first_used_s": {
+          "6": 99.2,
+          "7": 99.2,
+          "8": null
+        },
+        "first_five_truth_checked_s": 69.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.285955199094595,
+        "p95_velocity_mps": 0.09452588808612077,
+        "max_time_error_s": 4.051258883919218e-09,
+        "gaps": 0
+      },
+      "common_window": {
+        "from_s": 99.2,
+        "valid_epochs": 330,
+        "p95_position_m": 0.9488705018582195,
+        "p95_velocity_mps": 0.08405912448309567
+      },
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 165000,
+        "compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+        "compact_crc32": "87a51e97",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 5.0,
+            "device_s": 5.000412,
+            "host_s": 5.0369719580048695
+          },
+          "four_locks": {
+            "sample_s": 38.8,
+            "device_s": 38.800637,
+            "host_s": 38.83701745799044
+          },
+          "first_valid": {
+            "sample_s": 69.2,
+            "device_s": 69.202183,
+            "host_s": 69.23887324996758
+          }
+        },
+        "status_rows": 825,
+        "valid_rows": 480,
+        "gaps": 0,
+        "device_elapsed_s": 165.003105,
+        "host_elapsed_s": 165.03943800000707,
+        "min_device_status_interval_us": 199938,
+        "max_device_status_interval_us": 201357,
+        "late_us": 3110,
+        "starved": 0,
+        "peak_backlog": 3,
+        "first_valid_host_offset_s": 69.23887324996758,
+        "last_valid_host_offset_s": 165.03838470799383,
+        "longest_valid_streak_reports": 480,
+        "longest_valid_streak_wall_s": 95.79951145802625,
+        "longest_valid_streak_wall_hz": 5.000025498145362
+      },
+      "uf2_sha256": "b0040332d6f57aba05ec5c60b64bae2bf4cc37cfa21b35d39139b888635eaebe",
+      "rate_trial": [
+        {
+          "samples_per_window": 5,
+          "span_s": 0.8,
+          "epochs_5hz": 476,
+          "epochs_1hz": 96,
+          "raw_5hz_p95_m": 1.2866800914940946,
+          "filtered_5hz_p95_m": 1.17935899661999,
+          "raw_1hz_p95_m": 1.2230754664806696,
+          "filtered_1hz_p95_m": 1.1693581237475685
+        },
+        {
+          "samples_per_window": 25,
+          "span_s": 4.8,
+          "epochs_5hz": 456,
+          "epochs_1hz": 92,
+          "raw_5hz_p95_m": 1.2230754664806696,
+          "filtered_5hz_p95_m": 1.0899268099434227,
+          "raw_1hz_p95_m": 1.2252198113862385,
+          "filtered_1hz_p95_m": 1.086851280287606
+        },
+        {
+          "samples_per_window": 40,
+          "span_s": 7.8,
+          "epochs_5hz": 441,
+          "epochs_1hz": 89,
+          "raw_5hz_p95_m": 1.1303777054710844,
+          "filtered_5hz_p95_m": 1.0153946196560122,
+          "raw_1hz_p95_m": 1.1836510317518296,
+          "filtered_1hz_p95_m": 0.9957576219017856
+        }
+      ]
+    },
+    {
+      "label": "Rolling prototype",
+      "group": "validation",
+      "status_file": "clocked/orbit_fix_rolling2.csv.gz",
+      "status_csv_sha256": "24045b5afadff8f609fbb76ac267fdc11ed201ad13ec7938b7f1ab0dc37b924d",
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 6,
+        "first_fix_position_error_m": 0.7376192032105224,
+        "first_used_s": {
+          "6": 39.2,
+          "7": 69.2,
+          "8": 69.2
+        },
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 0.9369043042973201,
+        "p95_velocity_mps": 0.07642643727903517,
+        "max_time_error_s": 3.050075747523806e-09,
+        "gaps": 0
+      },
+      "common_window": {
+        "from_s": 99.2,
+        "valid_epochs": 330,
+        "p95_position_m": 0.9506144545785549,
+        "p95_velocity_mps": 0.06740185079026799
+      },
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 165000,
+        "compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+        "compact_crc32": "87a51e97",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 1.2,
+            "device_s": 1.200394,
+            "host_s": 1.2373620409634896
+          },
+          "four_locks": {
+            "sample_s": 6.0,
+            "device_s": 6.000611,
+            "host_s": 6.037564874975942
+          },
+          "first_valid": {
+            "sample_s": 39.2,
+            "device_s": 39.202765,
+            "host_s": 39.23955387499882
+          },
+          "six_used": {
+            "sample_s": 39.2,
+            "device_s": 39.202765,
+            "host_s": 39.23955387499882
+          },
+          "seven_used": {
+            "sample_s": 69.2,
+            "device_s": 69.203271,
+            "host_s": 69.24020799994469
+          }
+        },
+        "status_rows": 825,
+        "valid_rows": 630,
+        "gaps": 0,
+        "device_elapsed_s": 165.003317,
+        "host_elapsed_s": 165.0405928749824,
+        "min_device_status_interval_us": 199400,
+        "max_device_status_interval_us": 201816,
+        "late_us": 3424,
+        "starved": 0,
+        "peak_backlog": 3,
+        "first_valid_host_offset_s": 39.23955387499882,
+        "last_valid_host_offset_s": 165.03996124997502,
+        "longest_valid_streak_reports": 630,
+        "longest_valid_streak_wall_s": 125.8004073749762,
+        "longest_valid_streak_wall_hz": 4.999983808678179
+      },
+      "uf2_sha256": "ea354856283d69a6979a336b09845ae71af2f74c1118b5d84f4a748433c1bf0b",
+      "rate_trial": [
+        {
+          "samples_per_window": 5,
+          "span_s": 0.8,
+          "epochs_5hz": 626,
+          "epochs_1hz": 126,
+          "raw_5hz_p95_m": 0.9369665727596221,
+          "filtered_5hz_p95_m": 0.8906639158491577,
+          "raw_1hz_p95_m": 0.9632476175032643,
+          "filtered_1hz_p95_m": 0.8975714068448581
+        },
+        {
+          "samples_per_window": 25,
+          "span_s": 4.8,
+          "epochs_5hz": 606,
+          "epochs_1hz": 122,
+          "raw_5hz_p95_m": 0.9404576842778649,
+          "filtered_5hz_p95_m": 0.7548061085638518,
+          "raw_1hz_p95_m": 0.9655086835792744,
+          "filtered_1hz_p95_m": 0.7583877649994576
+        },
+        {
+          "samples_per_window": 40,
+          "span_s": 7.8,
+          "epochs_5hz": 591,
+          "epochs_1hz": 119,
+          "raw_5hz_p95_m": 0.9437490101200153,
+          "filtered_5hz_p95_m": 0.6506417617663767,
+          "raw_1hz_p95_m": 0.9688891246427751,
+          "filtered_1hz_p95_m": 0.6464275652075048
+        }
+      ]
+    },
+    {
+      "label": "Flight, start 1",
+      "group": "selected",
+      "status_file": "clocked/orbit_fix_flight1.csv.gz",
+      "status_csv_sha256": "62f9d7f2cbc83e83ce6b0de6d8d99569151a8464b7ef37197f3d06410a1ae576",
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 8,
+        "first_fix_position_error_m": 0.5330756838083541,
+        "first_used_s": {
+          "6": 39.2,
+          "7": 39.2,
+          "8": 39.2
+        },
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.0462626389875858,
+        "p95_velocity_mps": 0.07134546858998388,
+        "max_time_error_s": 4.027981503895717e-09,
+        "gaps": 0
+      },
+      "common_window": {
+        "from_s": 99.2,
+        "valid_epochs": 330,
+        "p95_position_m": 1.1709311699878844,
+        "p95_velocity_mps": 0.08083180524893982
+      },
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 165000,
+        "compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+        "compact_crc32": "87a51e97",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 1.2,
+            "device_s": 1.200395,
+            "host_s": 1.2380983750335872
+          },
+          "four_locks": {
+            "sample_s": 4.6,
+            "device_s": 4.600604,
+            "host_s": 4.638170375023037
+          },
+          "first_valid": {
+            "sample_s": 39.2,
+            "device_s": 39.203259,
+            "host_s": 39.24040404200787
+          },
+          "six_used": {
+            "sample_s": 39.2,
+            "device_s": 39.203259,
+            "host_s": 39.24040404200787
+          },
+          "seven_used": {
+            "sample_s": 39.2,
+            "device_s": 39.203259,
+            "host_s": 39.24040404200787
+          }
+        },
+        "status_rows": 825,
+        "valid_rows": 630,
+        "gaps": 0,
+        "device_elapsed_s": 165.003321,
+        "host_elapsed_s": 165.03964754199842,
+        "min_device_status_interval_us": 199971,
+        "max_device_status_interval_us": 202307,
+        "late_us": 3384,
+        "worst_epoch": 132201,
+        "starved": 0,
+        "peak_backlog": 3,
+        "first_valid_host_offset_s": 39.24040404200787,
+        "last_valid_host_offset_s": 165.03941970900632,
+        "longest_valid_streak_reports": 630,
+        "longest_valid_streak_wall_s": 125.79901566699846,
+        "longest_valid_streak_wall_hz": 5.000039123239412
+      },
+      "uf2_sha256": "3c183e54e573796d962ae071df72196ed5e21f68b5315b03d9e2f61264fa1ed7",
+      "rate_trial": [
+        {
+          "samples_per_window": 5,
+          "span_s": 0.8,
+          "epochs_5hz": 626,
+          "epochs_1hz": 126,
+          "raw_5hz_p95_m": 1.0502049210445672,
+          "filtered_5hz_p95_m": 1.0471754830464801,
+          "raw_1hz_p95_m": 1.016026783290731,
+          "filtered_1hz_p95_m": 1.0725774193232058
+        },
+        {
+          "samples_per_window": 25,
+          "span_s": 4.8,
+          "epochs_5hz": 606,
+          "epochs_1hz": 122,
+          "raw_5hz_p95_m": 1.0613163152188605,
+          "filtered_5hz_p95_m": 0.7960685013720952,
+          "raw_1hz_p95_m": 1.0200636633251485,
+          "filtered_1hz_p95_m": 0.79827666319326
+        },
+        {
+          "samples_per_window": 40,
+          "span_s": 7.8,
+          "epochs_5hz": 591,
+          "epochs_1hz": 119,
+          "raw_5hz_p95_m": 1.0699681411518134,
+          "filtered_5hz_p95_m": 0.7092774777489218,
+          "raw_1hz_p95_m": 1.0211558816221782,
+          "filtered_1hz_p95_m": 0.7024096126365669
+        }
+      ]
+    },
+    {
+      "label": "Full-size search control",
+      "group": "control",
+      "status_file": "clocked/orbit_fix_control1.csv.gz",
+      "status_csv_sha256": "bdfd432cdbbcc01a3d0b90d1470af2f88dec04f2ad6638670925f971ce3e416e",
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 480,
+        "first_valid_s": 69.2,
+        "satellites_at_first_fix": 4,
+        "first_fix_position_error_m": 0.5368092840293163,
+        "first_used_s": {
+          "6": 99.2,
+          "7": 99.2,
+          "8": 117.2
+        },
+        "first_five_truth_checked_s": 69.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.1716705020808174,
+        "p95_velocity_mps": 0.10879032088168754,
+        "max_time_error_s": 5.052427809459914e-09,
+        "gaps": 0
+      },
+      "common_window": {
+        "from_s": 99.2,
+        "valid_epochs": 330,
+        "p95_position_m": 0.8854156620152513,
+        "p95_velocity_mps": 0.0789498709197414
+      },
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 165000,
+        "compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+        "compact_crc32": "87a51e97",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 5.0,
+            "device_s": 5.000392,
+            "host_s": 5.037415500031784
+          },
+          "four_locks": {
+            "sample_s": 38.2,
+            "device_s": 38.200603,
+            "host_s": 38.23778816702543
+          },
+          "first_valid": {
+            "sample_s": 69.2,
+            "device_s": 69.202125,
+            "host_s": 69.23978841700591
+          },
+          "six_used": {
+            "sample_s": 99.2,
+            "device_s": 99.203061,
+            "host_s": 99.24335545802023
+          },
+          "seven_used": {
+            "sample_s": 99.2,
+            "device_s": 99.203061,
+            "host_s": 99.24335545802023
+          }
+        },
+        "status_rows": 825,
+        "valid_rows": 480,
+        "gaps": 0,
+        "device_elapsed_s": 165.003322,
+        "host_elapsed_s": 165.03991920803674,
+        "min_device_status_interval_us": 199951,
+        "max_device_status_interval_us": 201335,
+        "late_us": 3381,
+        "worst_epoch": 142401,
+        "starved": 0,
+        "peak_backlog": 3,
+        "first_valid_host_offset_s": 69.23978841700591,
+        "last_valid_host_offset_s": 165.03947958303615,
+        "longest_valid_streak_reports": 480,
+        "longest_valid_streak_wall_s": 95.79969116603024,
+        "longest_valid_streak_wall_hz": 5.000016118735144
+      },
+      "uf2_sha256": "7d17aa39532948c7e65097518cd2a3e04170470de140a6fec32fc8944d422e15",
+      "rate_trial": [
+        {
+          "samples_per_window": 5,
+          "span_s": 0.8,
+          "epochs_5hz": 476,
+          "epochs_1hz": 96,
+          "raw_5hz_p95_m": 1.183526756734623,
+          "filtered_5hz_p95_m": 1.0842054136339239,
+          "raw_1hz_p95_m": 1.1877437150130041,
+          "filtered_1hz_p95_m": 1.0621279896126377
+        },
+        {
+          "samples_per_window": 25,
+          "span_s": 4.8,
+          "epochs_5hz": 456,
+          "epochs_1hz": 92,
+          "raw_5hz_p95_m": 1.0995992490243824,
+          "filtered_5hz_p95_m": 0.9814756074919286,
+          "raw_1hz_p95_m": 1.2029735362895122,
+          "filtered_1hz_p95_m": 0.978189364202577
+        },
+        {
+          "samples_per_window": 40,
+          "span_s": 7.8,
+          "epochs_5hz": 441,
+          "epochs_1hz": 89,
+          "raw_5hz_p95_m": 1.0457230496011651,
+          "filtered_5hz_p95_m": 0.8900718781606013,
+          "raw_1hz_p95_m": 1.0417835977132308,
+          "filtered_1hz_p95_m": 0.8772090617983541
+        }
+      ]
+    },
+    {
+      "label": "Flight, start 2",
+      "group": "selected",
+      "status_file": "clocked/orbit_fix_flight2.csv.gz",
+      "status_csv_sha256": "01bc7256821e59893540c8fdf8dfb1293c381b9478ebc971131f6b498a6c1f2b",
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 8,
+        "first_fix_position_error_m": 0.5235202905707231,
+        "first_used_s": {
+          "6": 39.2,
+          "7": 39.2,
+          "8": 39.2
+        },
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.044690331443256,
+        "p95_velocity_mps": 0.07135288561261785,
+        "max_time_error_s": 4.027981503895717e-09,
+        "gaps": 0
+      },
+      "common_window": {
+        "from_s": 99.2,
+        "valid_epochs": 330,
+        "p95_position_m": 1.174982340462284,
+        "p95_velocity_mps": 0.08083506571899679
+      },
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 165000,
+        "compact_sha256": "4904c08f673d102c6b30e01e37f87bdb34654399c5fac8b42418b098188b47ca",
+        "compact_crc32": "87a51e97",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 1.2,
+            "device_s": 1.200395,
+            "host_s": 1.2378611250314862
+          },
+          "four_locks": {
+            "sample_s": 4.6,
+            "device_s": 4.600593,
+            "host_s": 4.637675625039265
+          },
+          "first_valid": {
+            "sample_s": 39.2,
+            "device_s": 39.203257,
+            "host_s": 39.24057750002248
+          },
+          "six_used": {
+            "sample_s": 39.2,
+            "device_s": 39.203257,
+            "host_s": 39.24057750002248
+          },
+          "seven_used": {
+            "sample_s": 39.2,
+            "device_s": 39.203257,
+            "host_s": 39.24057750002248
+          }
+        },
+        "status_rows": 825,
+        "valid_rows": 630,
+        "gaps": 0,
+        "device_elapsed_s": 165.00332,
+        "host_elapsed_s": 165.03980145900277,
+        "min_device_status_interval_us": 199959,
+        "max_device_status_interval_us": 202304,
+        "late_us": 3386,
+        "worst_epoch": 90401,
+        "starved": 0,
+        "peak_backlog": 3,
+        "first_valid_host_offset_s": 39.24057750002248,
+        "last_valid_host_offset_s": 165.03949799999828,
+        "longest_valid_streak_reports": 630,
+        "longest_valid_streak_wall_s": 125.7989204999758,
+        "longest_valid_streak_wall_hz": 5.000042905774546
+      },
+      "uf2_sha256": "3c183e54e573796d962ae071df72196ed5e21f68b5315b03d9e2f61264fa1ed7",
+      "rate_trial": [
+        {
+          "samples_per_window": 5,
+          "span_s": 0.8,
+          "epochs_5hz": 626,
+          "epochs_1hz": 126,
+          "raw_5hz_p95_m": 1.0449580404773737,
+          "filtered_5hz_p95_m": 1.049061977082873,
+          "raw_1hz_p95_m": 1.016026783290731,
+          "filtered_1hz_p95_m": 1.078706857453883
+        },
+        {
+          "samples_per_window": 25,
+          "span_s": 4.8,
+          "epochs_5hz": 606,
+          "epochs_1hz": 122,
+          "raw_5hz_p95_m": 1.0588562910074175,
+          "filtered_5hz_p95_m": 0.7963698069209039,
+          "raw_1hz_p95_m": 1.0200636633251485,
+          "filtered_1hz_p95_m": 0.7992254838095006
+        },
+        {
+          "samples_per_window": 40,
+          "span_s": 7.8,
+          "epochs_5hz": 591,
+          "epochs_1hz": 119,
+          "raw_5hz_p95_m": 1.0699681411518134,
+          "filtered_5hz_p95_m": 0.710702589519986,
+          "raw_1hz_p95_m": 1.0211558816221782,
+          "filtered_1hz_p95_m": 0.7022779871682907
+        }
+      ]
+    }
+  ],
+  "exploratory": [
+    {
+      "description": "Unmatched compact replica, full band",
+      "passed_transport": true,
+      "peak_lateness_us": 2884,
+      "score": {
+        "passed": false,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 4,
+        "first_fix_position_error_m": 1.5576339794028884,
+        "first_used_s": {
+          "6": 69.2,
+          "7": null,
+          "8": null
+        },
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 2.595555563632323,
+        "p95_velocity_mps": 0.21404011491498112,
+        "max_time_error_s": 1.6018745441215287e-08,
+        "gaps": 0
+      },
+      "csv_sha256": "e2f5547e473a0b011f99c2462a3918d8d9ae627e125d6451632d60f21084f1bf"
+    },
+    {
+      "description": "Inner band first, full-size FFT",
+      "passed_transport": false,
+      "peak_lateness_us": 208204,
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 480,
+        "first_valid_s": 69.2,
+        "satellites_at_first_fix": 5,
+        "first_fix_position_error_m": 1.287852677324689,
+        "first_used_s": {
+          "6": 117.2,
+          "7": 129.2,
+          "8": null
+        },
+        "first_five_truth_checked_s": 69.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.2217829978857546,
+        "p95_velocity_mps": 0.11071687945224604,
+        "max_time_error_s": 6.007027764098893e-09,
+        "gaps": 0
+      },
+      "csv_sha256": "c8cf07208983092161f8b5f5f86333d82945ffef06d2e3820f05dd5fbfe66d0f"
+    },
+    {
+      "description": "Matched compact replica, two surveys then a full four-dwell pass",
+      "passed_transport": false,
+      "peak_lateness_us": 557051,
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 6,
+        "first_fix_position_error_m": 0.397039668196157,
+        "first_used_s": {
+          "6": 39.2,
+          "7": 117.2,
+          "8": 129.2
+        },
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.3056935208817375,
+        "p95_velocity_mps": 0.0810217069277491,
+        "max_time_error_s": 4.05125177849186e-09,
+        "gaps": 0
+      },
+      "csv_sha256": "6358441c956f381a7c1e8759d85a95955ee630c000881918802170bccd7aba75"
+    },
+    {
+      "description": "Full-size, sparse carrier grid with fresh refinement",
+      "passed_transport": false,
+      "peak_lateness_us": 280729,
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 540,
+        "first_valid_s": 57.2,
+        "satellites_at_first_fix": 5,
+        "first_fix_position_error_m": 0.6145334601632165,
+        "first_used_s": {
+          "6": 63.2,
+          "7": 153.2,
+          "8": null
+        },
+        "first_five_truth_checked_s": 57.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.229005729951637,
+        "p95_velocity_mps": 0.08607356562185489,
+        "max_time_error_s": 4.0279672930410015e-09,
+        "gaps": 0
+      },
+      "csv_sha256": "9640a04023eb80dabbc81fc42691c6d40f3638fad25bf3c151742887ab83667e"
+    },
+    {
+      "description": "Rolling compact survey before tracking optimization",
+      "passed_transport": false,
+      "peak_lateness_us": 3604845,
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 7,
+        "first_fix_position_error_m": 0.6045351607042612,
+        "first_used_s": {
+          "6": 39.2,
+          "7": 39.2,
+          "8": 99.2
+        },
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 0.9060934651323375,
+        "p95_velocity_mps": 0.07555901778514024,
+        "max_time_error_s": 3.050075747523806e-09,
+        "gaps": 0
+      },
+      "csv_sha256": "b56a28c42fcc695c788729c2f5ae8cea67ba0ce6858370ae18b5fdafbf06dcd9"
+    }
+  ],
+  "native_work": "1141/5706 calls per input ms; up to four compact transforms per call. Offsets discard a prefix and restart all receiver state.",
+  "native_arcs": [
+    {
+      "altitude_km": 550,
+      "phase_deg": 12,
+      "discarded_s": 0,
+      "original_eiq_sha256": "018fa9917892487dce2ef27b804af8e662a34fbbc9ce7d1ca6e71b5c82d7b2c8",
+      "csv_sha256": "8313eb09532017f589a422617708c5b207c3cf42052d333cca44eb2cf7c11975",
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 7,
+        "first_fix_position_error_m": 0.5513838905749381,
+        "first_used_s": {
+          "6": 39.2,
+          "7": 39.2,
+          "8": 63.2
+        },
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 0.8906921132892162,
+        "p95_velocity_mps": 0.07449671341460394,
+        "max_time_error_s": 3.050075747523806e-09,
+        "gaps": 0
+      }
+    },
+    {
+      "altitude_km": 400,
+      "phase_deg": 103,
+      "discarded_s": 0,
+      "original_eiq_sha256": "e0a4cd27957f37fa7e4bd2568b423d40edc08494f03d7455cbcc84de00c359c0",
+      "csv_sha256": "5964728e619a61119b446ab592d9fcb48d71be9e8935f1af6893bc2c046ca67b",
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 7,
+        "first_fix_position_error_m": 0.291188862899963,
+        "first_used_s": {
+          "6": 39.2,
+          "7": 39.2,
+          "8": 63.2
+        },
+        "first_five_truth_checked_s": 39.4,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.7356190910740563,
+        "p95_velocity_mps": 0.1474297565791482,
+        "max_time_error_s": 5.0291433240090555e-09,
+        "gaps": 0
+      }
+    },
+    {
+      "altitude_km": 800,
+      "phase_deg": 211,
+      "discarded_s": 0,
+      "original_eiq_sha256": "bf64df944288abc3bfdf6c702055f60419d75510d3398c5c787c3102a247ced5",
+      "csv_sha256": "0775053f8a8e9e6b158b583fe01681c5a29d47fd062bdcea2e9a2dbe7cb7cf48",
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 7,
+        "first_fix_position_error_m": 0.7332619859265299,
+        "first_used_s": {
+          "6": 39.2,
+          "7": 39.2,
+          "8": 63.2
+        },
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.650870265361023,
+        "p95_velocity_mps": 0.09062836308665544,
+        "max_time_error_s": 6.05359673500061e-09,
+        "gaps": 0
+      }
+    },
+    {
+      "altitude_km": 475,
+      "phase_deg": 151,
+      "discarded_s": 0,
+      "original_eiq_sha256": "2a36d58bdffde31e3e4109012c5c0fa58876970e2c4af659eab1b6e9963163aa",
+      "csv_sha256": "e7e52b1dbd721bff2771623f8c61d8855e9fd1716b9244b0422b593d4cae19c2",
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 630,
+        "first_valid_s": 39.2,
+        "satellites_at_first_fix": 7,
+        "first_fix_position_error_m": 0.3891105565807336,
+        "first_used_s": {
+          "6": 39.2,
+          "7": 39.2,
+          "8": 63.2
+        },
+        "first_five_truth_checked_s": 39.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.0849290079526628,
+        "p95_velocity_mps": 0.07066757384018166,
+        "max_time_error_s": 3.981405427566642e-09,
+        "gaps": 0
+      }
+    },
+    {
+      "altitude_km": 400,
+      "phase_deg": 281,
+      "discarded_s": 0,
+      "original_eiq_sha256": "516f375789b621506a460126ce5268b80acb395d6c22c9e16a96f579ada277d8",
+      "csv_sha256": "bdcfa31ad89925b319b751fdec95e465037b2d5768f303af11eb2063feb77c31",
+      "score": {
+        "passed": true,
+        "status_epochs": 825,
+        "valid_epochs": 660,
+        "first_valid_s": 33.2,
+        "satellites_at_first_fix": 5,
+        "first_fix_position_error_m": 2.0065125428226946,
+        "first_used_s": {
+          "6": 39.2,
+          "7": 39.2,
+          "8": 39.2
+        },
+        "first_five_truth_checked_s": 33.8,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 2.414976202228044,
+        "p95_velocity_mps": 0.15560026213940079,
+        "max_time_error_s": 6.05359673500061e-09,
+        "gaps": 0
+      }
+    },
+    {
+      "altitude_km": 550,
+      "phase_deg": 12,
+      "discarded_s": 7,
+      "original_eiq_sha256": "018fa9917892487dce2ef27b804af8e662a34fbbc9ce7d1ca6e71b5c82d7b2c8",
+      "csv_sha256": "ee2fb94419d7114fb327ca7681dfa8ae5fe734988c16cbfd1e13c8896c371b59",
+      "score": {
+        "passed": true,
+        "status_epochs": 790,
+        "valid_epochs": 630,
+        "first_valid_s": 32.2,
+        "satellites_at_first_fix": 7,
+        "first_fix_position_error_m": 0.3421331170807818,
+        "first_used_s": {
+          "6": 32.2,
+          "7": 32.2,
+          "8": 122.2
+        },
+        "first_five_truth_checked_s": 32.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.179008159992174,
+        "p95_velocity_mps": 0.07297249449861351,
+        "max_time_error_s": 4.0279672930410015e-09,
+        "gaps": 0
+      }
+    },
+    {
+      "altitude_km": 550,
+      "phase_deg": 12,
+      "discarded_s": 17,
+      "original_eiq_sha256": "018fa9917892487dce2ef27b804af8e662a34fbbc9ce7d1ca6e71b5c82d7b2c8",
+      "csv_sha256": "c138efdcf5483ef74a2aa4f3c7a5aeeaa2247b5a2ed37c4467ba764c13a9f577",
+      "score": {
+        "passed": true,
+        "status_epochs": 740,
+        "valid_epochs": 540,
+        "first_valid_s": 40.2,
+        "satellites_at_first_fix": 7,
+        "first_fix_position_error_m": 0.301463031049168,
+        "first_used_s": {
+          "6": 40.2,
+          "7": 40.2,
+          "8": 52.2
+        },
+        "first_five_truth_checked_s": 40.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 0.9454385812530206,
+        "p95_velocity_mps": 0.07369381494863599,
+        "max_time_error_s": 3.050075747523806e-09,
+        "gaps": 0
+      }
+    },
+    {
+      "altitude_km": 550,
+      "phase_deg": 12,
+      "discarded_s": 29,
+      "original_eiq_sha256": "018fa9917892487dce2ef27b804af8e662a34fbbc9ce7d1ca6e71b5c82d7b2c8",
+      "csv_sha256": "32bf0eeb7f91040afa0c7dd46483594b9169377dc6a8d605bfc8310f118babc1",
+      "score": {
+        "passed": true,
+        "status_epochs": 680,
+        "valid_epochs": 510,
+        "first_valid_s": 34.2,
+        "satellites_at_first_fix": 4,
+        "first_fix_position_error_m": 0.6937785701963011,
+        "first_used_s": {
+          "6": 40.2,
+          "7": 40.2,
+          "8": 64.2
+        },
+        "first_five_truth_checked_s": 34.2,
+        "availability_after_streak": 1.0,
+        "p95_position_m": 1.5224034445455705,
+        "p95_velocity_mps": 0.09324120984050524,
+        "max_time_error_s": 6.030312249549752e-09,
+        "gaps": 0
+      }
+    }
+  ]
+}

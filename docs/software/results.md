@@ -1,12 +1,14 @@
 # Receiver measurements
 
+The latest 550 km cold trials measure the time to the first position and to six, seven and eight satellites in a fix. [Orbital fix timing on the Pico](orbit-fix.md)
+
 The Pico kept 5 Hz while correcting the height of two real rooftop antennas. [Height against antenna references](height.md)
 
 [Real antenna recording on the Pico](real-sky.md) · [3D position error budget](position-error.md) · [Cold-search timing and accuracy](accuracy.md#time-from-cold-start) · [Independent ground and orbital replay](independent.md#cold-search-at-a-fixed-work-rate)
 
 ## Device-clocked replay on the Pico
 
-The 150 MHz Pico Plus 2 ran cold acquisition, tracking, LNAV decoding and the navigation solver on two independent 165-second recordings. The laptop supplied half-chip I/Q signs over USB and measured when each fix arrived. Both recordings completed with zero input gaps or underruns. Each run started from an empty receiver in SRAM. The RF front end and antenna are outside this bench.
+In the earlier ground and orbit comparison, the 150 MHz Pico Plus 2 ran cold acquisition, tracking, LNAV decoding and the navigation solver on two independent 165-second recordings. The laptop supplied half-chip I/Q signs over USB and measured when each fix arrived. Both recordings completed with zero input gaps or underruns. Each run started from an empty receiver in SRAM. The RF front end and antenna are outside this bench.
 
 | Recorded motion | First satellite lock | Four locks | First position on laptop | Consecutive fixes | Wall-clock rate | 3D position / velocity error, p95 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |

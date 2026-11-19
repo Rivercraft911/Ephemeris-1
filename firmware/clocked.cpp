@@ -22,14 +22,17 @@ constexpr unsigned epoch_bytes = 512, ring_bytes = 64 * epoch_bytes;
 constexpr unsigned slot_count = 4;
 uint8_t __uninitialized_ram(input_ring)[ring_bytes];
 alignas(32) uint32_t __uninitialized_ram(worker_stack)[4096];
-alignas(4) uint32_t raw[sig::raw_per_ms / 8];
+// The compact epoch has two padding pairs. Expand the last byte uniformly;
+// the receiver only reads the first 2046 half chips.
+alignas(4) uint32_t raw[4 * epoch_bytes];
+static_assert(sig::raw_per_ms / 8 == 4 * epoch_bytes - 2);
 ephemeris::Receiver receiver;
 struct Line { char text[448]; unsigned length{}; };
 Line lines[slot_count];
 std::atomic<unsigned> received{}, consumed{}, queued{}, sent{};
 std::atomic<bool> started{}, done{}, detached{};
 unsigned epochs, line_offset, peak_backlog, starved, dropped_status, processed;
-uint32_t max_late_us, crc = ~uint32_t{};
+uint32_t max_late_us, worst_epoch, crc = ~uint32_t{};
 uint64_t start_us, elapsed_us;
 
 constexpr uint32_t if_word(unsigned pair) {
@@ -39,18 +42,19 @@ constexpr uint32_t if_word(unsigned pair) {
                            (sample(!i,!q) << 8) | (sample(q,!i) << 12);
     return cycle | (cycle << 16);
 }
-constexpr std::array<uint32_t,4> waveform{if_word(0),if_word(1),if_word(2),if_word(3)};
+constexpr auto make_waveforms() {
+    std::array<std::array<uint32_t, 4>, 256> words{};
+    for (unsigned byte = 0; byte < words.size(); ++byte)
+        for (unsigned pair = 0; pair < 4; ++pair)
+            words[byte][pair] = if_word((byte >> (2 * pair)) & 3);
+    return words;
+}
+constexpr auto waveform = make_waveforms();
 void expand(const uint8_t* compact) {
-    // Each byte holds four half-chip I/Q pairs. The last has only two.
     for (unsigned b = 0; b < epoch_bytes; ++b) {
         const uint8_t v = compact[b];
         crc = (crc >> 8) ^ replay_crc::table[(crc ^ v) & 255];
-        raw[4*b] = waveform[v & 3];
-        raw[4*b+1] = waveform[(v >> 2) & 3];
-        if (b + 1 < epoch_bytes) {
-            raw[4*b+2] = waveform[(v >> 4) & 3];
-            raw[4*b+3] = waveform[v >> 6];
-        }
+        std::memcpy(raw + 4*b, waveform[v].data(), sizeof(waveform[v]));
     }
 }
 // One USB owner. During replay the core 0 timer services the endpoint while
@@ -103,7 +107,11 @@ void process() {
         consumed.store(offset + epoch_bytes, std::memory_order_release);
         receiver.process(reinterpret_cast<const uint8_t*>(raw), uint64_t(processed)*sig::raw_per_ms, false);
         const auto end = time_us_64();
-        max_late_us = std::max(max_late_us, uint32_t(end - deadline));
+        const auto late = uint32_t(end - deadline);
+        if (late > max_late_us) {
+            max_late_us = late;
+            worst_epoch = processed + 1;
+        }
         if ((processed + 1) % 200 == 0) emit(receiver.status(), end);
     }
     elapsed_us = time_us_64() - start_us;
@@ -150,8 +158,8 @@ void run(uint32_t expected_crc) {
                     sent.load() == queued.load() && checksum == expected_crc;
     char summary[192];
     std::snprintf(summary, sizeof(summary), "%s epochs=%u elapsed_us=%" PRIu64
-                  " late_us=%" PRIu32 " starved=%u peak_backlog=%u crc=%08" PRIx32 "\n",
-                  ok ? "PASS" : "FAIL", processed, elapsed_us, max_late_us, starved, peak_backlog, checksum);
+                  " late_us=%" PRIu32 " worst_epoch=%" PRIu32 " starved=%u peak_backlog=%u crc=%08" PRIx32 "\n",
+                  ok ? "PASS" : "FAIL", processed, elapsed_us, max_late_us, worst_epoch, starved, peak_backlog, checksum);
     write_line(summary);
 }
 }

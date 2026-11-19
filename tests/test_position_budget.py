@@ -6,11 +6,27 @@ import unittest
 
 import numpy as np
 
-from independent_orbit import compare_positions, trajectory
+from independent_orbit import compare_positions, rate_trial, trajectory
 from position_budget import C, FS, score
 
 
 class PositionBudget(unittest.TestCase):
+    def test_rate_trial_compares_current_positions_across_a_gap(self):
+        def motion(t):
+            zero = np.zeros_like(t)
+            return np.column_stack((t*t, zero, zero, 2*t, zero, zero))
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "rate.csv"
+            with path.open("w", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(("sample", "valid", "gaps", "x_m", "y_m", "z_m", "vx_mps", "vy_mps", "vz_mps"))
+                for i in range(1, 31):
+                    writer.writerow((i * (FS // 5), int(i != 10), int(i >= 10), *motion(np.array([i / 5]))[0]))
+            short, = rate_trial(path, motion, 6)
+            self.assertEqual((short["epochs_1hz"], short["epochs_5hz"]), (5, 21))
+            self.assertLess(short["filtered_5hz_p95_m"], 1e-12)
+
     def test_pairs_require_the_same_satellites(self):
         truth = trajectory(np.arange(1, 6) / 5)
         with tempfile.TemporaryDirectory() as tmp:

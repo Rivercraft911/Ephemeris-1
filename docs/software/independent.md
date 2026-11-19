@@ -43,6 +43,8 @@ Both builds used `--work 1141/5706` on the same I/Q for each pair. The 400 km ru
 
 ### Full-band strong-signal survey
 
+The compact flight profile uses a different first pass and interleaves the sensitive searches. [Current Pico measurements and flags](orbit-fix.md)
+
 `-DEPHEMERIS_FLIGHT_SURVEY=ON` tests each unoccupied PRN across ±70 kHz with one millisecond of data. A correlation peak at least 18 times the mean code-cell power goes to the usual independent confirmation. The next pass uses four dwells for every remaining PRN while a tracking slot is available. This option defaults to off. Cached Doppler searches and fresh searches around an old detection use four dwells. Enabling ground-first search as well inserts a four-dwell ±12 kHz pass before each wide pass.
 
 | Orbit | Eight tracking locks, baseline → survey | First position, baseline → survey | Survey position / velocity error, p95 |

@@ -142,7 +142,7 @@ def run(port, source, out):
     max_status_delay_us = 0
     min_interval = max_interval = None
     arrivals = FixArrivals()
-    events = {k: None for k in ("first_lock", "four_locks", "first_valid")}
+    events = {k: None for k in ("first_lock", "four_locks", "first_valid", "six_used", "seven_used")}
     try:
         if read_line(port) != "H " + FIELDS:
             raise ValueError("unexpected 5 Hz status header")
@@ -186,14 +186,17 @@ def run(port, source, out):
                 if not 4 <= int(row["sv"]) <= navigation.bit_count() or not all(map(math.isfinite, coordinates)):
                     raise ValueError("invalid navigation solution marked valid")
                 valid_rows += 1
+            used = int(row["sv"]) if valid else 0
             for key, reached in (("first_lock", bool(locked)), ("four_locks", locked.bit_count() >= 4),
-                                 ("first_valid", valid)):
+                                 ("first_valid", valid), ("six_used", used >= 6), ("seven_used", used >= 7)):
                 if reached and events[key] is None:
                     events[key] = dict(sample_s=sample/RATE, device_s=device_us/1e6, host_s=host_offset)
             out.write(status + "\n")
             out.flush()
         summary = dict(item.split("=", 1) for item in line.split()[1:])
+        worst_epoch = int(summary["worst_epoch"]) if "worst_epoch" in summary else None
         if (int(summary["epochs"]) != epochs or int(summary["crc"], 16) != crc
+                or (worst_epoch is not None and not 1 <= worst_epoch <= epochs)
                 or int(summary["starved"]) != 0 or gaps or rows != epochs // 200
                 or int(summary["elapsed_us"]) < max(previous_us, epochs * 1000)
                 or not max_status_delay_us <= int(summary["late_us"]) < 4000):
@@ -214,7 +217,7 @@ def run(port, source, out):
         "events": events, "status_rows": rows, "valid_rows": valid_rows, "gaps": gaps,
         "device_elapsed_s": int(summary["elapsed_us"])/1e6, "host_elapsed_s": host_offset,
         "min_device_status_interval_us": min_interval, "max_device_status_interval_us": max_interval,
-        "late_us": int(summary["late_us"]), "starved": int(summary["starved"]),
+        "late_us": int(summary["late_us"]), "worst_epoch": worst_epoch, "starved": int(summary["starved"]),
         "peak_backlog": int(summary["peak_backlog"]), **arrivals.summary(),
     }
 

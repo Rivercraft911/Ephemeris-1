@@ -6,4 +6,4 @@ Tired of $10,000 spacecraft GNSS quotes? About $33 in parts buys the front end o
 
 The MAX2769B takes GPS L1 in through the SMA and sends raw I/Q samples to the host header. Receiver firmware targets an RP2350B. The first boards are here for assembly and Safran simulator testing follows bring-up.
 
-[Interactive assembly BOM](https://rivercraft911.github.io/Ephemeris-1/assembly/ibom.html) · [Parts and cost](docs/ordering-bom.md) · [KiCad](hardware/GNSS-IQ-Breakout.kicad_pro) · [Bring-up](docs/design.md#first-capture) · [Receiver](docs/software/receiver.md) · [Ground fix](docs/software/ground.md) · [Test plots](docs/software/results.md)
+[Interactive assembly BOM](https://rivercraft911.github.io/Ephemeris-1/assembly/ibom.html) · [Parts and cost](docs/ordering-bom.md) · [KiCad](hardware/GNSS-IQ-Breakout.kicad_pro) · [Bring-up](docs/design.md#first-capture) · [Receiver](docs/software/receiver.md) · [Ground fix](docs/software/ground.md) · [Orbital fix timing](docs/software/orbit-fix.md) · [Test plots](docs/software/results.md)
