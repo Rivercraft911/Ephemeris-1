@@ -78,19 +78,29 @@ private:
     unsigned cached_prn_{};
 };
 
-// Four independent fresh dwells refine the candidate code phase and carrier.
+// Four fresh dwells refine the candidate. Ambiguous near-far cells receive a
+// second, independent check after suppressing the dominant repeated signal.
 class Confirmation {
 public:
     void start(const Detection& seed);
-    bool add(const Epoch& fresh);  // true after four independent verification epochs
+    bool add(const Epoch& fresh);  // true when verification finishes
     Detection best() const { return best_; }
 private:
     Detection seed_{}, best_{};
     Code code_{};
     static constexpr int hypotheses = 3*9; // three Dopplers, nine quarter-chip offsets
     std::array<float, hypotheses> power_{};
+    // Compare sparse raw baseband samples at the same point of two code periods.
+    static constexpr int repeat_stride = 8;
+    std::array<IQ8, (samples_per_ms + repeat_stride - 1)/repeat_stride> previous_{};
+    int previous_energy_{};
+    float repeat_sum_{};
+    unsigned repeat_pairs_{};
+    float residual_sum_{};
     unsigned dwells_{};
     std::uint64_t previous_sample_{};
+    void measure_repetition(const Epoch& fresh);
+    float residual_power(const Epoch& fresh, int offset, float gain_i, float gain_q, int input_energy) const;
 };
 
 struct Prompt {

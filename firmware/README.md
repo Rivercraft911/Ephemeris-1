@@ -78,9 +78,9 @@ python3 firmware/bench.py PORT blind-lock 1 --seconds 60
 python3 firmware/bench.py PORT blind-lock 4 --seconds 120
 ```
 
-The host uploads one millisecond of I/Q with the chosen GPS code at 137.25 chips and zero Doppler. The fixture repeats the same noise samples and carries a constant data bit. Internal PIO and DMA pace the receiver at one block per millisecond. The search starts at PRN 1 and receives the waveform alone. The device records the first epoch of a 20 ms interval with one continuously locked PRN. The host checks the PRN, code phase and Doppler. A wrong PRN fails even if the tracking loop declared lock. Compute-paced native replay at 64 search steps per millisecond produced a wrong early lock on the PRN 4 fixture. This repeating waveform serves as a timing test. RF sensitivity and false-lock rates need independent noise and changing signals.
+The host uploads one millisecond of I/Q with the chosen GPS code at 137.25 chips and zero Doppler. The fixture repeats the same noise samples and carries a constant data bit. Internal PIO and DMA pace the receiver at one block per millisecond. The search starts at PRN 1 and receives the waveform alone. The device records the first epoch of a 20 ms interval with one continuously locked PRN. The host checks the PRN, code phase and Doppler. A wrong PRN fails even if the tracking loop declared lock. An earlier compute-paced native build produced a wrong early lock on the PRN 4 fixture. The cross-code regression now exercises that failure with independent noise. This repeating waveform serves as a timing test. RF sensitivity and false-lock rates need independent noise and changing signals.
 
-On the 150 MHz Pico the sampled and wall times were 10.628 s and 10.628185 s for PRN 1, then 42.500 s and 42.499627 s for PRN 4. Both runs recorded zero sample gaps, missed blocks, FIFO stalls and clock timeouts. Each result measures one cold channel acquisition. A position fix also requires decoding satellite clocks and orbits on multiple channels.
+With the original FFT on the 150 MHz Pico the sampled and wall times were 10.628 s and 10.628185 s for PRN 1, then 42.500 s and 42.499627 s for PRN 4. Both runs recorded zero sample gaps, missed blocks, FIFO stalls and clock timeouts. Each result measures one cold channel acquisition. A position fix also requires decoding satellite clocks and orbits on multiple channels.
 
 ## Single-Pico digital capture
 
@@ -143,3 +143,24 @@ python firmware/replay_bench.py PORT leo.eiq receiver.csv --work 2 \
 The host needs pyserial and Python 3.10+. Truth scoring also uses NumPy. The last two options above use the synthetic fixture's known alignment. The host opens the independent truth file after the USB session closes. It scores the 5 Hz interval actually processed and records the result with transport metrics. Omit `--stop-after-fixes` for the full recording, or use `--max-ms 250` for a transport check. The final CSV contains only statuses reported by the target. An interrupted transfer leaves a `.partial` file with the received rows. Close the serial port to abandon a session. A new `replay` command starts cold, and `bootsel` at the command prompt returns to the boot ROM.
 
 Playback follows the host's backpressure. Recorded time sets the simulated receiver dynamics. The metrics JSON reports input bytes and seconds of recording per wall second. It records first and last valid host arrival offsets on a monotonic clock. During the longest unbroken run of valid reports, the measured wall-clock fix rate is `(reports − 1) / (last arrival − first arrival)`. The recording's scheduled 5 Hz cadence is recorded separately. A 250 ms stock-clock SRAM smoke run with two acquisition steps per millisecond processed 497 search steps in 4.64 s wall time. The prefix-sum image processed 45.404 s of a synthetic 550 km LEO recording in 926.77 s of wall time. It cold-acquired seven satellites and delivered five valid fixes from recorded times 44.6 through 45.4 s. Their four arrival intervals spanned 20.717 s on the host clock, giving 0.193 Hz, or one fix every 5.18 wall seconds. The independent truth score over those five fixes measured 1.02 m position and 0.0366 m/s velocity error at the 95th percentile. This mode supports end-to-end testing before RF assembly. The live capture and conducted RF procedures measure timing at the hardware boundary.
+
+
+### Clocked I/Q replay on the Pico
+
+The experimental `ephemeris_clocked_replay` bench runs acquisition, tracking, navigation decoding and the solver on the Pico under a 1 kHz device clock. To fit USB full-speed, the host mixes each block to baseband, integrates eight ADC samples and retains the I and Q signs per half-chip. Each millisecond occupies 512 bytes. The Pico reconstructs a unit-amplitude IF waveform for the normal receiver. The recording supplies neither satellite identities nor navigation hints. The live image still takes full-rate ADC samples from PIO.
+
+```sh
+cmake -S firmware -B build/pico-clocked -G Ninja -DCMAKE_BUILD_TYPE=Release \
+  -DPICO_NO_FLASH=1 -DEPHEMERIS_GROUND_SEARCH=ON
+cmake --build build/pico-clocked --target ephemeris_clocked_replay
+python3 firmware/clocked_replay.py pack ground.eiq ground.bin
+picotool load -x build/pico-clocked/ephemeris_clocked_replay.elf
+python3 firmware/clocked_replay.py run PORT ground.bin clocked.csv
+python3 tests/independent_static.py clocked.csv --seconds 165
+```
+
+The scorer above expects the independent 165-second static fixture. Use the corresponding orbital scorer and a full-range build for the orbital recording. For a matched native input, run `python3 firmware/clocked_replay.py expand ground.bin rebuilt.eiq`. Packing requires a recording with sample origin zero. Reload the SRAM bench between cold trials.
+
+The device clock starts after a 64 ms input prefill. Host timing starts at the USB handshake. A complete transport pass requires the expected CRC, all scheduled 5 Hz statuses, zero input underruns and less than 4 ms of maximum processing lateness. The recording's truth scorer checks position, velocity and GPS time separately. Incomplete runs leave a partial CSV.
+
+In the first two hardware trials the input queue ran dry at 2.796 s and 13.362 s. The second used a 512-byte USB endpoint transfer. Peak processing lateness was 1.19 ms in that trial. Both runs ended before a position fix. The current build gives USB service priority during tracking. [Timing and validation results](../docs/software/measurements/pico-acquisition.json)

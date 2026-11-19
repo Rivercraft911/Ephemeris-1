@@ -98,6 +98,16 @@ private:
     bool initialized_{};
 };
 
+// Five-sample causal least-squares line evaluated at the newest Doppler epoch.
+class VelocityFit {
+public:
+    void update(Fix& fix, uint64_t sample);
+private:
+    std::array<Vec3, 4> history_{};
+    uint64_t previous_sample_{};
+    unsigned count_{};
+};
+
 // Supply TOW from a free-running local sample-clock origin to retain a
 // meaningful receiver bias over successive fixes. Without one, the initial
 // receiver epoch is assigned 75 ms after the first transmitter's timestamp.

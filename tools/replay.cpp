@@ -2,22 +2,52 @@
 #include "receiver/app.hpp"
 
 #include <array>
+#include <charconv>
 #include <chrono>
 #include <cstring>
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <string_view>
 #include <vector>
 
 namespace {
+// N/D gives N acquisition work units per D milliseconds of signal. Unused
+// whole units expire when the worker is waiting for another input snapshot.
+struct WorkRate {
+    uint32_t units = 8, milliseconds = 1;
+    uint64_t credit = 0;
+    static uint32_t number(std::string_view value) {
+        uint32_t n = 0;
+        const auto end = value.data() + value.size();
+        const auto parsed = std::from_chars(value.data(), end, n);
+        if (parsed.ec != std::errc{} || parsed.ptr != end)
+            throw std::runtime_error("work must be a nonnegative integer or N/D");
+        return n;
+    }
+    void parse(std::string_view text) {
+        const auto slash = text.find('/');
+        units = number(text.substr(0, slash));
+        milliseconds = slash == text.npos ? 1 : number(text.substr(slash + 1));
+        if (!milliseconds || units > uint64_t{4096} * milliseconds)
+            throw std::runtime_error("work rate must be in [0,4096] steps per ms");
+    }
+    unsigned next() {
+        credit += units;
+        const auto whole = credit / milliseconds;
+        credit %= milliseconds;
+        return static_cast<unsigned>(whole);
+    }
+};
+
 uint64_t little(const uint8_t* p, unsigned n) {
     uint64_t v = 0;
     for (unsigned i = 0; i < n; ++i) v |= uint64_t(p[i]) << (8 * i);
     return v;
 }
 int run(int argc, char** argv) {
-    if (argc < 2) throw std::runtime_error("usage: eph-replay INPUT.eiq [--work bins-per-ms] [--channels file.csv] [--warm-reset-ms ms] [--seed PRN,DOPPLER_HZ,PHASE_CHIPS]");
+    if (argc < 2) throw std::runtime_error("usage: eph-replay INPUT.eiq [--work N[/D]] [--channels file.csv] [--warm-reset-ms ms] [--seed PRN,DOPPLER_HZ,PHASE_CHIPS]");
     std::ifstream file;
     if (std::strcmp(argv[1], "-") != 0) file.open(argv[1], std::ios::binary);
     std::istream& input = std::strcmp(argv[1], "-") == 0 ? std::cin : file;
@@ -31,15 +61,13 @@ int run(int argc, char** argv) {
         throw std::runtime_error("invalid complete-millisecond sample interval");
     auto rx = std::make_unique<ephemeris::Receiver>();
     std::ofstream channels;
-    unsigned work = 8;
+    WorkRate work;
     uint64_t reset_ms = 0;
     for (int i = 2; i < argc; ++i) {
         std::string arg = argv[i];
         if (++i == argc) throw std::runtime_error("missing option value for " + arg);
         if (arg == "--work") {
-            const int parsed = std::stoi(argv[i]);
-            if (parsed < 0 || parsed > 4096) throw std::runtime_error("work must be in [0,4096]");
-            work = unsigned(parsed);
+            work.parse(argv[i]);
         } else if (arg == "--warm-reset-ms") {
             size_t consumed = 0;
             reset_ms = std::stoull(argv[i], &consumed);
@@ -65,6 +93,7 @@ int run(int argc, char** argv) {
     std::cout << ephemeris::status_header << '\n';
     using Clock = std::chrono::steady_clock;
     double worst_us = 0;
+    uint64_t search_steps = 0;
     const auto begin = Clock::now();
     for (uint64_t offset = 0; offset < count; offset += eph::signal::raw_per_ms) {
         if (!input.read(reinterpret_cast<char*>(bytes.data()), bytes.size()))
@@ -81,7 +110,8 @@ int run(int argc, char** argv) {
         rx->process(bytes.data(), start + offset, false);
         const double us = std::chrono::duration<double, std::micro>(Clock::now()-tick).count();
         worst_us = std::max(worst_us, us);
-        for (unsigned j = 0; j < work && rx->work_acquisition(); ++j) {}
+        const auto budget = work.next();
+        for (unsigned j = 0; j < budget && rx->work_acquisition(); ++j) ++search_steps;
         if (channels.is_open()) {
             for (unsigned j = 0; j < rx->channels; ++j) {
                 const auto& tr = rx->channel(j);
@@ -104,7 +134,7 @@ int run(int argc, char** argv) {
     if (input.peek() != std::char_traits<char>::eof()) throw std::runtime_error("capture has trailing bytes");
     std::cerr << "native replay: " << count / eph::signal::raw_per_ms << " ms, elapsed "
               << std::chrono::duration<double>(Clock::now()-begin).count() << " s, worst processing "
-              << worst_us << " us (acquisition timed separately from processing)\n";
+              << worst_us << " us, search_steps=" << search_steps << " (acquisition outside processing timer)\n";
     return 0;
 }
 }

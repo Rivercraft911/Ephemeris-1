@@ -1,0 +1,380 @@
+{
+  "method": "Host cold start with half-chip tracking. Samples are the only receiver input. Timing uses 5 Hz output sample tags. The position smoother and neutral atmosphere correction are disabled.",
+  "baseline_revision": "91b992d311e0ff4b0c2ca00cd59f08cda87615cf",
+  "binary_sha256": {
+    "baseline_original": "eaf6a58289621960f4fdf4710be7f09206368bc9fba1d70b299ffc71fdd61cc5",
+    "baseline_fractional_harness": "8657231cbdb539a41fcfea76a3f8995ea1ee02a9202bc56aa609796f7f8a6b54",
+    "ground": "7c0584fc910b147e50eb85491f8e14c2f367844b0557325d4c08c44bf1c0aa55",
+    "wide": "5cad2165ecd20f87929f0e6d5078c21deaf219d997570646f3cbf644b175a9e5"
+  },
+  "work": "Steps per millisecond of recorded I/Q. 1141/10628 comes from an earlier Pico live blind PRN 1 sweep. Each configuration runs at that same fixed rate for the limited comparisons. 1141/5706 uses the optimized full-band PRN 1 sweep time of 5.706271 s, rounded to the nearest millisecond. The paced comparisons use this same average on ground and in orbit. Ground narrow-band work was not separately calibrated. The model omits variable step cost and interrupt scheduling.",
+  "recording_sha256": {
+    "ground65": "faabca8705ab72b408f09a36c4ede91f77a2c60ab0605dc18cb5c29b92a6e63c",
+    "orbit90": "953926b31a7b06216ab89f7ea9b4b7e7ff6fe284d6591c969af7c00d282cc015",
+    "ground165": "81ac5404c39ac5c4410bab20ce096f6ebda777089d843176cd9f08d3e4e904b5",
+    "orbit165": "f783daaa975a8e9b3c348addaf9f3570ed5a9b1f4ab73c8084f0c14e31e23eae"
+  },
+  "transmitted_prns_at_signal_seconds": {
+    "ground": {
+      "0": [
+        1,
+        3,
+        4,
+        7,
+        8,
+        9,
+        16,
+        21,
+        22,
+        26,
+        27,
+        31,
+        32
+      ]
+    },
+    "orbit": {
+      "0": [
+        1,
+        3,
+        4,
+        8,
+        10,
+        16,
+        21,
+        22,
+        26,
+        27,
+        31,
+        32
+      ],
+      "81": [
+        1,
+        3,
+        4,
+        8,
+        10,
+        16,
+        21,
+        22,
+        27,
+        31,
+        32
+      ]
+    }
+  },
+  "observations": "Every run emitted all scheduled 5 Hz reports with zero gaps. All reported locked PRNs were transmitting at the time of the report. Each receiver has eight tracking slots. All runs with a fix emitted valid PVT on every subsequent report.",
+  "thresholds": "truth_streak_s is the first of five consecutive reports within 10 m and 0.2 m/s. Position and velocity percentiles use all valid reports, including startup.",
+  "runs": {
+    "baseline_static_reference": {
+      "recording": "ground65",
+      "work": "8",
+      "one_lock_s": 0.2,
+      "four_locks_s": 1.2,
+      "first_fix_s": 33.2,
+      "truth_streak_s": 33.6,
+      "valid_epochs": 160,
+      "p95_position_m": 1.005,
+      "p95_velocity_mps": 0.1671,
+      "locked_prns": [
+        1,
+        3,
+        4,
+        7,
+        8,
+        9,
+        16,
+        21
+      ],
+      "csv_sha256": "7430c04d6c81ae1006563efa3c07437573b755c82a62ff55965ddaae76bbe99a",
+      "status_epochs": 325,
+      "build": "baseline",
+      "first_ecef_m": [
+        6378136.393,
+        0.7,
+        -0.236
+      ]
+    },
+    "candidate_static_reference": {
+      "recording": "ground65",
+      "work": "8",
+      "one_lock_s": 0.2,
+      "four_locks_s": 0.4,
+      "first_fix_s": 33.2,
+      "truth_streak_s": 33.2,
+      "valid_epochs": 160,
+      "p95_position_m": 0.833,
+      "p95_velocity_mps": 0.1514,
+      "locked_prns": [
+        1,
+        3,
+        4,
+        7,
+        8,
+        9,
+        16,
+        21
+      ],
+      "csv_sha256": "70baabeb2c69168375f32052de14527c1d888895ec350bda4b6766a15bbab43f",
+      "status_epochs": 325,
+      "build": "ground",
+      "first_ecef_m": [
+        6378136.479,
+        0.558,
+        -0.329
+      ]
+    },
+    "baseline_orbit_reference": {
+      "recording": "orbit90",
+      "work": "8",
+      "one_lock_s": 0.2,
+      "four_locks_s": 1.2,
+      "first_fix_s": 33.2,
+      "truth_streak_s": 33.2,
+      "valid_epochs": 285,
+      "p95_position_m": 0.829,
+      "p95_velocity_mps": 0.1725,
+      "locked_prns": [
+        1,
+        3,
+        4,
+        8,
+        10,
+        16,
+        21,
+        22
+      ],
+      "csv_sha256": "213c97008fea2aa145ee0e02b03b219a251eb50f7194c0e529055528ae581979",
+      "status_epochs": 450,
+      "build": "baseline",
+      "first_ecef_m": [
+        5641388.123,
+        3658107.78,
+        1670948.367
+      ]
+    },
+    "candidate_orbit_reference": {
+      "recording": "orbit90",
+      "work": "8",
+      "one_lock_s": 0.2,
+      "four_locks_s": 1.2,
+      "first_fix_s": 33.2,
+      "truth_streak_s": 33.2,
+      "valid_epochs": 285,
+      "p95_position_m": 0.829,
+      "p95_velocity_mps": 0.1725,
+      "locked_prns": [
+        1,
+        3,
+        4,
+        8,
+        10,
+        16,
+        21,
+        22
+      ],
+      "csv_sha256": "213c97008fea2aa145ee0e02b03b219a251eb50f7194c0e529055528ae581979",
+      "status_epochs": 450,
+      "build": "wide",
+      "first_ecef_m": [
+        5641388.123,
+        3658107.78,
+        1670948.367
+      ]
+    },
+    "baseline_static_limited": {
+      "recording": "ground165",
+      "work": "1141/10628",
+      "one_lock_s": 10.8,
+      "four_locks_s": 74.4,
+      "first_fix_s": 99.2,
+      "truth_streak_s": 99.2,
+      "valid_epochs": 330,
+      "p95_position_m": 1.457,
+      "p95_velocity_mps": 0.2435,
+      "locked_prns": [
+        1,
+        3,
+        4,
+        7,
+        8,
+        9
+      ],
+      "csv_sha256": "9b48ef6e5ea347ecd790609966059d37c305491c4d8399bd894b3f3aed84a905",
+      "status_epochs": 825,
+      "build": "baseline",
+      "first_ecef_m": [
+        6378137.186,
+        1.262,
+        0.07
+      ]
+    },
+    "candidate_static_limited": {
+      "recording": "ground165",
+      "work": "1141/10628",
+      "one_lock_s": 2.4,
+      "four_locks_s": 15.0,
+      "first_fix_s": 39.2,
+      "truth_streak_s": 39.2,
+      "valid_epochs": 630,
+      "p95_position_m": 1.211,
+      "p95_velocity_mps": 0.1709,
+      "locked_prns": [
+        1,
+        3,
+        4,
+        7,
+        8,
+        9,
+        16,
+        21
+      ],
+      "csv_sha256": "f6598b12413b85995c7e7fef5ecfdcd059d7502ca76d7e4902edca55fe3364dc",
+      "status_epochs": 825,
+      "build": "ground",
+      "first_ecef_m": [
+        6378136.422,
+        -0.272,
+        0.177
+      ]
+    },
+    "baseline_orbit_limited": {
+      "recording": "orbit165",
+      "work": "1141/10628",
+      "one_lock_s": 10.8,
+      "four_locks_s": 106.2,
+      "first_fix_s": null,
+      "truth_streak_s": null,
+      "valid_epochs": 0,
+      "p95_position_m": null,
+      "p95_velocity_mps": null,
+      "locked_prns": [
+        1,
+        3,
+        4,
+        10
+      ],
+      "csv_sha256": "bab080866bed7621f8bccf6d21b9d5003caf8d195610eb5ea0ef007055bb6021",
+      "status_epochs": 825,
+      "build": "baseline"
+    },
+    "candidate_orbit_limited": {
+      "recording": "orbit165",
+      "work": "1141/10628",
+      "one_lock_s": 11.0,
+      "four_locks_s": 87.2,
+      "first_fix_s": 123.2,
+      "truth_streak_s": 124.6,
+      "valid_epochs": 210,
+      "p95_position_m": 1.588,
+      "p95_velocity_mps": 0.2551,
+      "locked_prns": [
+        1,
+        3,
+        4,
+        8,
+        10
+      ],
+      "csv_sha256": "a245befe666134f13c90fb10910aab84bb3685aadb9df874cbace4931f9f7a7e",
+      "status_epochs": 825,
+      "build": "wide",
+      "first_ecef_m": [
+        5550604.11,
+        3437479.373,
+        2318107.508
+      ]
+    },
+    "candidate_static_paced": {
+      "recording": "ground165",
+      "work": "1141/5706",
+      "one_lock_s": 1.2,
+      "four_locks_s": 7.8,
+      "first_fix_s": 39.2,
+      "truth_streak_s": 40.2,
+      "valid_epochs": 630,
+      "p95_position_m": 1.095,
+      "p95_velocity_mps": 0.1662,
+      "locked_prns": [
+        1,
+        3,
+        4,
+        7,
+        8,
+        9,
+        16,
+        21
+      ],
+      "csv_sha256": "1b8d5d7c4b5258dc1496faa8ecd1c2b7e06782ed4d763a499286dc92edf13fdf",
+      "status_epochs": 825,
+      "build": "ground",
+      "first_ecef_m": [
+        6378136.279,
+        0.022,
+        0.088
+      ]
+    },
+    "candidate_orbit_paced": {
+      "recording": "orbit165",
+      "work": "1141/5706",
+      "one_lock_s": 6.0,
+      "four_locks_s": 46.4,
+      "first_fix_s": 69.2,
+      "truth_streak_s": 74.0,
+      "valid_epochs": 480,
+      "p95_position_m": 1.88,
+      "p95_velocity_mps": 0.2338,
+      "locked_prns": [
+        1,
+        3,
+        4,
+        8,
+        10,
+        16,
+        21,
+        22
+      ],
+      "csv_sha256": "ec24fd75adad005831aefc44582c73c125a1f82af42fcb2f6fcc3fcf405cb3fe",
+      "status_epochs": 825,
+      "build": "wide",
+      "first_ecef_m": [
+        5611919.802,
+        3573845.224,
+        1932112.537
+      ]
+    }
+  },
+  "matched_ground_limited": {
+    "from_s": 99.2,
+    "to_s": 165.0,
+    "epochs": 330,
+    "baseline_m_mps_mean_pdop": [
+      1.457,
+      0.2435,
+      2.743
+    ],
+    "candidate_m_mps_mean_pdop": [
+      1.165,
+      0.1535,
+      1.961
+    ]
+  },
+  "lnav_phase_ground_limited": {
+    "cold_powerup_offsets_s": [
+      0,
+      7,
+      17,
+      29
+    ],
+    "baseline_elapsed_ttff_s": [
+      99.2,
+      110.2,
+      112.2,
+      100.2
+    ],
+    "candidate_elapsed_ttff_s": [
+      39.2,
+      50.2,
+      46.2,
+      40.2
+    ]
+  }
+}

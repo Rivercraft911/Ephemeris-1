@@ -2,10 +2,10 @@
 // Host-paced, cold EIQ replay. Core 0 validates USB frames while core 1
 // advances the receiver in recording time, with a fixed acquisition budget.
 #include "usb.hpp"
+#include "replay_crc.hpp"
 #include "receiver/app.hpp"
 #include "pico/multicore.h"
 #include "pico/stdlib.h"
-#include <array>
 #include <atomic>
 #include <cinttypes>
 #include <cstdio>
@@ -28,20 +28,6 @@ ephemeris::Receiver receiver;
 std::atomic<uint32_t> submitted{0}, completed{0};
 uint32_t reported = 0;
 
-constexpr std::array<uint32_t,256> crc_table() {
-    std::array<uint32_t,256> t{};
-    for (uint32_t i=0; i<256; ++i) {
-        uint32_t v=i;
-        for (unsigned b=0;b<8;++b) v=(v>>1)^((0u-(v&1u)) & 0xedb88320u);
-        t[i]=v;
-    }
-    return t;
-}
-constexpr auto table=crc_table();
-uint32_t update_crc(uint32_t v,const uint8_t* data,size_t size) {
-    for (size_t i=0;i<size;++i) v=(v>>8)^table[(v^data[i])&255];
-    return v;
-}
 uint64_t little(const uint8_t* p,unsigned size) {
     uint64_t value=0;
     for (unsigned i=0;i<size;++i) value|=uint64_t(p[i])<<(8*i);
@@ -147,7 +133,7 @@ void session(unsigned work) {
         auto& f=frames[issued%window];
         const auto bytes=count*sig::bytes_per_ms;
         if (bytes && !receive(f.iq,bytes)) {send("ERR short payload or timeout\n"); return;}
-        f.crc=~update_crc(update_crc(~uint32_t{},head,20),f.iq,bytes);
+        f.crc=~replay_crc::update(replay_crc::update(~uint32_t{},head,20),f.iq,bytes);
         if (f.crc!=little(head+20,4)) {send("ERR frame CRC\n"); return;}
         if (!count) {
             while (reported!=issued) {usb::poll(); if (!report_completed()) return;}

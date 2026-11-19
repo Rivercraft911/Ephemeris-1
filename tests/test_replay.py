@@ -56,25 +56,54 @@ class Replay(unittest.TestCase):
         )  # inverted Q sign
         self.assertFalse(inspect(waveform(1, [], seed=917))["passed"])
 
-    def test_unaided_acquisition(self):
+    def check_acquisition(self, ms, doppler):
         # The receiver gets no PRN, phase or Doppler input. Truth stays in Python.
         with tempfile.TemporaryDirectory() as d:
             path = Path(d) / "test.eiq"
             log = Path(d) / "channels.csv"
             with path.open("wb") as out:
                 write_capture(
-                    out, waveform(90, [(1, -18320.0, 77.125, 1.3, 55.0)], seed=4567)
+                    out, waveform(ms, [(1, doppler, 77.125, 1.3, 55.0)], seed=4567)
                 )
-            subprocess.run(
+            result = subprocess.run(
                 [REPLAY, str(path), "--work", "128", "--channels", str(log)],
                 check=True,
                 capture_output=True,
+                text=True,
             )
             with log.open() as f:
                 rows = list(csv.DictReader(f))
             locked = [r for r in rows if r["prn"] == "1" and r["locked"] == "1"]
             self.assertGreater(len(locked), 35)
-            self.assertLess(abs(float(locked[-1]["doppler_hz"]) + 18315), 175)
+            expected_doppler = doppler + 55 * ms / 1000
+            self.assertLess(abs(float(locked[-1]["doppler_hz"]) - expected_doppler), 175)
+            status = csv.DictReader(io.StringIO(result.stdout))
+            self.assertFalse(any(int(row["valid"]) for row in status))
+
+    def test_unaided_acquisition(self):
+        self.check_acquisition(90, -6320.0)
+
+    def test_full_doppler_coverage(self):
+        # The ground-first build scans the other PRNs before its full-band pass.
+        self.check_acquisition(500, -18320.0)
+
+    def test_fractional_search_budget(self):
+        block = (ROOT / "tests/fixtures/prn01.eiq").read_bytes()[HEADER.size :]
+
+        def replay(ms, rate):
+            stream = io.BytesIO()
+            write_capture(stream, block * ms)
+            return subprocess.run(
+                [REPLAY, "-", "--work", rate], input=stream.getvalue(), capture_output=True
+            )
+
+        # The first input is ready immediately. Credit permits one step every four epochs.
+        for ms, expect in ((3, 0), (4, 1), (7, 1), (8, 2)):
+            result = replay(ms, "1/4")
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn(f"search_steps={expect} ".encode(), result.stderr)
+        for bad in ("-1", "1/0", "1/2/3", "4097", "1.5"):
+            self.assertNotEqual(replay(1, bad).returncode, 0)
 
     def test_noise_only(self):
         with tempfile.TemporaryDirectory() as d:
@@ -92,6 +121,36 @@ class Replay(unittest.TestCase):
             self.assertEqual(rows[0]["valid"], "0")
             self.assertEqual(rows[0]["locked_mask"], "0")
             self.assertEqual(int(rows[0]["sample"]), 200 * SAMPLES_MS)
+
+    def test_strong_signal_cross_code_sidelobes(self):
+        # Repeated capture reproduces the on-chip blind-lock bench. Varying
+        # noise and a second, 18 dB weaker signal exercise the same issue with
+        # distinct input epochs. The receiver sees only packed four-bit I/Q.
+        strong = [(4, 0.0, 137.25, 1.0, 0.0)]
+        pair = [(4, -2350.0, 142.25, 1.0, 0.0), (7, 4900.0, 23.45, 0.125, 0.0)]
+        for name, signals, raw in (
+            ("repeated", strong, waveform(1, strong, noise=.05, alternate_bits=False) * 350),
+            ("near-far", pair, waveform(500, pair, noise=.38, seed=421)),
+        ):
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                record, log = Path(directory) / "input.eiq", Path(directory) / "channels.csv"
+                with record.open("wb") as stream:
+                    write_capture(stream, raw)
+                subprocess.run([REPLAY, str(record), "--work", "64", "--channels", str(log)],
+                               capture_output=True, check=True)
+                with log.open() as stream:
+                    locks = [r for r in csv.DictReader(stream) if r["locked"] == "1"]
+                self.assertEqual({int(r["prn"]) for r in locks}, {s[0] for s in signals})
+                for prn, fd, phase, _, _ in signals:
+                    matching = [r for r in locks if int(r["prn"]) == prn]
+                    self.assertGreaterEqual(len(matching), 20)
+                    row = matching[-1]
+                    # The reported code phase is the end of this millisecond.
+                    time_s = (int(row["sample"]) / SAMPLES_MS + 1) * .001
+                    expected = phase + fd * time_s / 1540
+                    phase_error = (float(row["code_phase_chips"]) - expected + 511.5) % 1023 - 511.5
+                    self.assertLess(abs(phase_error), .75)
+                    self.assertLess(abs(float(row["doppler_hz"]) - fd), 100)
 
 
 if __name__ == "__main__":

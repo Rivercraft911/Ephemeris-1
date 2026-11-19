@@ -1,5 +1,7 @@
 # Receiver measurements
 
+[Cold-search timing and accuracy](accuracy.md#time-from-cold-start) · [Independent ground and orbital replay](independent.md#cold-search-at-a-fixed-work-rate)
+
 [Lock times, bias experiments and accuracy at 5 Hz](accuracy.md) · [Outdoor ground fix](ground.md)
 
 ## Post-lock timing on the Pico Plus 2

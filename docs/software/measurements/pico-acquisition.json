@@ -1,0 +1,102 @@
+{
+  "hardware": "Pimoroni Pico Plus 2, RP2350B at 150 MHz, SRAM-only bench images. No RF front end.",
+  "full_band_prn1_s": {
+    "baseline": 10.628185,
+    "radix4": 6.616256,
+    "fused": 5.706271
+  },
+  "blind_search_method": "Strong repeated PRN 1 at zero Doppler; cold +/-70 kHz search over all code phases; internally clocked PIO and DMA. Requires 20 consecutive locked epochs. Trials isolate FFT changes and predate the stale-candidate refresh.",
+  "baseline_blind_source": "doppler-position.json",
+  "radix4_prn1": {
+    "prn": 1,
+    "lock_sample": 108290688,
+    "lock_us": 6616256,
+    "end_sample": 108601680,
+    "elapsed_us": 6635247,
+    "consecutive": 20,
+    "phase_chips": 137.2773,
+    "doppler_hz": -0.0,
+    "epochs": 6635,
+    "capture_gaps": 0,
+    "missed": 0,
+    "stalls": 0,
+    "clock_timeouts": 0,
+    "work_steps": 1141
+  },
+  "fused_prn1": {
+    "prn": 1,
+    "lock_sample": 93395808,
+    "lock_us": 5706271,
+    "end_sample": 93706800,
+    "elapsed_us": 5725262,
+    "consecutive": 20,
+    "phase_chips": 137.2755,
+    "doppler_hz": -0.0,
+    "epochs": 5725,
+    "capture_gaps": 0,
+    "missed": 0,
+    "stalls": 0,
+    "clock_timeouts": 0,
+    "work_steps": 1141,
+    "sram_uf2_sha256": "affd6e8b04ea50cbea99c0f1dafd545fda9efdcd799b3a4a96f2c83b2b8e2d34"
+  },
+  "baseline_host_paced_raw": {
+    "mode": "host-paced-cold-replay",
+    "first_sample": 0,
+    "sample_rate_hz": 16368000,
+    "capture_ms": 65000,
+    "processed_ms": 40004,
+    "frames": 10001,
+    "committed_raw_sha256": "aec4ed9f1458cc7469b710b4642ecfcb0484f27eaa79fc0ea072410d116b51cc",
+    "work_per_ms": 2,
+    "search_steps": 23932,
+    "tracking_us": 58751477,
+    "acquisition_us": 220817769,
+    "status_rows": 200,
+    "first_valid_ms": 39200,
+    "final_consecutive_valid": 5,
+    "elapsed_s": 619.0301484999945,
+    "recording_seconds_per_wall_second": 0.06462366994069006,
+    "raw_input_bytes_per_wall_second": 528880.1147946074,
+    "scheduled_status_hz_in_recording_time": 5,
+    "first_valid_host_offset_s": 608.0013656250085,
+    "last_valid_host_offset_s": 619.0181380420108,
+    "longest_valid_streak_reports": 5,
+    "longest_valid_streak_wall_s": 11.016772417002358,
+    "longest_valid_streak_wall_hz": 0.3630827477044672,
+    "fixture": "Static GPS-SDR-SIM, ECEF (6378137, 0, 0) m, stock clock, coarse tracking, 2 acquisition steps per ms of signal time",
+    "truth": {
+      "passed": true,
+      "status_epochs": 200,
+      "valid_epochs": 5,
+      "first_valid_s": 39.2,
+      "first_five_truth_checked_s": 39.2,
+      "availability_after_streak": 1.0,
+      "p95_position_m": 0.8166443919118471,
+      "p95_velocity_mps": 0.1232221651395938,
+      "max_time_error_s": 2.0489068219831097e-09,
+      "gaps": 0
+    },
+    "csv_sha256": "00fb70cd184e75a7b86fb5b04e509541411b8997aa31df5aad3b7ebf28518716",
+    "sram_uf2_sha256": "667bf8673ebb88c7942db520e6b1c70fe70fafa046874675f88e39f7c43fe366"
+  },
+  "clocked_compact": {
+    "method": "512 bytes per input millisecond, 2,046 half-chip I/Q sign pairs, CRC32, real device clock; loss of input terminates the trial.",
+    "ground_smoke": [
+      {
+        "input_s": 3,
+        "processed_ms": 2796,
+        "max_late_us": 1012,
+        "input_underruns": 1,
+        "usb_transfer_bytes": 64
+      },
+      {
+        "input_s": 15,
+        "processed_ms": 13362,
+        "max_late_us": 1191,
+        "input_underruns": 1,
+        "usb_transfer_bytes": 512
+      }
+    ]
+  }
+}

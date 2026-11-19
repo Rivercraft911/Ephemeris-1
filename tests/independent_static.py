@@ -10,15 +10,19 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 from iqio import RATE
+from campaign import Q
 
 
 def check(path, trajectory=None, seconds=65):
+    if seconds <= 0:
+        raise ValueError("recording duration must be positive")
     with path.open() as f:
         rows = list(csv.DictReader(f))
     t = np.array([int(r["sample"]) / RATE for r in rows])
-    count = seconds * 5
+    hz = Q["hz"]
+    count = seconds * hz
     if len(t) != count or not np.allclose(
-        t, (np.arange(count) + 1) / 5, rtol=0, atol=1e-8
+        t, (np.arange(count) + 1) / hz, rtol=0, atol=1e-8
     ):
         raise ValueError(
             f"expected all {count} status epochs from the {seconds}-second recording"
@@ -44,17 +48,19 @@ def check(path, trajectory=None, seconds=65):
         abs(float(r["tow_s"]) - 525609 - int(r["sample"]) / RATE) for r in fixes
     )
     accurate = np.zeros(len(t), bool)
-    accurate[flags == 1] = (dp <= 10) & (dv <= 0.2)
-    streak = next((i for i in range(len(t) - 4) if np.all(accurate[i : i + 5])), None)
+    accurate[flags == 1] = (dp <= Q["max_p95_position_m"]) & (dv <= Q["max_p95_velocity_mps"])
+    required = Q["valid_streak"]
+    streak = next((i for i in range(len(t) - required + 1) if np.all(accurate[i : i + required])), None)
     first = float(t[streak]) if streak is not None else None
     availability = float(np.mean(flags[streak:])) if streak is not None else 0
     p, v = float(np.percentile(dp, 95)), float(np.percentile(dv, 95))
     gaps = max(int(r["gaps"]) for r in rows)
     passed = bool(
         first is not None
-        and p <= 10
-        and v <= 0.2
-        and availability >= 0.99
+        and first <= Q["max_ttff_s"]
+        and p <= Q["max_p95_position_m"]
+        and v <= Q["max_p95_velocity_mps"]
+        and availability >= Q["min_availability"]
         and not gaps
         and time_error < 0.001
         and all(int(r["week_mod1024"]) == 142 for r in fixes)
@@ -76,6 +82,8 @@ def check(path, trajectory=None, seconds=65):
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("receiver_csv", type=Path)
-    result = check(p.parse_args().receiver_csv)
+    p.add_argument("--seconds", type=int, default=65, help="expected recording duration")
+    args = p.parse_args()
+    result = check(args.receiver_csv, seconds=args.seconds)
     print(json.dumps(result, indent=2))
     raise SystemExit(0 if result["passed"] else 1)

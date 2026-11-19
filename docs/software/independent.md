@@ -11,6 +11,34 @@ A separate GPS signal model generated two L1 C/A recordings. One runs 65 seconds
 
 Both builds emitted every 5 Hz status record, decoded the correct GPS week modulo 1024 and reported zero sample gaps. The orbital run uses 10 Hz simulator motion inputs and independently evaluates ECEF position and velocity at each reported sample time. [Static measurements and hashes](measurements/independent-static.json) · [Orbital measurements and hashes](measurements/independent-orbit.json)
 
+### Cold search at a fixed work rate
+
+A blind PRN 1 search on the Pico took 10.628 seconds for 1,141 work steps. The table gives the half-chip receiver the same average search budget on both 165-second recordings. Times are measured from sample zero to the first 5 Hz report showing each milestone. The ground build searches ±12 kHz first. The orbital build starts at ±70 kHz. Both refresh an old candidate on a new set of samples before confirming lock.
+
+| Recording and search | First lock | Four locks | First position | Position / velocity error, 95th percentile |
+| --- | ---: | ---: | ---: | ---: |
+| Ground, previous wide search | 10.8 s | 74.4 s | 99.2 s | 1.457 m / 0.244 m/s |
+| Ground, current ground search | 2.4 s | 15.0 s | 39.2 s | 1.211 m / 0.171 m/s |
+| 550 km, previous wide search | 10.8 s | 106.2 s | No fix in 165 s | — |
+| 550 km, current wide search | 11.0 s | 87.2 s | 123.2 s | 1.588 m / 0.255 m/s |
+
+Across four ground power-up offsets, first position took 39.2–50.2 seconds with the current build and 99.2–112.2 seconds with the previous build. In the orbital case, five consecutive truth-checked reports began at 124.6 seconds. That misses the 120-second target and the 0.2 m/s velocity target at this work rate. The 825 status epochs on each 165-second run had zero sample gaps. Every PRN reported locked was present in the generator's transmitted set at that epoch. [Results, input hashes and PRN allocations](measurements/cold-replay.json)
+
+The optimized wide sweep took 5.706271 seconds for the same 1,141 steps on the Pico. Applying `--work 1141/5706` to both native profiles gave a ground first lock at 1.2 seconds, four locks at 7.8 seconds and position at 39.2 seconds. The 550 km receiver reached those milestones at 6.0, 46.4 and 69.2 seconds. It returned 480 consecutive fixes at 5 Hz, with 95th-percentile errors of 1.880 m and 0.234 m/s. Ground timing uses the measured wide-search average as an estimate for the narrow pass. [Paced replay results](measurements/cold-replay.json)
+
+### Five-report velocity fit
+
+`-DEPHEMERIS_VELOCITY_FIT=ON` fits a line through five successive ECEF Doppler velocities and evaluates it at the current epoch. At 5 Hz the window spans 0.8 seconds. Its endpoint weights, oldest first, are `[-1, 0, 1, 2, 3] / 5`. They sum to one and their weighted time offsets sum to zero, so constant acceleration introduces zero lag. Constant jerk contributes a velocity error of −0.04 s² times the jerk. A sharp maneuver can therefore produce a transient overshoot. The first four reports after startup, an invalid solution or a sampling break carry single-epoch velocity. The position smoother consumes the raw Doppler velocity before this optional fit.
+
+| 165-second recording | First position | Position error p95 | Single-epoch velocity error p95 | Fitted velocity error p95 |
+| --- | ---: | ---: | ---: | ---: |
+| Static ground | 39.2 s | 1.095 m | 0.166 m/s | 0.141 m/s |
+| 550 km | 69.2 s | 1.880 m | 0.234 m/s | 0.145 m/s |
+| 400 km, held out | 99.2 s | 9.955 m | 1.584 m/s | 0.895 m/s |
+| 800 km, held out | 69.2 s | 2.121 m | 0.294 m/s | 0.168 m/s |
+
+Both builds used `--work 1141/5706` on the same I/Q for each pair. The 400 km run missed the 0.2 m/s velocity threshold. Its first 90 fixes used four satellites with mean PDOP 24.63. Its final 180 fixes used eight satellites with mean PDOP 2.58 and fitted velocity error of 0.153 m/s at the 95th percentile. To regenerate the held-out arcs, pass `--altitude-km 400 --phase-deg 103` or `--altitude-km 800 --phase-deg 211` to the motion exporter and scorer. Use import seeds 7411 and 9203, respectively. [Paired hashes, geometry and numerical checks](measurements/velocity-fit.json)
+
 ### Replay the recording
 
 The adapter accepts interleaved signed 8-bit I followed by Q, sampled at 16.368 MHz in complex baseband. Input length must be an integral number of milliseconds. Amplitude is expressed in ADC threshold units per input count. The published run used gain 0.012 and Gaussian noise with standard deviation 0.8 on each axis.
@@ -22,6 +50,8 @@ python3 tests/independent_static.py receiver.csv
 ```
 
 The last command scores this specific known position and recording epoch. To select the half-chip implementation, configure a separate release build with `-DEPHEMERIS_COARSE_TRACKING=ON` and replay the same EIQ file.
+
+`--work N/D` permits N acquisition steps per D milliseconds of input. The worker spends each whole step when it becomes available. Unused whole steps expire if it is waiting for the next sample block. For example, `--work 1141/10628` models the average rate of a measured blind PRN sweep on the Pico. A fixed rate approximates search throughput. DMA interrupts, tracker load and differences between search steps affect the actual board timing.
 
 ### Recreate the reference input
 
@@ -40,3 +70,5 @@ build/current/gps-sdr-sim -e "$SIM/brdc0010.22n" -u orbit.csv -t 2022/01/01,02:0
 python3 tools/import_baseband.py orbit.iq8 - --gain .012 --noise-sigma .8 --seed 10209 | build/current/native/eph-replay - --work 8 > orbit-receiver.csv
 python3 tests/independent_orbit.py --score orbit-receiver.csv
 ```
+
+For the 165-second cold-start trials, set the generator duration to `-d 165.1`. For the orbital case, first export the longer trajectory using `python3 tests/independent_orbit.py --motion orbit-165.csv --seconds 165`. Import with the same noise seed and pass `--seconds 165` to the appropriate scorer. Adding `-v` to the generator records its transmitted PRNs at startup and at each subsequent allocation. The first 65 seconds of static samples and 90 seconds of orbital samples match the original recordings byte for byte.

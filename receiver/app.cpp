@@ -85,6 +85,9 @@ void Receiver::clear_channels() {
 #ifdef EPHEMERIS_DOPPLER_POSITION
     position_smoother_ = {};
 #endif
+#ifdef EPHEMERIS_VELOCITY_FIT
+    velocity_fit_ = {};
+#endif
     status_.active_mask = status_.locked_mask = status_.valid_nav_mask = 0;
     have_clock_ = false;
     generation_.fetch_add(1, std::memory_order_release);
@@ -139,6 +142,23 @@ bool Receiver::work_acquisition() {
         return true;
     }
     if (stage_ == Search::confirm) {
+        if (may_refresh_) {
+            may_refresh_ = false;
+            if (snapshot_.first_sample >= candidate_.first_sample &&
+                snapshot_.first_sample - candidate_.first_sample >= uint64_t(sig::raw_hz)) {
+                // A coarse frequency bin can be 250 Hz off at the first dwell.
+                // Allow either sign of Doppler slew (150 Hz/s design envelope)
+                // and search every code phase again on four current epochs.
+                const double age_s = double(snapshot_.first_sample - candidate_.first_sample) / sig::raw_hz;
+                const float radius = float(std::min(5000., 250. + 150.*age_s));
+                const float center = candidate_.doppler_hz;
+                const bool started = acquisition_.start(snapshot_, candidate_.prn,
+                    std::max(-100000.f, center-radius), std::min(100000.f, center+radius));
+                stage_ = started ? Search::collect : Search::select;
+                slot_.store(Slot::need_epoch, std::memory_order_release);
+                return true;
+            }
+        }
         if (!confirmation_.add(snapshot_)) {
             slot_.store(Slot::need_epoch, std::memory_order_release);
             return true;
@@ -160,24 +180,32 @@ bool Receiver::work_acquisition() {
         slot_.store(Slot::need_epoch, std::memory_order_release);
         return false;
     }
-    unsigned prn = next_prn_;
+    unsigned prn;
+    float span = 70000;
     if (const auto preferred = priority_mask_ & ~used) {
         prn = 1u + static_cast<unsigned>(__builtin_ctz(preferred));
         priority_mask_ &= ~mask(prn);
     } else {
-        while (used & mask(prn)) prn = prn % 32 + 1;
+        do {
+#ifdef EPHEMERIS_GROUND_SEARCH
+            // Try all unoccupied codes near L1 first. A complete wide pass
+            // follows even if the receiver oscillator is outside this window.
+            span = (search_index_ & 32u) ? 70000.f : 12000.f;
+#endif
+            prn = 1u + (search_index_++ & 31u);
+        } while (used & mask(prn));
     }
-    next_prn_ = prn % 32 + 1;
-    float low = -70000, high = 70000;
+    float low = -span, high = span;
     if (warm_mask_ & mask(prn)) {
         low = last_carrier_[prn - 1] - 2500;
         high = last_carrier_[prn - 1] + 2500;
-        warm_mask_ &= ~mask(prn); // Fall back to full search if this narrow attempt misses.
+        warm_mask_ &= ~mask(prn); // Rejoin normal cold search after one cached attempt.
     }
     if (!acquisition_.start(snapshot_, prn, low, high)) {
         slot_.store(Slot::need_epoch, std::memory_order_release);
         return false;
     }
+    may_refresh_ = true;
     stage_ = Search::collect;
     slot_.store(Slot::need_epoch, std::memory_order_release);
     return true;
@@ -209,6 +237,9 @@ void Receiver::navigate(uint64_t sample) {
     nav::solve_fix(obs.data(), n, status_.fix, receiver_tow);
 #ifdef EPHEMERIS_DOPPLER_POSITION
     position_smoother_.update(status_.fix, sample);
+#endif
+#ifdef EPHEMERIS_VELOCITY_FIT
+    velocity_fit_.update(status_.fix, sample);
 #endif
     status_.sample = sample;
     ++status_.sequence;
