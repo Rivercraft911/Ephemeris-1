@@ -1,0 +1,266 @@
+{
+  "recording": {
+    "source": "https://gnss-sdr.org/my-first-fix/",
+    "place": "CTTC rooftop, Castelldefels, Spain",
+    "date": "2013-04-04",
+    "gps_week": 1734,
+    "front_end": "NovAtel GPS-600 antenna, USRP1 with DBSRX v2",
+    "sample_rate_hz": 4000000,
+    "sample_count": 400000000,
+    "format": "little-endian signed 16-bit interleaved I and Q, complex baseband",
+    "archive_sha256": "d5b926aefe7462ca4211bcae2129591a810fa4960a214f35d056a883aa2af3ff",
+    "unpacked_sha256": "6489a6630784478f144f20bf872848410dee3b54a20fd8d1bdd9258afccf2976"
+  },
+  "conversion": {
+    "tool": "tools/import_cttc.py",
+    "ratio": [
+      1023,
+      250
+    ],
+    "fixed_magnitude_threshold_input_counts": 122.590593,
+    "if_hz": 4092000,
+    "eiq_sha256": "3990d6273ef66e586d35c7313d3bcd6a86aa02ad62d575c45b9e26f5043f5320",
+    "numpy": "2.2.5",
+    "scipy": "1.17.1"
+  },
+  "reference": {
+    "name": "GNSS-SDR 0.0.19, RTKLIB single-point solution on the original 4 MS/s samples",
+    "config": "reference.conf",
+    "raw_time_scale": "Receive TOW minus fitted receiver clock offset in seconds. GNSS-SDR reports GPS week 1734 using the recording era. The Pico reports broadcast week 710 modulo 1024.",
+    "selection": "Regular 10 Hz published GPX epochs joined to the unrounded RTKLIB binary PVT records by time and all three coordinates.",
+    "reference_is_surveyed": false,
+    "status_file": "gnss-sdr.csv.gz",
+    "uncompressed_sha256": "338fa4d61a601841b104df5adb221feefbdbec7d6313b3a99610b87b167c4621"
+  },
+  "receiver": {
+    "source_revision": "cab65fd50e13f71e77d45242c8b173c87e286611",
+    "profile": "Terrestrial cold search, half-chip tracking, ground troposphere, Doppler position smoothing and five-report velocity fit. No aiding.",
+    "pico": "Pimoroni Pico Plus 2, RP2350B at 150 MHz, dual tracking, SRAM, Pico SDK 2.2.0, Arm GCC 14.2",
+    "clocked_uf2_sha256": "1f66fe321af694d909f4515c717d2fd4e4b707526a7b646bdb0a92a8c85b637f",
+    "native_executable_sha256": "d9dd856fb1d6095791366ec7f4dae5d2c7063a6ef4e4b5ab73c5b13e6e26bdf2"
+  },
+  "runs": {
+    "pico": {
+      "mode": "1 kHz device clock, half-chip sign input over USB",
+      "status_file": "pico.csv.gz",
+      "uncompressed_sha256": "e683c05cd9e3714395ec9b6eb70bb6ef5c28fa1c6b7312f015bdea27f894b70a",
+      "first_fix_sv_count": 5,
+      "fix_sv_count_range": [
+        5,
+        6
+      ],
+      "locked_prns": [
+        1,
+        11,
+        17,
+        20,
+        23,
+        32
+      ],
+      "decoded_prns": [
+        1,
+        11,
+        17,
+        20,
+        23,
+        32
+      ],
+      "static_apparent_speed_p95_mps": 1.5256939693527134,
+      "comparison": {
+        "receiver_rows": 500,
+        "valid_fixes": 225,
+        "first_fix": {
+          "elapsed_s": 55.2,
+          "week_mod1024": 710,
+          "tow_s": 368658.231221993,
+          "lat_deg": 41.27484575900575,
+          "lon_deg": 1.9876840236243667,
+          "ellipsoid_height_m": 81.69353651162237
+        },
+        "llh_of_componentwise_median_ecef": {
+          "lat_deg": 41.27482482133166,
+          "lon_deg": 1.9876875486875485,
+          "ellipsoid_height_m": 78.57172094285488
+        },
+        "reference_rows": 566,
+        "reference_max_interpolation_interval_s": 0.15,
+        "matched_fixes": 223,
+        "separation": {
+          "horizontal_m": {
+            "median": 2.5615369165602635,
+            "p95": 5.798100228006424
+          },
+          "abs_vertical_m": {
+            "median": 5.3539182691859875,
+            "p95": 13.751123451894774
+          },
+          "distance_3d_m": {
+            "median": 6.114695477161946,
+            "p95": 13.941841711107696
+          }
+        }
+      },
+      "transport": {
+        "mode": "clocked half-chip USB replay",
+        "epochs": 100000,
+        "compact_sha256": "fe3bca4ae5834a7168424f232f9ff7220ef7800d72ac9de62ed0aab8e9d27569",
+        "compact_crc32": "b9f8ec56",
+        "origin": "device elapsed starts after prefill; host elapsed starts at READY",
+        "events": {
+          "first_lock": {
+            "sample_s": 1.4,
+            "device_s": 1.400411,
+            "host_s": 1.4371634580311365
+          },
+          "four_locks": {
+            "sample_s": 26.6,
+            "device_s": 26.600636,
+            "host_s": 26.637240042036865
+          },
+          "first_valid": {
+            "sample_s": 55.2,
+            "device_s": 55.202789,
+            "host_s": 55.240114582993556
+          }
+        },
+        "status_rows": 500,
+        "valid_rows": 225,
+        "gaps": 0,
+        "device_elapsed_s": 100.003123,
+        "host_elapsed_s": 100.04344245803077,
+        "min_device_status_interval_us": 199929,
+        "max_device_status_interval_us": 201963,
+        "late_us": 3086,
+        "starved": 0,
+        "peak_backlog": 3,
+        "first_valid_host_offset_s": 55.240114582993556,
+        "last_valid_host_offset_s": 100.0392975420109,
+        "longest_valid_streak_reports": 225,
+        "longest_valid_streak_wall_s": 44.799182959017344,
+        "longest_valid_streak_wall_hz": 5.000091189272738
+      }
+    },
+    "native": {
+      "mode": "full four-bit EIQ, 8 acquisition steps per ms",
+      "status_file": "native.csv.gz",
+      "uncompressed_sha256": "ed01ee68b4c99eda4a0f3fa147a59d738e2d0ed83331bb83b3ad99d57dce412c",
+      "first_fix_sv_count": 6,
+      "fix_sv_count_range": [
+        6,
+        6
+      ],
+      "locked_prns": [
+        1,
+        11,
+        17,
+        20,
+        23,
+        32
+      ],
+      "decoded_prns": [
+        1,
+        11,
+        17,
+        20,
+        23,
+        32
+      ],
+      "static_apparent_speed_p95_mps": 1.460586976199261,
+      "comparison": {
+        "receiver_rows": 500,
+        "valid_fixes": 375,
+        "first_fix": {
+          "elapsed_s": 25.2,
+          "week_mod1024": 710,
+          "tow_s": 368628.231065646,
+          "lat_deg": 41.27483260591035,
+          "lon_deg": 1.9876962705172696,
+          "ellipsoid_height_m": 78.55085678119212
+        },
+        "llh_of_componentwise_median_ecef": {
+          "lat_deg": 41.274840620215805,
+          "lon_deg": 1.9876949855434791,
+          "ellipsoid_height_m": 76.66971161589026
+        },
+        "reference_rows": 566,
+        "reference_max_interpolation_interval_s": 0.15,
+        "matched_fixes": 283,
+        "separation": {
+          "horizontal_m": {
+            "median": 2.8275205664545298,
+            "p95": 9.435112585621775
+          },
+          "abs_vertical_m": {
+            "median": 5.6227720148901685,
+            "p95": 24.367751471933076
+          },
+          "distance_3d_m": {
+            "median": 6.377580441616678,
+            "p95": 25.586738052343833
+          }
+        }
+      }
+    },
+    "paced_native": {
+      "mode": "expanded half-chip sign input, 1141 acquisition steps per 5706 ms",
+      "status_file": "paced_native.csv.gz",
+      "uncompressed_sha256": "2677cd917ce48171bd0727cfc87c3e6863e5bad70707d48b2e557f249f3799ed",
+      "first_fix_sv_count": 6,
+      "fix_sv_count_range": [
+        6,
+        6
+      ],
+      "locked_prns": [
+        1,
+        11,
+        17,
+        20,
+        23,
+        32
+      ],
+      "decoded_prns": [
+        1,
+        11,
+        17,
+        20,
+        23,
+        32
+      ],
+      "static_apparent_speed_p95_mps": 1.6493984286787042,
+      "comparison": {
+        "receiver_rows": 500,
+        "valid_fixes": 225,
+        "first_fix": {
+          "elapsed_s": 55.2,
+          "week_mod1024": 710,
+          "tow_s": 368658.231221991,
+          "lat_deg": 41.274841530721176,
+          "lon_deg": 1.9876781634633771,
+          "ellipsoid_height_m": 82.19064240623266
+        },
+        "llh_of_componentwise_median_ecef": {
+          "lat_deg": 41.274826331980954,
+          "lon_deg": 1.9876921255727729,
+          "ellipsoid_height_m": 78.21079747285694
+        },
+        "reference_rows": 566,
+        "reference_max_interpolation_interval_s": 0.15,
+        "matched_fixes": 223,
+        "separation": {
+          "horizontal_m": {
+            "median": 2.515959264779502,
+            "p95": 5.851807503855704
+          },
+          "abs_vertical_m": {
+            "median": 5.357082903632018,
+            "p95": 13.338249835741097
+          },
+          "distance_3d_m": {
+            "median": 6.115994157900622,
+            "p95": 13.879484821349793
+          }
+        }
+      }
+    }
+  }
+}

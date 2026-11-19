@@ -134,7 +134,7 @@ def plot(points, path):
                                      (2, "Absolute vertical", "#ff8c3a")):
             ax.scatter(values[:, 0], values[:, column], s=7, linewidths=0, color=color, label=label)
         ax.set(xlabel="Seconds from capture start", ylabel="Position separation (m)",
-               title="Ephemeris 1 and GNSS-SDR on recorded ground I/Q", xlim=(0, None), ylim=(0, None))
+               title="Ephemeris 1 and GNSS-SDR on recorded ground I/Q", ylim=(0, None))
         ax.legend(frameon=False, ncol=3)
         ax.grid(axis="y", alpha=0.25)
         fig.savefig(path, dpi=180)
