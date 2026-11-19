@@ -29,7 +29,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install 'numpy>=1.26,<3' 'scipy>=1.11,<2'
-      - run: cmake -S . -B build/native -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DEPHEMERIS_SANITIZE=${{ matrix.sanitize }} -DEPHEMERIS_BITPLANE_TRACKING=${{ matrix.bitplane }} -DEPHEMERIS_PREFIX_SUMS=${{ matrix.prefix }} -DEPHEMERIS_COARSE_TRACKING=${{ matrix.coarse }} -DEPHEMERIS_GROUND_SEARCH=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_GROUND_TROPOSPHERE=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_DOPPLER_POSITION=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_FLIGHT_SURVEY=${{ matrix.survey || 'OFF' }} -DEPHEMERIS_VELOCITY_FIT=${{ matrix.ground || matrix.survey || 'OFF' }}
+      - run: cmake -S . -B build/native -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DEPHEMERIS_SANITIZE=${{ matrix.sanitize }} -DEPHEMERIS_BITPLANE_TRACKING=${{ matrix.bitplane }} -DEPHEMERIS_PREFIX_SUMS=${{ matrix.prefix }} -DEPHEMERIS_COARSE_TRACKING=${{ matrix.coarse }} -DEPHEMERIS_GROUND_SEARCH=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_GROUND_TROPOSPHERE=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_GROUND_IONOSPHERE=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_LONG_CODE_SMOOTHING=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_DOPPLER_POSITION=${{ matrix.ground || 'OFF' }} -DEPHEMERIS_FLIGHT_SURVEY=${{ matrix.survey || 'OFF' }} -DEPHEMERIS_VELOCITY_FIT=${{ matrix.ground || matrix.survey || 'OFF' }}
       - run: cmake --build build/native --parallel 2
       - run: ctest --test-dir build/native --output-on-failure -j 2
       - if: github.event_name == 'schedule' && matrix.backend == 'scalar' && matrix.sanitize == 'OFF'

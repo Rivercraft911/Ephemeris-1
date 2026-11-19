@@ -25,6 +25,12 @@ constexpr double turns32 = 4294967296.0;
 constexpr unsigned phase_window_ms = 200;
 constexpr unsigned phase_window_samples = phase_window_ms * raw_per_ms;
 constexpr unsigned phase_lead_samples = 20 * raw_per_ms;
+// Each complete C/A period supplies one code timing measurement per millisecond.
+#ifdef EPHEMERIS_LONG_CODE_SMOOTHING
+constexpr unsigned code_smoothing_periods = 15000;
+#else
+constexpr unsigned code_smoothing_periods = 4000;
+#endif
 // Equalized noncoherent means for 1..4 dwells. Each threshold is for a
 // whole PRN search; acceptance also needs independent fresh code/carrier tests.
 constexpr float acq_threshold[] = {0,13.0f,8.8f,6.9f,5.8f};
@@ -593,7 +599,7 @@ void Tracker::finish_period(double boundary, TrackingResult& result) {
         observe_phase(center_sample,midpoint_turns+residual_turns,snr_metric>=4.0f);
         // A short carrier-smoothed code interval reduces DLL jitter for
         // pseudoranges. The DLL still controls the code actually correlated.
-        smooth_count_ = std::min(smooth_count_+1, 4000u);
+        smooth_count_ = std::min(smooth_count_+1, code_smoothing_periods);
         const double predicted = smooth_boundary_ + raw_hz*code_length/
                                  (chip_hz+measured_doppler(center_sample)/1540.);
         const double alpha = 1.0/smooth_count_;

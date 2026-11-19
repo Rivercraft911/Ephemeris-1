@@ -43,4 +43,46 @@ double GroundAtmosphere::slant_m(const Vec3& line) const {
     const double sec_z = 1.0 / std::clamp(sin_el, sin_five_deg, 1.0);
     return (zenith_m - .002277*(sec_z*sec_z-1.0)) * sec_z;
 }
+
+#ifdef EPHEMERIS_GROUND_IONOSPHERE
+double GroundAtmosphere::ionosphere_slant_m(const Vec3& line, double tow_s,
+                                           const Ionosphere& model) const {
+    // IS-GPS-200N 20.3.3.5.2.5 and Table 20-X. Angles in the model are
+    // semicircles. The cold model uses only the 5 ns vertical baseline.
+    constexpr double pi = 3.14159265358979323846;
+    const double sin_el = -(line[0]*up[0] + line[1]*up[1] + line[2]*up[2]);
+    if (!(sin_el > 0)) return 0;
+    const double elevation = std::asin(std::min(1., sin_el))/pi;
+    const double q = .53 - elevation;
+    const double slant = 1 + 16*q*q*q;
+    constexpr double baseline_s = 5e-9;
+    if (model.received_sample < 0) return speed_of_light*slant*baseline_s;
+
+    const double longitude = std::atan2(up[1], up[0]);
+    const double cos_latitude = std::hypot(up[0], up[1]);
+    const double latitude = std::atan2(up[2], cos_latitude);
+    const double cos_lon = std::cos(longitude), sin_lon = std::sin(longitude);
+    const double east = line[0]*sin_lon - line[1]*cos_lon;
+    const double north = (line[0]*cos_lon + line[1]*sin_lon)*up[2] - line[2]*cos_latitude;
+    const double azimuth = std::atan2(east, north);
+    const double psi = .0137/(elevation + .11) - .022;
+    const double phi = std::clamp(latitude/pi + psi*std::cos(azimuth), -.416, .416);
+    const double lambda = longitude/pi + psi*std::sin(azimuth)/std::cos(pi*phi);
+    const double magnetic_latitude = phi + .064*std::cos(pi*(lambda - 1.617));
+    double local_s = tow_s + 43200*lambda;
+    local_s -= 86400*std::floor(local_s/86400);
+
+    const auto& c = model.coefficients;
+    const double m = magnetic_latitude;
+    const double amplitude = c[0]*0x1p-30 + m*(c[1]*0x1p-27 + m*(c[2]*0x1p-24 + m*c[3]*0x1p-24));
+    const double period = c[4]*0x1p11 + m*(c[5]*0x1p14 + m*(c[6]*0x1p16 + m*c[7]*0x1p16));
+    const double phase = 2*pi*(local_s - 50400)/std::max(72000., period);
+    double vertical_s = baseline_s;
+    if (std::abs(phase) < 1.57) {
+        const double phase_sq = phase*phase;
+        vertical_s += std::max(0., amplitude)*(1 + phase_sq*(-.5 + phase_sq/24));
+    }
+    return speed_of_light*slant*vertical_s;
+}
+#endif
 } // namespace eph::nav

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 #include "navigation.hpp"
-#ifdef EPHEMERIS_GROUND_TROPOSPHERE
+#if defined(EPHEMERIS_GROUND_TROPOSPHERE) || defined(EPHEMERIS_GROUND_IONOSPHERE)
 #include "troposphere.hpp"
 #endif
 
@@ -185,17 +185,34 @@ void LnavDecoder::accept(const std::array<uint32_t,10>& w, double start) {
     if (field(w[1], 18, 1)) {
         timed_ = ready_ = false;
         pending_ = {}; issue2_ = issue3_ = -1; received_.fill(-1);
+#ifdef EPHEMERIS_GROUND_IONOSPHERE
+        ionosphere_ = {};
+#endif
         return;
     }
     const int current = (int(z)*6000 + 604800000 - 20) % 604800000;
     if (timed_ && bit_tow_ms_ != current) {
         pending_ = {}; issue2_ = issue3_ = -1; received_.fill(-1);
         ready_ = false;
+#ifdef EPHEMERIS_GROUND_IONOSPHERE
+        ionosphere_ = {};
+#endif
     }
     bit_tow_ms_ = current;
     verified_sample_ = start;
     timed_ = true;
     ++good_;
+#ifdef EPHEMERIS_GROUND_IONOSPHERE
+    if (sf == 4 && field(w[2],1,2) == 1 && field(w[2],3,6) == 56) {
+        // Page 18, IS-GPS-200N Table 20-X. All ten words passed parity.
+        for (unsigned i = 0; i < 8; ++i) {
+            const unsigned byte = i + 1;
+            const int raw = int(field(w[2 + byte/3], 1 + 8*(byte%3), 8));
+            ionosphere_.coefficients[i] = int8_t(raw < 128 ? raw : raw-256);
+        }
+        ionosphere_.received_sample = start;
+    }
+#endif
     if (sf > 3) return;
     auto& e = pending_;
     if (sf == 1) {
@@ -347,7 +364,8 @@ void VelocityFit::update(Fix& fix, uint64_t sample) {
     history_.back() = raw;
 }
 
-bool solve_fix(const Observation* obs, std::size_t n, Fix& fix, double receiver_tow_s) {
+bool solve_fix(const Observation* obs, std::size_t n, Fix& fix, double receiver_tow_s,
+               [[maybe_unused]] const Ionosphere* ionosphere) {
     fix = {};
     if (!obs || n < 4 || n > 32) return false;
     const double rx = std::isnan(receiver_tow_s) ? week_time(obs[0].sv_tow_s + .075) : receiver_tow_s;
@@ -385,7 +403,11 @@ bool solve_fix(const Observation* obs, std::size_t n, Fix& fix, double receiver_
     }
     Fix trial{};
     bool converged = false;
-#ifdef EPHEMERIS_GROUND_TROPOSPHERE
+#ifdef EPHEMERIS_GROUND_IONOSPHERE
+    std::array<float,32> iono_m{};
+    bool calculate_iono = false;
+#endif
+#if defined(EPHEMERIS_GROUND_TROPOSPHERE) || defined(EPHEMERIS_GROUND_IONOSPHERE)
     GroundAtmosphere atmosphere;
     bool checked_height = false;
 #endif
@@ -403,6 +425,11 @@ bool solve_fix(const Observation* obs, std::size_t n, Fix& fix, double receiver_
 #ifdef EPHEMERIS_GROUND_TROPOSPHERE
             if (atmosphere.zenith_m > 0) model += atmosphere.slant_m(line);
 #endif
+#ifdef EPHEMERIS_GROUND_IONOSPHERE
+            if (calculate_iono)
+                iono_m[i] = static_cast<float>(atmosphere.ionosphere_slant_m(line, week_time(rx - trial.clock_bias_m/speed_of_light), *ionosphere));
+            model += iono_m[i];
+#endif
             ls.add(line, m.range - model);
         }
         std::array<double,4> d{};
@@ -410,10 +437,18 @@ bool solve_fix(const Observation* obs, std::size_t n, Fix& fix, double receiver_
         for (int j = 0; j < 3; ++j) trial.position_m[j] += d[j];
         trial.clock_bias_m += d[3];
         const double step = std::max({std::abs(d[0]),std::abs(d[1]),std::abs(d[2]),std::abs(d[3])});
-#ifdef EPHEMERIS_GROUND_TROPOSPHERE
+#ifdef EPHEMERIS_GROUND_IONOSPHERE
+        calculate_iono = false;
+#endif
+#if defined(EPHEMERIS_GROUND_TROPOSPHERE) || defined(EPHEMERIS_GROUND_IONOSPHERE)
         if (!checked_height && step < 100) {
             checked_height = true;
-            if (atmosphere.set_from_ecef(trial.position_m)) continue;
+            if (atmosphere.set_from_ecef(trial.position_m)) {
+#ifdef EPHEMERIS_GROUND_IONOSPHERE
+                calculate_iono = ionosphere != nullptr;
+#endif
+                continue;
+            }
         }
 #endif
         if (step < .001) {

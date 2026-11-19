@@ -37,6 +37,16 @@ struct Satellite {
 bool usable_at(const Ephemeris& ephemeris, double t);
 bool propagate(const Ephemeris& ephemeris, double t, Satellite& sat);
 
+struct Ionosphere {
+    // Signed LNAV alpha0..3 and beta0..3 in their transmitted scale.
+    std::array<int8_t, 8> coefficients{};
+    double received_sample = -1;
+    bool fresh(double sample) const {
+        return received_sample >= 0 && sample >= received_sample &&
+               sample - received_sample < 86400 * sample_rate;
+    }
+};
+
 class LnavDecoder {
 public:
     // Feed contiguous prompt integrations, each aligned to one full C/A code
@@ -53,6 +63,9 @@ public:
     // The default health field is 63 until the first parity-checked SF1 arrives.
     bool broadcast_unhealthy() const { return received_[0] >= 0 && pending_.health != 0; }
     unsigned good_subframes() const { return good_; }
+#ifdef EPHEMERIS_GROUND_IONOSPHERE
+    const Ionosphere& ionosphere() const { return ionosphere_; }
+#endif
 
 private:
     void accept(const std::array<uint32_t, 10>& data, double bit_start);
@@ -70,6 +83,9 @@ private:
     Ephemeris pending_{}, active_{};
     int issue2_ = -1, issue3_ = -1;
     std::array<double, 3> received_{{-1, -1, -1}};
+#ifdef EPHEMERIS_GROUND_IONOSPHERE
+    Ionosphere ionosphere_{};
+#endif
 };
 
 struct Observation {
@@ -115,6 +131,7 @@ private:
 // receiver epoch is assigned 75 ms after the first transmitter's timestamp.
 // Failure clears the output, including its validity flag.
 bool solve_fix(const Observation* obs, std::size_t n, Fix& fix,
-               double receiver_tow_s = std::numeric_limits<double>::quiet_NaN());
+               double receiver_tow_s = std::numeric_limits<double>::quiet_NaN(),
+               const Ionosphere* ionosphere = nullptr);
 
 } // namespace eph::nav
