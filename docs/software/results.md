@@ -1,5 +1,7 @@
 # Receiver measurements
 
+[Lock times, bias experiments and accuracy at 5 Hz](accuracy.md) · [Outdoor ground fix](ground.md)
+
 ## Post-lock timing on the Pico Plus 2
 
 The 150 MHz RP2350B has 1,000 µs before the next millisecond of I/Q arrives. At eight locked channels the two-core half-chip tracker averaged **825 µs** and peaked at **872 µs**. An on-chip sample clock drove real PIO and DMA traffic. The receiver processed a repeating synthetic GPS epoch with seeded code phases. Each channel count retained every requested lock for 990 scored epochs and dropped zero input blocks.
@@ -31,7 +33,7 @@ All 12 scalar starts passed. The first of five consecutive truth-checked fixes a
 
 ### Complete orbits from raw I/Q
 
-The native scalar reference processed 4 h 49 min of synthetic GPS I/Q across three cold starts. Each replay covered one full receiver orbit from the first start phase. All 82,768 eligible epochs after first fix returned valid solutions at the scheduled 5 Hz signal-time cadence. An eligible epoch had at least six healthy signals at or above 40 dB-Hz and a truth PDOP of 3 or better.
+The native scalar reference processed 4 h 49 min of synthetic GPS I/Q across three cold starts. Inertial speeds were 7.669, 7.585 and 7.452 km/s at 400, 550 and 800 km respectively. Each replay covered one full receiver orbit from the first start phase. All 82,768 eligible epochs after first fix returned valid solutions at the scheduled 5 Hz signal-time cadence. An eligible epoch had at least six healthy signals at or above 40 dB-Hz and a truth PDOP of 3 or better.
 
 | Altitude | Recording | First of five truth-checked fixes | Valid / eligible epochs | 3D position error, p95 | 3D velocity error, p95 |
 | ---: | ---: | ---: | ---: | ---: | ---: |
