@@ -27,7 +27,11 @@ def rate_trial(path, motion, seconds):
     truth = motion(times)[:, :3]
     pos = np.column_stack([data[k] for k in XYZ[:3]])
     vel = np.column_stack([data[k] for k in XYZ[3:]])
+    if not np.isin(data["valid"], [0, 1]).all() or np.any(np.diff(data["gaps"]) < 0):
+        raise ValueError("invalid fix flag or gap counter")
     valid = data["valid"] == 1
+    if not np.isfinite(pos[valid]).all() or not np.isfinite(vel[valid]).all():
+        raise ValueError("nonfinite valid solution")
     raw = np.linalg.norm(pos - truth, axis=1)
     result = []
     for count in (5, 25, 40):
@@ -38,7 +42,8 @@ def rate_trial(path, motion, seconds):
                 continue
             # Under trapezoidal integration the oldest displacement enters one
             # prediction, the next enters two, and the newest enters count-1.
-            steps = (vel[window][1:] + vel[window][:-1]) / (2 * Q["hz"])
+            velocities = vel[window]
+            steps = (velocities[1:] + velocities[:-1]) / (2 * Q["hz"])
             current = pos[window].mean(axis=0) + np.arange(1, count) @ steps / count
             indices.append(i)
             errors.append(np.linalg.norm(current - truth[i]))
