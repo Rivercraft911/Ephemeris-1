@@ -76,7 +76,7 @@ jobs:
           cmake --build build/pico-scalar --target ephemeris_pico ephemeris_profile --parallel 2
       - name: Build the outdoor receiver
         run: |
-          cmake -S firmware -B build/pico-ground -G Ninja -DPICO_SDK_PATH="$GITHUB_WORKSPACE/build/sdk" -DCMAKE_BUILD_TYPE=Release -DEPHEMERIS_GROUND_SEARCH=ON -DEPHEMERIS_GROUND_TROPOSPHERE=ON -DEPHEMERIS_DOPPLER_POSITION=ON
+          cmake -S firmware -B build/pico-ground -G Ninja -DPICO_SDK_PATH="$GITHUB_WORKSPACE/build/sdk" -DCMAKE_BUILD_TYPE=Release -DEPHEMERIS_GROUND_SEARCH=ON -DEPHEMERIS_GROUND_TROPOSPHERE=ON -DEPHEMERIS_GROUND_IONOSPHERE=ON -DEPHEMERIS_DOPPLER_POSITION=ON -DEPHEMERIS_VELOCITY_FIT=ON
           cmake --build build/pico-ground --target ephemeris_pico ephemeris_profile --parallel 2
       - name: Cross-build the experimental orbital search
         run: |

@@ -83,6 +83,8 @@ def rinex_epochs(path):
         elif epoch is not None and line.startswith("G"):
             def field(name):
                 start = 3 + 16 * codes.index(name)
+                if name == "L1C" and line[start+14:start+15].strip() not in ("", "0"):
+                    raise ValueError("flagged phase ambiguity in the CTTC carrier comparison")
                 return float(line[start:start + 14])
             values[int(line[1:3])] = (field("C1C"), field("L1C"))
     if epoch is not None:
@@ -100,6 +102,8 @@ def extract(eiq, rinex, output):
     for raw, measurements in rinex_epochs(rinex):
         t = ref.get(raw)
         if t is None or len(measurements) != 5:
+            continue
+        if not measurements.keys() <= traces.keys():
             continue
         if not all(a[0, 0] <= t <= a[-1, 0] for a in traces.values()):
             continue

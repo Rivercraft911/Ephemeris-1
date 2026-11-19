@@ -20,11 +20,16 @@ def fix_errors(status, antenna):
     east = np.array((-np.sin(lon), np.cos(lon), 0))
     north = np.cross(up, east)
     errors = {}
+    previous = -1
     for row in status:
+        sample = int(row['sample'])
+        if sample <= previous or row['valid'] not in ('0', '1'):
+            raise ValueError('expected ordered, unique clocked statuses with a validity flag')
+        previous = sample
         if row['valid'] == '1':
             delta = position(row) - antenna
-            errors[int(row['sample'])] = (int(row['nav_mask']), int(row['sv']),
-                                          float(delta @ up), float(np.hypot(delta @ east, delta @ north)))
+            errors[sample] = (int(row['nav_mask']), int(row['sv']),
+                              float(delta @ up), float(np.hypot(delta @ east, delta @ north)))
     return errors
 
 
