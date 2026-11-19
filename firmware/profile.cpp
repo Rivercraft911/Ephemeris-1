@@ -5,7 +5,11 @@
 #include "capture.hpp"
 #include "usb.hpp"
 #include "receiver/app.hpp"
+#ifdef EPHEMERIS_GROUND_TROPOSPHERE
+#include "tests/fixtures/ground.hpp"
+#else
 #include "tests/fixtures/rollover.hpp"
+#endif
 #include "tracking_irq.hpp"
 #include "pico/multicore.h"
 #include "hardware/clocks.h"
@@ -19,10 +23,13 @@
 namespace {
 ephemeris::Receiver receiver;
 capture::Stream stream;
-alignas(32) uint32_t tracking_stack[4096];
+// The SDK initializes this stack on core launch. Placing it before the
+// 32 KiB-aligned DMA ring uses space otherwise lost to alignment padding.
+alignas(32) uint32_t __uninitialized_ram(tracking_stack)[4096];
 alignas(4) uint32_t input[board::words_per_ms], replay[board::words_per_ms];
 std::atomic<uint32_t> work_count{0};
 std::atomic<bool> suspend_search{false}, search_idle{false};
+bool receiver_started = false;  // Capture core only. A blind trial requires power-on search state.
 constexpr unsigned epoch_target = 1000;
 constexpr unsigned recovery_limit = 50;
 uint32_t durations[epoch_target + recovery_limit];
@@ -85,33 +92,55 @@ void check_clock_faults() {
     reply(line);
 }
 struct FixBench {
+#ifdef EPHEMERIS_GROUND_TROPOSPHERE
+    static constexpr auto make_observations = eph::fixture::ground_observations;
+    static constexpr auto at_zero = eph::fixture::ground_position;
+    static constexpr eph::nav::Vec3 velocity{};
+    static constexpr double receiver_tow = eph::fixture::ground_tow, true_tow = receiver_tow, initial_s = 0;
+#else
+    static constexpr auto make_observations = eph::fixture::rollover_observations;
+    static constexpr auto at_zero = eph::fixture::at_zero, velocity = eph::fixture::velocity;
+    static constexpr double receiver_tow = .0021, true_tow = .002, initial_s = .002;
+#endif
     std::array<eph::nav::Ephemeris,6> eph;
     std::array<eph::nav::Observation,6> obs;
     eph::nav::Fix f;
+#ifdef EPHEMERIS_DOPPLER_POSITION
+    eph::nav::PositionSmoother smoother;
+#endif
     unsigned count{}, good{}, total{}, worst{};
     double max_position_sq{}, max_velocity_sq{};
 
     void reset() {
         *this = {};
-        eph::fixture::rollover_observations(eph, obs);
+        make_observations(eph, obs);
     }
     void solve() {
+        double elapsed_fixture_s = initial_s;
         const auto start = time_us_32();
-        const bool solved = eph::nav::solve_fix(obs.data(), obs.size(), f, .0021);
+        const bool solved = eph::nav::solve_fix(obs.data(), obs.size(), f, receiver_tow);
+#ifdef EPHEMERIS_DOPPLER_POSITION
+        // The independent PVT oracle has one epoch. Extend its solution along
+        // its known constant ECEF velocity to exercise successive filter updates.
+        const double offset_s = count * .2;
+        for (unsigned i = 0; i < 3; ++i) f.position_m[i] += offset_s * velocity[i];
+        smoother.update(f, count * eph::nav::PositionSmoother::interval_samples);
+        elapsed_fixture_s += offset_s;
+#endif
         const auto us = time_us_32()-start;
         total += us;
         worst = std::max(worst, unsigned(us));
         double dp2 = 0, dv2 = 0;
         for (unsigned i = 0; i < 3; ++i) {
-            const auto dp = f.position_m[i]-(eph::fixture::at_zero[i]+.002*eph::fixture::velocity[i]);
-            const auto dv = f.velocity_mps[i]-eph::fixture::velocity[i];
+            const auto dp = f.position_m[i]-(at_zero[i]+elapsed_fixture_s*velocity[i]);
+            const auto dv = f.velocity_mps[i]-velocity[i];
             dp2 += dp*dp;
             dv2 += dv*dv;
         }
         max_position_sq = std::max(max_position_sq, dp2);
         max_velocity_sq = std::max(max_velocity_sq, dv2);
         good += solved && f.valid && f.satellites == 6 && f.week_mod1024 == 303 &&
-                std::abs(f.tow_s-.002) < 1e-9 && dp2 < .04 && dv2 < .000016;
+                std::abs(f.tow_s-true_tow) < 1e-9 && dp2 < .04 && dv2 < .000016;
         ++count;
     }
 } fix_bench;
@@ -206,7 +235,7 @@ bool measure_kernels(unsigned& prepare_us, unsigned& tracker_us) {
 }
 
 enum class Mode { internal, external, offline };
-void profile(unsigned channels, Mode mode, bool pvt_load = false) {
+bool read_fixture() {
     reply("READY 8184\n");
     size_t read = 0;
     uint64_t start = time_us_64();
@@ -214,7 +243,77 @@ void profile(unsigned channels, Mode mode, bool pvt_load = false) {
         usb::poll();
         read += usb::read(reinterpret_cast<uint8_t*>(replay) + read, sizeof(replay) - read);
     }
-    if (read != sizeof(replay)) { reply("ERR incomplete fixture\n"); return; }
+    if (read != sizeof(replay)) { reply("ERR incomplete fixture\n"); return false; }
+    return true;
+}
+
+void blind_lock(unsigned seconds) {
+    if (receiver_started) { reply("ERR reload profile image for a cold search\n"); return; }
+    if (!read_fixture()) return;
+    receiver_started = true;
+    constexpr unsigned required = 20;
+    unsigned blocks = 0, gaps = 0, consecutive = 0, prn = 0;
+    uint64_t first_lock = 0, first_wall = 0, end_sample = 0;
+    double phase = 0, doppler = 0;
+    const auto before = stream.stats();
+    const auto initial_work = work_count.load();
+    const auto start = time_us_64();
+    stream.start_at(internal_clock, 0);
+    while (usb::connected() && blocks < seconds * 1000 &&
+           time_us_64() - start < (seconds + 2u) * 1000000ull) {
+        usb::poll();
+        uint64_t first;
+        bool gap;
+        if (!stream.read(input, first, gap)) continue;
+        if (gap || first != end_sample) ++gaps;
+        end_sample = first + board::samples_per_ms;
+        ++blocks;
+        receiver.process(reinterpret_cast<const uint8_t*>(replay), first, gap);
+        const auto mask = receiver.status().locked_mask;
+        if (!mask || (mask & (mask - 1)) || gap) {
+            consecutive = 0;
+            continue;
+        }
+        const unsigned locked = 1u + unsigned(__builtin_ctz(mask));
+        if (!consecutive || prn != locked) {
+            first_lock = end_sample;
+            first_wall = time_us_64() - start;
+            prn = locked;
+            consecutive = 0;
+        }
+        if (++consecutive == required) {
+            for (unsigned i = 0; i < receiver.channels; ++i) {
+                const auto& result = receiver.channel(i);
+                if (result.prn == prn && result.locked) {
+                    phase = result.code_phase_chips;
+                    doppler = result.doppler_hz;
+                }
+            }
+            break;
+        }
+    }
+    const auto elapsed = time_us_64() - start;
+    stream.stop();
+    const auto after = stream.stats();
+    const auto missed = after.missed_blocks - before.missed_blocks;
+    const auto stalls = after.fifo_stalls - before.fifo_stalls;
+    const auto timeouts = after.clock_timeouts - before.clock_timeouts;
+    const auto work = work_count.load() - initial_work;
+    const bool passed = consecutive == required && work && !gaps && !missed && !stalls && !timeouts;
+    char line[384];
+    std::snprintf(line, sizeof(line),
+        "%s prn=%u lock_sample=%llu lock_us=%llu end_sample=%llu elapsed_us=%llu consecutive=%u "
+        "phase_chips=%.4f doppler_hz=%.3f epochs=%u capture_gaps=%u missed=%llu stalls=%u "
+        "clock_timeouts=%u work_steps=%u\n",
+        passed ? "PASS" : "FAIL", prn, (unsigned long long)first_lock, (unsigned long long)first_wall,
+        (unsigned long long)end_sample, (unsigned long long)elapsed, consecutive, phase, doppler,
+        blocks, gaps, (unsigned long long)missed, unsigned(stalls), unsigned(timeouts), unsigned(work));
+    reply(line);
+}
+
+void profile(unsigned channels, Mode mode, bool pvt_load = false) {
+    if (!read_fixture()) return;
+    receiver_started = true;
 
     constexpr unsigned hot_start = 10;  // allow the loops to establish initial lock
     const bool offline = mode == Mode::offline;
@@ -251,7 +350,7 @@ void profile(unsigned channels, Mode mode, bool pvt_load = false) {
     const uint32_t work_start = work_count.load();
     if (!offline) stream.start_at(mode == Mode::external ? board::clock_pin : internal_clock,
                                  first_epoch + board::samples_per_ms);
-    start = time_us_64();
+    const auto start = time_us_64();
     const unsigned limit = epoch_target + (pvt_load ? recovery_limit : 0);
     while (n < limit && time_us_64() - start < (offline ? 120000000u : 6000000u)) {
         usb::poll();
@@ -352,6 +451,13 @@ void bench_worker() {
         if (!usb::command(cmd, sizeof(cmd))) continue;
         if (!std::strcmp(cmd, "pvt")) { check_fix_timing(); continue; }
         if (!std::strcmp(cmd, "clocktest")) { check_clock_faults(); continue; }
+        if (!std::strncmp(cmd, "blind ", 6)) {
+            char* end;
+            const auto seconds = std::strtoul(cmd + 6, &end, 10);
+            if (!*end && seconds >= 1 && seconds <= 600) blind_lock(unsigned(seconds));
+            else reply("ERR expected a duration of 1 to 600 seconds\n");
+            continue;
+        }
         if (!std::strncmp(cmd, "continuity ", 11)) {
             char* end;
             const unsigned long seconds = std::strtoul(cmd + 11, &end, 10);

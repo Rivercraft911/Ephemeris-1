@@ -91,6 +91,9 @@ private:
     unsigned next_prn_ = 1;
     Search stage_ = Search::select;
     Status status_{};
+#ifdef EPHEMERIS_DOPPLER_POSITION
+    eph::nav::PositionSmoother position_smoother_{};
+#endif
     bool running_{}, have_clock_{};
     uint64_t next_sample_{}, clock_sample_{}, report_at_{};
     double clock_tow_{};

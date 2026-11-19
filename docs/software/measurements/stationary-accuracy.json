@@ -1,0 +1,367 @@
+{
+  "level": "Host stationary-position experiment on 5 Hz fixes decoded from raw I/Q",
+  "method": "Mean of ECEF positions since the first contiguous valid fix. Start both error series at the same epoch after 10 s of continuous fixes. Reset the mean after invalidity, an unexpected sample increment or a changed gap counter. The stationary assumption comes from the fixture.",
+  "half_chip_receiver_sha256": "a8b63c83c8c19ce039d6d1152f776c8e3b3b1efc9f5dd95a1fa761965c89aa26",
+  "work_per_ms": 8,
+  "mixer_sha256": "befa13e7eb396f2bbde50f64effd90c75b9acb90c9fac2cb54403ad3140e1ef6",
+  "waveforms": {
+    "oracle-gpssim-coarse": "See independent-static.json for GPS-SDR-SIM recording, broadcast ephemerides and input hash.",
+    "seed-2811 and seed-4709": {
+      "duration_s": 120,
+      "satellites": 7,
+      "cn0_dbhz": 46,
+      "orbit_km": 0,
+      "seeds": [
+        2811,
+        4709
+      ],
+      "source_revision": "f6322cf99e41dde8855c9ec3e4f21ca11c30138c",
+      "sky_signal_sha256": "1e9772905e65ae84db66c5ec507bb9fdbfc7140a1b89ba64162bf40e68a32de4",
+      "settings": {
+        "clean": {
+          "slant_tecu": 0,
+          "broadcast_error_m": 0
+        },
+        "bias": {
+          "slant_tecu": 10,
+          "broadcast_error_m": 1
+        }
+      },
+      "truth_csv_sha256": {
+        "2811": "d2232d77ed7c53d8719dba607b8cc38ee05578fd86a77cd4c146fdf7d609705d",
+        "4709": "a51ad7cc687072e1dd1ce1239707f019018288652033c25033fc775f173c23d2"
+      }
+    },
+    "clean, neutral, echo, combined": {
+      "duration_s": 90,
+      "satellites": 7,
+      "cn0_dbhz": 47,
+      "orbit_km": 0,
+      "seed": 1958,
+      "truth_csv_sha256": "020b77a9d73c6fbc39f7709c17ba7becd9eafa2e1a955ceb81b84cfecef87de8",
+      "settings": {
+        "clean": {},
+        "neutral": {
+          "zenith_delay_m": 2.4
+        },
+        "echo": {
+          "ground_echo_height_m": 8,
+          "ground_echo_voltage": -0.3
+        },
+        "combined": {
+          "zenith_delay_m": 2.4,
+          "ground_echo_height_m": 8,
+          "ground_echo_voltage": -0.3
+        }
+      }
+    }
+  },
+  "warmup_s": 10,
+  "truth_ecef_m": [
+    6378137.0,
+    0.0,
+    0.0
+  ],
+  "runs": {
+    "oracle-gpssim-coarse": {
+      "receiver_csv_sha256": "7430c04d6c81ae1006563efa3c07437573b755c82a62ff55965ddaae76bbe99a",
+      "status_epochs": 325,
+      "valid_epochs": 160,
+      "scored_epochs": 110,
+      "first_fix_s": 33.2,
+      "first_scored_s": 43.2,
+      "raw": {
+        "rms_3d_m": 0.4810698021747769,
+        "p95_3d_m": 0.7631054158711178,
+        "mean_ecef_error_m": [
+          -0.07349090911448002,
+          0.1746181818181819,
+          -0.04333636363636366
+        ]
+      },
+      "stationary_mean": {
+        "rms_3d_m": 0.38199114157487885,
+        "p95_3d_m": 0.5587221325726003,
+        "mean_ecef_error_m": [
+          -0.1969255662861873,
+          0.3110612923463117,
+          -0.03284775635251644
+        ]
+      }
+    },
+    "seed-2811-bias-rx": {
+      "receiver_csv_sha256": "84f138a7c6d30265033d9f47cf1b5c9a5fd50576182eb54b5f4c9672419f75d8",
+      "status_epochs": 600,
+      "valid_epochs": 485,
+      "scored_epochs": 435,
+      "first_fix_s": 23.2,
+      "first_scored_s": 33.2,
+      "raw": {
+        "rms_3d_m": 1.1025205104001123,
+        "p95_3d_m": 1.8861255608127123,
+        "mean_ecef_error_m": [
+          -0.4355770114937733,
+          0.2290528735632183,
+          0.3067310344827584
+        ]
+      },
+      "stationary_mean": {
+        "rms_3d_m": 0.5835766853049258,
+        "p95_3d_m": 0.7050976023487707,
+        "mean_ecef_error_m": [
+          -0.3478976867472132,
+          0.22923371572111442,
+          0.3774946066763404
+        ]
+      }
+    },
+    "seed-2811-clean-rx": {
+      "receiver_csv_sha256": "7d523eb96b4bc15b92ab7cb38f026e4ed6f0e57e74bae7eff9406f08835ad87e",
+      "status_epochs": 600,
+      "valid_epochs": 485,
+      "scored_epochs": 435,
+      "first_fix_s": 23.2,
+      "first_scored_s": 33.2,
+      "raw": {
+        "rms_3d_m": 1.3159535050883076,
+        "p95_3d_m": 2.4230665884408564,
+        "mean_ecef_error_m": [
+          -0.09543908044010743,
+          0.082367816091954,
+          0.07843218390804602
+        ]
+      },
+      "stationary_mean": {
+        "rms_3d_m": 0.30195554726771173,
+        "p95_3d_m": 0.5198894482354137,
+        "mean_ecef_error_m": [
+          0.09860660029125624,
+          0.19270523145824914,
+          0.07039073145893007
+        ]
+      }
+    },
+    "seed-4709-bias-rx": {
+      "receiver_csv_sha256": "ec357f2d297ceb205d067262c9c8f0e42061e2723fcc3447f6c96b53544ff944",
+      "status_epochs": 600,
+      "valid_epochs": 485,
+      "scored_epochs": 435,
+      "first_fix_s": 23.2,
+      "first_scored_s": 33.2,
+      "raw": {
+        "rms_3d_m": 0.9759787436399057,
+        "p95_3d_m": 1.8180049704242167,
+        "mean_ecef_error_m": [
+          -0.49131724137341837,
+          0.0011908045977011212,
+          -0.034514942528735645
+        ]
+      },
+      "stationary_mean": {
+        "rms_3d_m": 0.3998372547938966,
+        "p95_3d_m": 0.5142386343258553,
+        "mean_ecef_error_m": [
+          -0.37645842431691184,
+          0.039335230778527054,
+          0.01327551669831094
+        ]
+      }
+    },
+    "seed-4709-clean-rx": {
+      "receiver_csv_sha256": "046e9b907ff20a25d1c0f73966c7b0c95936aa5a506abc561d6ded4c01e7fff7",
+      "status_epochs": 600,
+      "valid_epochs": 485,
+      "scored_epochs": 435,
+      "first_fix_s": 23.2,
+      "first_scored_s": 33.2,
+      "raw": {
+        "rms_3d_m": 0.8567554620859817,
+        "p95_3d_m": 1.5481848013292583,
+        "mean_ecef_error_m": [
+          -0.16652183910382204,
+          0.0081701149425288,
+          -0.11308735632183915
+        ]
+      },
+      "stationary_mean": {
+        "rms_3d_m": 0.27407642946451816,
+        "p95_3d_m": 0.5989849352879348,
+        "mean_ecef_error_m": [
+          0.1170165012451424,
+          -0.11420414453613477,
+          -0.11121563024148476
+        ]
+      }
+    },
+    "clean-rx": {
+      "receiver_csv_sha256": "2da205cba340e6bb5a8dbb04b8aa6b8422f18b68945c5985e6db54cb3fbf8d70",
+      "status_epochs": 450,
+      "valid_epochs": 335,
+      "scored_epochs": 285,
+      "first_fix_s": 23.2,
+      "first_scored_s": 33.2,
+      "raw": {
+        "rms_3d_m": 0.8891139409460624,
+        "p95_3d_m": 1.738394818482018,
+        "mean_ecef_error_m": [
+          0.37778596492124755,
+          -0.11378596491228066,
+          -0.16232280701754387
+        ]
+      },
+      "stationary_mean": {
+        "rms_3d_m": 0.4928114104521963,
+        "p95_3d_m": 0.6056864523880064,
+        "mean_ecef_error_m": [
+          0.42255214769393207,
+          -0.21584356843660954,
+          -0.05239568798977652
+        ]
+      }
+    },
+    "combined-rx": {
+      "receiver_csv_sha256": "ceef7c6c6a9f37d1ea072856b43e017694e83a92233bac074b2ea5103a38b316",
+      "status_epochs": 450,
+      "valid_epochs": 335,
+      "scored_epochs": 285,
+      "first_fix_s": 23.2,
+      "first_scored_s": 33.2,
+      "raw": {
+        "rms_3d_m": 7.709298360707641,
+        "p95_3d_m": 8.963791949629444,
+        "mean_ecef_error_m": [
+          7.1424666666932275,
+          2.023442105263157,
+          1.7750947368421042
+        ]
+      },
+      "stationary_mean": {
+        "rms_3d_m": 8.042674213272193,
+        "p95_3d_m": 8.20054692557625,
+        "mean_ecef_error_m": [
+          7.540755587976361,
+          2.2296555757281267,
+          1.6636096705230234
+        ]
+      }
+    },
+    "echo-rx": {
+      "receiver_csv_sha256": "544f9f95c7807b06e7bfedc3bca97c629da15cb7aa865ec33c42605d2e1fc2d6",
+      "status_epochs": 450,
+      "valid_epochs": 335,
+      "scored_epochs": 285,
+      "first_fix_s": 23.2,
+      "first_scored_s": 33.2,
+      "raw": {
+        "rms_3d_m": 3.3980946735444117,
+        "p95_3d_m": 4.248484556288784,
+        "mean_ecef_error_m": [
+          -2.753221052604025,
+          0.16335438596491247,
+          1.6446315789473698
+        ]
+      },
+      "stationary_mean": {
+        "rms_3d_m": 3.0783137848232913,
+        "p95_3d_m": 3.172758918439933,
+        "mean_ecef_error_m": [
+          -2.6406299756349703,
+          0.20755522620097333,
+          1.5426339394361093
+        ]
+      }
+    },
+    "neutral-rx": {
+      "receiver_csv_sha256": "fa87086be211eeb316573cb04c9aebb68bd865a11166f268ba669abb29c6ba6b",
+      "status_epochs": 450,
+      "valid_epochs": 335,
+      "scored_epochs": 285,
+      "first_fix_s": 23.2,
+      "first_scored_s": 33.2,
+      "raw": {
+        "rms_3d_m": 10.564159848040228,
+        "p95_3d_m": 11.75457296363237,
+        "mean_ecef_error_m": [
+          10.385175438604334,
+          1.7511894736842097,
+          -0.02511929824561401
+        ]
+      },
+      "stationary_mean": {
+        "rms_3d_m": 10.815531101393745,
+        "p95_3d_m": 11.025814664749987,
+        "mean_ecef_error_m": [
+          10.665424658034585,
+          1.7854784147759228,
+          0.09977024356500053
+        ]
+      }
+    }
+  },
+  "neutral_model_controls": {
+    "scope": "Raw GPS-SDR-SIM replays with the half-chip receiver before and after enabling the ground code-range correction. The upstream range generator includes no neutral atmosphere; its ionosphere is disabled by -i in these fixtures.",
+    "generator": "https://github.com/osqzss/gps-sdr-sim/blob/28ca29a6719475195e3aabd5930c4ed02d67190f/gpssim.c#L1196-L1249",
+    "model_reference": "https://gnss-sdr.org/docs/sp-blocks/pvt/#saastamoinen",
+    "candidate_sha256": "c5b6876e830d94c5c2525a303a9632177e7272a68d8d4b8f6110ced314e9eebe",
+    "runs": {
+      "oracle-gpssim": {
+        "recording_reference": "independent-static.json",
+        "default_sha256": "7430c04d6c81ae1006563efa3c07437573b755c82a62ff55965ddaae76bbe99a",
+        "corrected_sha256": "2ac01d4cab4ea1bcc1a8dbec28911c5cfc9c072797700ff3346a1d7c3c3dbe38",
+        "default": {
+          "passed": true,
+          "status_epochs": 325,
+          "valid_epochs": 160,
+          "first_valid_s": 33.2,
+          "first_five_truth_checked_s": 33.6,
+          "availability_after_streak": 1.0,
+          "p95_position_m": 1.0051295667917433,
+          "p95_velocity_mps": 0.16713463221133926,
+          "max_time_error_s": 2.0489068219831097e-09,
+          "gaps": 0
+        },
+        "ground_correction": {
+          "passed": false,
+          "status_epochs": 325,
+          "valid_epochs": 160,
+          "first_valid_s": 33.2,
+          "first_five_truth_checked_s": null,
+          "availability_after_streak": 0,
+          "p95_position_m": 17.795421950919415,
+          "p95_velocity_mps": 0.1672993099823353,
+          "max_time_error_s": 5.101319544564831e-08,
+          "gaps": 0
+        }
+      },
+      "oracle-orbit": {
+        "recording_reference": "independent-orbit.json",
+        "default_sha256": "213c97008fea2aa145ee0e02b03b219a251eb50f7194c0e529055528ae581979",
+        "corrected_sha256": "213c97008fea2aa145ee0e02b03b219a251eb50f7194c0e529055528ae581979",
+        "default": {
+          "passed": true,
+          "status_epochs": 450,
+          "valid_epochs": 285,
+          "first_valid_s": 33.2,
+          "first_five_truth_checked_s": 33.2,
+          "availability_after_streak": 1.0,
+          "p95_position_m": 0.8287705282119646,
+          "p95_velocity_mps": 0.17246765132572936,
+          "max_time_error_s": 2.025629441959609e-09,
+          "gaps": 0
+        },
+        "ground_correction": {
+          "passed": true,
+          "status_epochs": 450,
+          "valid_epochs": 285,
+          "first_valid_s": 33.2,
+          "first_five_truth_checked_s": 33.2,
+          "availability_after_streak": 1.0,
+          "p95_position_m": 0.8287705282119646,
+          "p95_velocity_mps": 0.17246765132572936,
+          "max_time_error_s": 2.025629441959609e-09,
+          "gaps": 0
+        }
+      }
+    }
+  }
+}

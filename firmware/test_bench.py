@@ -8,8 +8,8 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from bench import run, verify_pattern
-from iqio import write_capture
+from bench import blind_lock, run, verify_pattern
+from iqio import BYTES_MS, SAMPLES_MS, write_capture
 
 
 def fixture_bytes():
@@ -94,6 +94,31 @@ int main() {
             run(Port(coarse, b"coarse\n"), "coarse", None, False)
             with self.assertRaisesRegex(ValueError, "coarse"):
                 run(Port(coarse.replace(b"errors=0", b"errors=1"), b"coarse\n"), "coarse", None, False)
+
+    def test_blind_acquisition(self):
+        class BlindPort(io.BytesIO):
+            def reset_input_buffer(self):
+                self.writes = []
+
+            def write(self, data):
+                self.writes.append(data)
+                return len(data)
+
+        record = (f"PASS prn=4 consecutive=20 lock_sample={400*SAMPLES_MS} lock_us=400071 "
+                  f"end_sample={419*SAMPLES_MS} elapsed_us=419077 phase_chips=137.3 "
+                  "doppler_hz=-2 capture_gaps=0 missed=0 stalls=0 clock_timeouts=0\n").encode()
+        with redirect_stdout(io.StringIO()):
+            def reply(report):
+                return BlindPort(b"READY 8184\n" + report)
+            port = reply(record)
+            blind_lock(port, 4, 60)
+            self.assertEqual(port.writes[0], b"blind 60\n")
+            self.assertEqual(len(port.writes[1]), BYTES_MS)
+            self.assertEqual(len(port.writes), 2)
+            for bad in [b"FAIL epochs=60000\n", record.replace(b"prn=4", b"prn=1"),
+                        record.replace(b"137.3", b"nan"), record.replace(b"stalls=0", b"stalls=1")]:
+                with self.assertRaises(ValueError):
+                    blind_lock(reply(bad), 4, 60)
 
     def test_axis_lookup(self):
         # Exhaust every possible eight-sample lane input in both positions,

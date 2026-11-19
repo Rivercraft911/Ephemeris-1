@@ -86,6 +86,18 @@ struct Fix {
     bool valid = false;
 };
 
+// Combine successive valid 5 Hz solutions. Velocity and clock remain the
+// single-epoch estimates. sample is the receiver's continuous raw ADC counter.
+class PositionSmoother {
+public:
+    static constexpr uint64_t interval_samples = static_cast<uint64_t>(sample_rate) / 5;
+    void update(Fix& fix, uint64_t sample);
+private:
+    Vec3 position_{}, velocity_{};
+    uint64_t previous_sample_{};
+    bool initialized_{};
+};
+
 // Supply TOW from a free-running local sample-clock origin to retain a
 // meaningful receiver bias over successive fixes. Without one, the initial
 // receiver epoch is assigned 75 ms after the first transmitter's timestamp.

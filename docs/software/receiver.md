@@ -2,7 +2,7 @@
 
 Ephemeris 1 uses a MAX2769B for RF and a Pimoroni Pico Plus 2 for baseband and navigation. The input is a continuous four-bit bus. Once configured, the ADC keeps sending samples through acquisition, tracking, and USB disconnects. This is the constraint that determines the firmware layout. [Board interface and startup](../design.md#first-capture) · [Pico build and bench instructions](../../firmware/README.md)
 
-[Measured accuracy and Pico timing](results.md) · [Conducted Safran tests](conducted.md)
+[Measured accuracy and Pico timing](results.md) · [Ground fix over USB](ground.md) · [Conducted Safran tests](conducted.md)
 
 ## Build and replay
 

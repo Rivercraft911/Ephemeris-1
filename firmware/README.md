@@ -68,6 +68,20 @@ Run `python3 firmware/bench.py PORT profile 8 --pvt-load` for a combined workloa
 
 The profile image also supports `python3 firmware/bench.py PORT continuity --seconds 270`. It consumes the continuously clocked DMA ring and verifies every block index, including the hardware transfer-count reload after about 66 seconds and the 32-bit sample boundary after about 262 seconds. The returned sample count and elapsed microseconds give the average digital input rate against the Pico timer. The generator and timer share a crystal. This run measures capture continuity without tracking or external RF.
 
+### Cold first-channel timing
+
+Start a fresh profile image for each trial. The bench rejects a blind trial if the receiver has already searched or used seeds in that boot.
+
+```sh
+python3 firmware/bench.py PORT blind-lock 1 --seconds 60
+# Restart the profile image, then run the next trial.
+python3 firmware/bench.py PORT blind-lock 4 --seconds 120
+```
+
+The host uploads one millisecond of I/Q with the chosen GPS code at 137.25 chips and zero Doppler. The fixture repeats the same noise samples and carries a constant data bit. Internal PIO and DMA pace the receiver at one block per millisecond. The search starts at PRN 1 and receives the waveform alone. The device records the first epoch of a 20 ms interval with one continuously locked PRN. The host checks the PRN, code phase and Doppler. A wrong PRN fails even if the tracking loop declared lock. Compute-paced native replay at 64 search steps per millisecond produced a wrong early lock on the PRN 4 fixture. This repeating waveform serves as a timing test. RF sensitivity and false-lock rates need independent noise and changing signals.
+
+On the 150 MHz Pico the sampled and wall times were 10.628 s and 10.628185 s for PRN 1, then 42.500 s and 42.499627 s for PRN 4. Both runs recorded zero sample gaps, missed blocks, FIFO stalls and clock timeouts. Each result measures one cold channel acquisition. A position fix also requires decoding satellite clocks and orbits on multiple channels.
+
 ## Single-Pico digital capture
 
 Load `ephemeris_capture.uf2` on an unwired Pico. These commands generate a PRBS on an isolated GP8–GP12 bus using PIO2 and read the pad states back through PIO0/PIO1. Leave GP8–GP12 free when using the internal source.
