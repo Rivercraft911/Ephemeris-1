@@ -6,7 +6,7 @@ Ephemeris 1 uses a MAX2769B for RF and a Pimoroni Pico Plus 2 for baseband and n
 
 ## Build and replay
 
-Use CMake 3.20+, a C++17 compiler, Python 3 with NumPy, and Ninja. The host tools and native tests use the same receiver core as the Pico.
+Use CMake 3.20+, a C++17 compiler, Python 3 with NumPy and SciPy, and Ninja. The host tools and native tests use the same receiver core as the Pico.
 
 ```sh
 cmake -S . -B build/current/native -G Ninja -DCMAKE_BUILD_TYPE=Release
