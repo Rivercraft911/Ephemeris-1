@@ -1,5 +1,7 @@
 # Lock time and position accuracy
 
+[Where the 3D position error comes from](position-error.md)
+
 ## Time from cold start
 
 The native receiver reports status every 200 ms. A lock means a channel tracks the code and carrier. A cold position also needs usable broadcast clock and orbit data from at least four satellites with suitable geometry. GPS L1 C/A sends 50 navigation bits per second in 300-bit subframes. The receiver checks subframes 1–3 for parity and a consistent ephemeris issue. [GPS interface specification, section 20.3](https://archive.gps.gov/technical/icwg/IS-GPS-200N.pdf)

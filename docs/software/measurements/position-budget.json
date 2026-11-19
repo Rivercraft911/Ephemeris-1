@@ -1,0 +1,400 @@
+{
+  "receiver_revision": "6938dc5753578d0b3aaf1741253bf5423e03d54e",
+  "gps_sdr_sim_revision": "28ca29a6719475195e3aabd5930c4ed02d67190f",
+  "upstream_sha256": {
+    "gpssim.c": "e1707b112d9f5291b06b95ab5af17e1b83c9399e35ccb968467db4f282437b24",
+    "gpssim.h": "093c341c6045bbfacc70df20ef7dc0f1a63e88741606808b44fe7463f2862fe4",
+    "brdc0010.22n": "7db04513dd2d0e13c0ee20cb4eaa8f71e5a28ab58b65c9b5b789f86eeab436cd"
+  },
+  "units": "Meters for range and position. Median and p95 PDOP are dimensionless.",
+  "method": "Clock-removed receive code times versus the waveform generator's scheduled L1 C/A ranges. The remaining differential range is the simulator/receiver range-model difference. Position contributions use the actual unweighted least-squares line of sight and clock column for each successful fix. Double-precision receiver positions are used before CSV rounding. Component percentiles are separate distributions.",
+  "orbits": [
+    {
+      "altitude_km": 400,
+      "phase_deg": 103.0,
+      "noise_seed": 7411,
+      "input_sha256": "e0a4cd27957f37fa7e4bd2568b423d40edc08494f03d7455cbcc84de00c359c0",
+      "status_sha256": "188ba401b3f1bdaf09f729e65b2fe20d70b45b464ca0c685e39ca7f52a5281c4",
+      "full": {
+        "fixes": 540,
+        "median_pdop": 3.7241,
+        "p95_pdop": 7.0913,
+        "p95_position_m": 2.6381,
+        "p95_from_code_timing_m": 2.3394,
+        "p95_from_range_model_m": 0.6158,
+        "radial_along_cross_rms_m": [
+          1.1666,
+          0.4039,
+          0.3411
+        ]
+      },
+      "by_satellite_count": {
+        "4": {
+          "fixes": 30,
+          "median_pdop": 7.106,
+          "p95_pdop": 7.1216,
+          "p95_position_m": 3.4185,
+          "p95_from_code_timing_m": 2.8563,
+          "p95_from_range_model_m": 0.6423,
+          "radial_along_cross_rms_m": [
+            1.8674,
+            0.4536,
+            0.701
+          ]
+        },
+        "6": {
+          "fixes": 30,
+          "median_pdop": 5.6915,
+          "p95_pdop": 5.6974,
+          "p95_position_m": 3.5239,
+          "p95_from_code_timing_m": 2.9392,
+          "p95_from_range_model_m": 0.6595,
+          "radial_along_cross_rms_m": [
+            2.4793,
+            0.6372,
+            0.9159
+          ]
+        },
+        "7": {
+          "fixes": 270,
+          "median_pdop": 3.7316,
+          "p95_pdop": 3.7447,
+          "p95_position_m": 1.9481,
+          "p95_from_code_timing_m": 2.1492,
+          "p95_from_range_model_m": 0.283,
+          "radial_along_cross_rms_m": [
+            0.9819,
+            0.2362,
+            0.1872
+          ]
+        },
+        "8": {
+          "fixes": 210,
+          "median_pdop": 3.4009,
+          "p95_pdop": 3.4074,
+          "p95_position_m": 2.3326,
+          "p95_from_code_timing_m": 2.0467,
+          "p95_from_range_model_m": 0.3015,
+          "radial_along_cross_rms_m": [
+            0.9401,
+            0.5102,
+            0.2531
+          ]
+        }
+      },
+      "pooled_clock_removed_range_rms_m": {
+        "all": 0.32111,
+        "code_timing": 0.31133,
+        "range_model": 0.06131
+      },
+      "max_linear_reconstruction_error_m": 3.100950966772123e-07
+    },
+    {
+      "altitude_km": 550,
+      "phase_deg": 12.0,
+      "noise_seed": 10209,
+      "input_sha256": "f783daaa975a8e9b3c348addaf9f3570ed5a9b1f4ab73c8084f0c14e31e23eae",
+      "status_sha256": "c770049e5078f8cc4ee650a540275942f30479876f7f14aee1721df1833ca775",
+      "full": {
+        "fixes": 480,
+        "median_pdop": 1.7378,
+        "p95_pdop": 2.194,
+        "p95_position_m": 1.0087,
+        "p95_from_code_timing_m": 0.962,
+        "p95_from_range_model_m": 0.2282,
+        "radial_along_cross_rms_m": [
+          0.4686,
+          0.2805,
+          0.2969
+        ]
+      },
+      "by_satellite_count": {
+        "6": {
+          "fixes": 90,
+          "median_pdop": 2.1928,
+          "p95_pdop": 2.1952,
+          "p95_position_m": 1.1154,
+          "p95_from_code_timing_m": 1.0532,
+          "p95_from_range_model_m": 0.2345,
+          "radial_along_cross_rms_m": [
+            0.649,
+            0.143,
+            0.2284
+          ]
+        },
+        "7": {
+          "fixes": 60,
+          "median_pdop": 1.9915,
+          "p95_pdop": 1.9927,
+          "p95_position_m": 1.1889,
+          "p95_from_code_timing_m": 1.133,
+          "p95_from_range_model_m": 0.2012,
+          "radial_along_cross_rms_m": [
+            0.4992,
+            0.4226,
+            0.2671
+          ]
+        },
+        "8": {
+          "fixes": 330,
+          "median_pdop": 1.7332,
+          "p95_pdop": 1.7424,
+          "p95_position_m": 0.9324,
+          "p95_from_code_timing_m": 0.8462,
+          "p95_from_range_model_m": 0.2237,
+          "radial_along_cross_rms_m": [
+            0.399,
+            0.2764,
+            0.3178
+          ]
+        }
+      },
+      "pooled_clock_removed_range_rms_m": {
+        "all": 0.34795,
+        "code_timing": 0.31945,
+        "range_model": 0.10494
+      },
+      "max_linear_reconstruction_error_m": 5.50658911079648e-08
+    },
+    {
+      "altitude_km": 800,
+      "phase_deg": 211.0,
+      "noise_seed": 9203,
+      "input_sha256": "bf64df944288abc3bfdf6c702055f60419d75510d3398c5c787c3102a247ced5",
+      "status_sha256": "d9d00eeba63e4504949aa93ff50343c71c140a5c1045643f1a3dc4166c7d98ef",
+      "full": {
+        "fixes": 630,
+        "median_pdop": 1.9621,
+        "p95_pdop": 4.4537,
+        "p95_position_m": 1.575,
+        "p95_from_code_timing_m": 1.5003,
+        "p95_from_range_model_m": 0.3435,
+        "radial_along_cross_rms_m": [
+          0.7634,
+          0.2772,
+          0.3532
+        ]
+      },
+      "by_satellite_count": {
+        "4": {
+          "fixes": 90,
+          "median_pdop": 4.4526,
+          "p95_pdop": 4.4562,
+          "p95_position_m": 1.5437,
+          "p95_from_code_timing_m": 1.2656,
+          "p95_from_range_model_m": 0.3749,
+          "radial_along_cross_rms_m": [
+            0.7518,
+            0.3099,
+            0.1975
+          ]
+        },
+        "5": {
+          "fixes": 30,
+          "median_pdop": 3.5753,
+          "p95_pdop": 3.5762,
+          "p95_position_m": 2.1275,
+          "p95_from_code_timing_m": 1.9762,
+          "p95_from_range_model_m": 0.2313,
+          "radial_along_cross_rms_m": [
+            1.2802,
+            0.5684,
+            0.1724
+          ]
+        },
+        "6": {
+          "fixes": 30,
+          "median_pdop": 3.4843,
+          "p95_pdop": 3.4851,
+          "p95_position_m": 3.0223,
+          "p95_from_code_timing_m": 2.8836,
+          "p95_from_range_model_m": 0.2267,
+          "radial_along_cross_rms_m": [
+            1.5873,
+            0.5054,
+            0.1839
+          ]
+        },
+        "8": {
+          "fixes": 480,
+          "median_pdop": 1.9602,
+          "p95_pdop": 1.9664,
+          "p95_position_m": 1.3556,
+          "p95_from_code_timing_m": 1.32,
+          "p95_from_range_model_m": 0.1863,
+          "radial_along_cross_rms_m": [
+            0.6317,
+            0.2161,
+            0.3904
+          ]
+        }
+      },
+      "pooled_clock_removed_range_rms_m": {
+        "all": 0.3268,
+        "code_timing": 0.30058,
+        "range_model": 0.09815
+      },
+      "max_linear_reconstruction_error_m": 4.391837111493836e-07
+    },
+    {
+      "altitude_km": 475,
+      "phase_deg": 151.0,
+      "noise_seed": 62031,
+      "input_sha256": "2a36d58bdffde31e3e4109012c5c0fa58876970e2c4af659eab1b6e9963163aa",
+      "status_sha256": "60962c222966a26b2415b7760bdb102880f6a49db137fb555f855c3aa7ee2bfe",
+      "full": {
+        "fixes": 630,
+        "median_pdop": 1.9179,
+        "p95_pdop": 3.6942,
+        "p95_position_m": 2.1164,
+        "p95_from_code_timing_m": 2.083,
+        "p95_from_range_model_m": 0.4016,
+        "radial_along_cross_rms_m": [
+          0.7302,
+          0.223,
+          0.4622
+        ]
+      },
+      "by_satellite_count": {
+        "4": {
+          "fixes": 90,
+          "median_pdop": 3.6934,
+          "p95_pdop": 3.696,
+          "p95_position_m": 2.9003,
+          "p95_from_code_timing_m": 3.0939,
+          "p95_from_range_model_m": 0.4261,
+          "radial_along_cross_rms_m": [
+            1.4811,
+            0.2663,
+            1.0265
+          ]
+        },
+        "6": {
+          "fixes": 30,
+          "median_pdop": 2.9303,
+          "p95_pdop": 2.9303,
+          "p95_position_m": 1.3955,
+          "p95_from_code_timing_m": 1.0087,
+          "p95_from_range_model_m": 0.4093,
+          "radial_along_cross_rms_m": [
+            0.637,
+            0.1994,
+            0.4382
+          ]
+        },
+        "7": {
+          "fixes": 30,
+          "median_pdop": 2.3808,
+          "p95_pdop": 2.3812,
+          "p95_position_m": 1.296,
+          "p95_from_code_timing_m": 1.3903,
+          "p95_from_range_model_m": 0.2502,
+          "radial_along_cross_rms_m": [
+            0.783,
+            0.1777,
+            0.236
+          ]
+        },
+        "8": {
+          "fixes": 480,
+          "median_pdop": 1.9117,
+          "p95_pdop": 1.9302,
+          "p95_position_m": 1.0296,
+          "p95_from_code_timing_m": 1.0241,
+          "p95_from_range_model_m": 0.1266,
+          "radial_along_cross_rms_m": [
+            0.4741,
+            0.218,
+            0.2596
+          ]
+        }
+      },
+      "pooled_clock_removed_range_rms_m": {
+        "all": 0.28898,
+        "code_timing": 0.27099,
+        "range_model": 0.08578
+      },
+      "max_linear_reconstruction_error_m": 2.1766740115023502e-07
+    },
+    {
+      "altitude_km": 400,
+      "phase_deg": 281.0,
+      "noise_seed": 73919,
+      "input_sha256": "516f375789b621506a460126ce5268b80acb395d6c22c9e16a96f579ada277d8",
+      "status_sha256": "0a4e7f52e265cdb2d1c71dae2742cdf74432d56d6c34b0e63b1380e197bb9fd4",
+      "full": {
+        "fixes": 630,
+        "median_pdop": 2.6796,
+        "p95_pdop": 5.6109,
+        "p95_position_m": 3.0655,
+        "p95_from_code_timing_m": 2.663,
+        "p95_from_range_model_m": 1.0296,
+        "radial_along_cross_rms_m": [
+          1.3425,
+          0.4161,
+          0.2939
+        ]
+      },
+      "by_satellite_count": {
+        "4": {
+          "fixes": 90,
+          "median_pdop": 5.6063,
+          "p95_pdop": 5.6204,
+          "p95_position_m": 4.3431,
+          "p95_from_code_timing_m": 3.3908,
+          "p95_from_range_model_m": 1.0635,
+          "radial_along_cross_rms_m": [
+            2.7376,
+            0.7165,
+            0.5076
+          ]
+        },
+        "6": {
+          "fixes": 30,
+          "median_pdop": 4.4084,
+          "p95_pdop": 4.4143,
+          "p95_position_m": 2.7778,
+          "p95_from_code_timing_m": 3.0344,
+          "p95_from_range_model_m": 0.4825,
+          "radial_along_cross_rms_m": [
+            2.0327,
+            0.488,
+            0.2411
+          ]
+        },
+        "7": {
+          "fixes": 30,
+          "median_pdop": 3.6892,
+          "p95_pdop": 3.692,
+          "p95_position_m": 1.7,
+          "p95_from_code_timing_m": 1.8126,
+          "p95_from_range_model_m": 0.2624,
+          "radial_along_cross_rms_m": [
+            0.8843,
+            0.1591,
+            0.4674
+          ]
+        },
+        "8": {
+          "fixes": 480,
+          "median_pdop": 2.678,
+          "p95_pdop": 2.6833,
+          "p95_position_m": 1.8435,
+          "p95_from_code_timing_m": 1.8482,
+          "p95_from_range_model_m": 0.1886,
+          "radial_along_cross_rms_m": [
+            0.8082,
+            0.3383,
+            0.2186
+          ]
+        }
+      },
+      "pooled_clock_removed_range_rms_m": {
+        "all": 0.33501,
+        "code_timing": 0.31605,
+        "range_model": 0.12199
+      },
+      "max_linear_reconstruction_error_m": 4.6607430808242626e-07
+    }
+  ]
+}

@@ -87,6 +87,7 @@ add_test(NAME ground_fix COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tes
 add_test(NAME independent_replay COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tests/test_replay.py $<TARGET_FILE:eph-replay>)
 add_test(NAME sky_mixer_reference COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tests/test_sky_mixer.py $<TARGET_FILE:eph_sky_mixer>)
 add_test(NAME campaign_scoring COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tests/test_campaign.py)
+add_test(NAME position_budget COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tests/test_position_budget.py)
 add_test(NAME conducted_evidence COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/tests/test_qualify.py)
 add_test(NAME target_replay_transport COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/firmware/test_replay_bench.py)
 add_test(NAME clocked_replay COMMAND ${Python3_EXECUTABLE} ${PROJECT_SOURCE_DIR}/firmware/test_clocked_replay.py)
