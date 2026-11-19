@@ -59,12 +59,16 @@ public:
     // Freeze one millisecond of data. Bin spacing is 2.046 MHz / 4096 (499.51 Hz).
     // Edges are rounded OUTWARD to bins. A new start discards unfinished work.
     bool start(const Epoch& epoch, unsigned prn, float lo_hz = -70000, float hi_hz = 70000);
+    // One search dwell. The flight profile can use a periodic 1024-point grid.
+    bool start_survey(const Epoch& epoch, unsigned prn, float lo_hz, float hi_hz);
+    bool step_survey(unsigned work_units = 1);
     static constexpr unsigned max_dwells = 4;
     bool add_dwell(const Epoch&); // before first step; disjoint epochs within 100 ms
     unsigned dwells() const { return dwells_; }
     bool step(unsigned max_transforms = 1); // at most one inverse FFT per work unit
     Detection best() const { return best_; }
 private:
+    bool begin_search(const Epoch&, unsigned prn, float lo_hz, float hi_hz);
     struct SpectralCell { std::int16_t i, q; };
     std::array<std::array<SpectralCell, fft_length>, max_dwells> data_{};
     std::array<float, max_dwells> weights_{};

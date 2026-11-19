@@ -191,19 +191,30 @@ void survey_weak_fallback() {
     const Sat sat{1,77.125,-6320.,55.,std::sqrt(2.e4/s::raw_hz)}; // 40 dB-Hz
     Source source(sat,1.,3301);
     Packed raw{};
-    for (unsigned ms=0; ms<110; ++ms) {
+#ifdef EPHEMERIS_COMPACT_SURVEY
+    constexpr unsigned survey_slots = 64;
+#else
+    constexpr unsigned survey_slots = 32;
+#endif
+    constexpr unsigned limit_ms = survey_slots + 78;
+    bool ran_full_search = false;
+    for (unsigned ms=0; ms<limit_ms; ++ms) {
         const auto epoch=source.epoch(std::uint64_t(ms)*s::raw_per_ms,&raw);
         if (!ms) {
             s::Acquisition acq;
-            require(search(acq,epoch,1,-70000,70000).metric<18.f,"weak PRN misses survey");
+            require(acq.start_survey(epoch,1,-70000,70000), "start weak-signal survey");
+            while (!acq.step_survey(32)) {}
+            require(!acq.best().detected, "weak PRN misses survey");
         }
         rx.process(raw.data(),epoch.first_sample,false);
-        while (rx.work_acquisition()) {}
+        unsigned work = 0;
+        while (rx.work_acquisition()) ++work;
+        ran_full_search |= work >= 4 * 281; // four full-band dwells
         require(!(rx.status().locked_mask & ~1u),"survey rejects absent PRNs");
         if (rx.status().locked_mask & 1u) {
             const auto& tr=rx.channel(0);
             const double t=(tr.first_sample+s::raw_per_ms)/s::raw_hz;
-            require(ms>=32 && std::abs(tr.doppler_hz-sat.doppler-sat.ramp*t)<125 &&
+            require(ran_full_search && ms >= survey_slots && std::abs(tr.doppler_hz-sat.doppler-sat.ramp*t)<125 &&
                     circular_error(tr.code_phase_chips,sat.phase+(sat.doppler+.5*sat.ramp*t)*t/1540.)<.75,
                     "full-band four-dwell fallback locks the weak signal");
             return;
@@ -217,11 +228,13 @@ struct VerifiedSearch { bool candidate; s::Detection hit; };
 
 VerifiedSearch verify_search(s::Acquisition& acq, const std::array<s::Epoch,12>& epochs,
                              unsigned prn, unsigned dwells) {
-    require(acq.start(epochs[0],prn),"start full-band trial");
+    const bool started = dwells == 1 ? acq.start_survey(epochs[0], prn, -70000, 70000)
+                                     : acq.start(epochs[0], prn);
+    require(started, "start full-band trial");
     for (unsigned n=1; n<dwells; ++n) require(acq.add_dwell(epochs[n]),"independent dwell");
-    while (!acq.step(64)) {}
+    while (!(dwells == 1 ? acq.step_survey(64) : acq.step(64))) {}
     auto candidate=acq.best();
-    if (!candidate.detected || (dwells==1 && candidate.metric<18.f)) return {};
+    if (!candidate.detected) return {};
     s::Confirmation confirmation;
     confirmation.start(candidate);
     for (unsigned n=4; n<epochs.size(); ++n) if (confirmation.add(epochs[n])) break;
@@ -278,6 +291,69 @@ void fft_oracle(s::Acquisition& acq) {
     require(circular_error(-delay*0.5,found.code_phase_chips)<1e-6,"FFT lag agrees with direct search");
     require(std::abs(found.metric-peak*2046/sum)<0.03,"FFT peak-to-mean agrees with direct search");
 }
+
+#ifdef EPHEMERIS_COMPACT_SURVEY
+void compact_survey_oracle(s::Acquisition& acq) {
+    // Independently integrate a continuous C/A replica over each time cell,
+    // wipe off the carrier and evaluate the dot products at all 1024 delays.
+    constexpr int cells = 1024;
+    const auto code = reference_code(17);
+    std::array<double,cells> replica{}, i{}, q{};
+    for (int n = 0; n < cells; ++n) {
+        const double begin = double(n)*s::code_length/cells;
+        const double end = double(n+1)*s::code_length/cells;
+        const int chip = int(begin);
+        const double split = std::min(end, double(chip+1));
+        replica[n] = ((split-begin)*code[chip] + (end-split)*code[(chip+1)%s::code_length])/(end-begin);
+    }
+    for (const int carrier : {-70000, -69500, 0, 69500, 70000}) {
+        Source source({17,carrier < 0 ? 1022.6 : 0.3,double(carrier),0.,1.});
+        const auto epoch = source.epoch(0);
+        for (int n = 0; n < cells; ++n) {
+            const int first = std::lround(double(n)*s::samples_per_ms/cells);
+            const int end = std::lround(double(n+1)*s::samples_per_ms/cells);
+            int sum_i = 0, sum_q = 0;
+            for (int j = first; j < end; ++j) {
+                sum_i += epoch.samples[j].i;
+                sum_q += epoch.samples[j].q;
+            }
+            const double angle = -tau*carrier*n/(cells*1000.);
+            i[n] = sum_i*std::cos(angle) - sum_q*std::sin(angle);
+            q[n] = sum_q*std::cos(angle) + sum_i*std::sin(angle);
+        }
+        double sum = 0, peak = 0;
+        int delay = 0;
+        for (int lag = 0; lag < cells; ++lag) {
+            double re = 0, im = 0;
+            for (int n = 0; n < cells; ++n) {
+                const double weight = replica[(n+cells-lag)%cells];
+                re += i[n]*weight;
+                im += q[n]*weight;
+            }
+            const double power = re*re + im*im;
+            sum += power;
+            if (power > peak) { peak = power; delay = lag; }
+        }
+        require(acq.start_survey(epoch,17,carrier,carrier), "start single survey bin");
+        require(!acq.step_survey(0) && acq.step_survey(1), "bounded compact survey");
+        const auto found = acq.best();
+        require(found.detected && found.doppler_hz == carrier, "compact survey carrier sign and half bin");
+        require(circular_error(found.code_phase_chips,-double(delay)*s::code_length/cells)<1e-6,
+                "compact FFT delay agrees with direct dot products");
+        require(std::abs(found.metric-peak*cells/sum)<.04, "compact FFT peak/mean agrees with direct dot products");
+    }
+    Source source({17,1022.5,-500.,0.,1.4});
+    const auto epoch = source.epoch(0);
+    require(acq.start_survey(epoch,17,-2350,2350) && !acq.step_survey(2), "outward bins span three work units");
+    require(!acq.start_survey(epoch,33,0,0) && acq.step_survey() && !acq.best().detected,
+            "invalid survey clears earlier search");
+    require(!acq.start_survey(epoch,17,500,-500), "inverted survey interval rejected");
+    require(acq.start_survey(epoch,17,-500,-500) && acq.step_survey(), "restart survey after invalid input");
+    const auto full = search(acq,epoch,17,-510,510);
+    require(full.detected && std::abs(full.doppler_hz+500)<2 && circular_error(full.code_phase_chips,1022.5)<.6,
+            "full search restores the replica after a compact survey of the same PRN");
+}
+#endif
 
 void tracking_tests(s::Acquisition& acq, Sat sat) {
     Source source(sat,0.6);
@@ -593,6 +669,9 @@ int main(int argc,char** argv) {
     test_slipping_epochs(-58000,2.5,0);
     s::Acquisition acq;
     fft_oracle(acq);
+#ifdef EPHEMERIS_COMPACT_SURVEY
+    compact_survey_oracle(acq);
+#endif
     multiple_dwell_timing(acq);
     tracking_tests(acq,{3,888.375,48072,72,1.5});
     tracking_tests(acq,{22,71.6,-51157,-85,1.5});

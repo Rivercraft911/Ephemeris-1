@@ -90,20 +90,21 @@ constexpr auto make_mixer() {
 constexpr auto mixer = make_mixer();
 
 using Spectrum = std::array<IQf, fft_length>;
+template<unsigned length = fft_length>
 void forward_fft(Spectrum& a) {
-    for (unsigned i = 1, j = 0; i < fft_length; ++i) {
-        unsigned bit = fft_length/2;
+    for (unsigned i = 1, j = 0; i < length; ++i) {
+        unsigned bit = length/2;
         while (j & bit) { j ^= bit; bit >>= 1; }
         j ^= bit;
         if (i < j) std::swap(a[i], a[j]);
     }
-    for (unsigned width = 2; width <= fft_length; width *= 2) {
+    for (unsigned width = 2; width <= length; width *= 2) {
         const unsigned half = width/2;
         for (unsigned k = 0; k < half; ++k) {
             const unsigned angle = k*(fft_length/width);
             const float c = sine(angle+fft_length/4);
             const float s = -sine(angle);
-            for (unsigned p = k; p < fft_length; p += width) {
+            for (unsigned p = k; p < length; p += width) {
                 const auto u = a[p], v = a[p+half];
                 const float i = v.i*c - v.q*s, q = v.i*s + v.q*c;
                 a[p] = {u.i+i, u.q+q};
@@ -147,35 +148,36 @@ void inverse_butterfly(IQf& a, IQf& b, IQf& c, IQf& d, IQf w1, IQf w2, IQf w3) {
         d = rotated(d,w3);
     }
 }
-template<class Product>
+template<unsigned length = fft_length, class Product>
 void inverse_fft(Spectrum& a, Product product) {
     // The first stage consumes the spectrum product in registers, saving a
     // write/read pass over the 32 KiB transform. Peak/mean cancels its scale.
-    constexpr unsigned quarter = fft_length/4;
+    constexpr unsigned quarter = length/4, stride_first = fft_length/length;
     for (unsigned k = 0; k < quarter; ++k) {
         auto b0 = product(k), b1 = product(k+quarter);
         auto b2 = product(k+2*quarter), b3 = product(k+3*quarter);
-        inverse_butterfly<false>(b0,b1,b2,b3,twiddle(k),twiddle(2*k),twiddle(3*k));
+        const unsigned angle = k*stride_first;
+        inverse_butterfly<false>(b0,b1,b2,b3,twiddle(angle),twiddle(2*angle),twiddle(3*angle));
         a[k] = b0;
         a[k+quarter] = b1;
         a[k+2*quarter] = b2;
         a[k+3*quarter] = b3;
     }
-    for (unsigned quarter_width = fft_length/16, stride = 4; quarter_width > 1;
+    for (unsigned quarter_width = length/16, stride = 4*(fft_length/length); quarter_width > 1;
          quarter_width /= 4, stride *= 4) {
         const unsigned width = 4*quarter_width;
-        for (unsigned p = 0; p < fft_length; p += width)
+        for (unsigned p = 0; p < length; p += width)
             inverse_butterfly<true>(a[p],a[p+quarter_width],a[p+2*quarter_width],
                                     a[p+3*quarter_width],{},{},{});
         for (unsigned k = 1; k < quarter_width; ++k) {
             const unsigned angle = k*stride;
             const auto w1 = twiddle(angle), w2 = twiddle(2*angle), w3 = twiddle(3*angle);
-            for (unsigned p = k; p < fft_length; p += width)
+            for (unsigned p = k; p < length; p += width)
                 inverse_butterfly<false>(a[p],a[p+quarter_width],a[p+2*quarter_width],
                                          a[p+3*quarter_width],w1,w2,w3);
         }
     }
-    for (unsigned p = 0; p < fft_length; p += 4)
+    for (unsigned p = 0; p < length; p += 4)
         inverse_butterfly<true>(a[p],a[p+1],a[p+2],a[p+3],{},{},{});
 }
 
@@ -239,7 +241,7 @@ bool ca_code(unsigned prn, Code& out) {
     return true;
 }
 
-bool Acquisition::start(const Epoch& epoch, unsigned prn, float lo_hz, float hi_hz) {
+bool Acquisition::begin_search(const Epoch& epoch, unsigned prn, float lo_hz, float hi_hz) {
     best_ = {};
     dwells_ = current_dwell_ = 0;
     scanning_ = false;
@@ -248,6 +250,13 @@ bool Acquisition::start(const Epoch& epoch, unsigned prn, float lo_hz, float hi_
     if (!valid_epoch(epoch.first_sample) || prn < 1 || prn > 32 ||
         !std::isfinite(lo_hz) || !std::isfinite(hi_hz) || lo_hz > hi_hz ||
         lo_hz < -100000.0f || hi_hz > 100000.0f) return false;
+    best_.prn = prn;
+    best_.first_sample = epoch.first_sample;
+    return true;
+}
+
+bool Acquisition::start(const Epoch& epoch, unsigned prn, float lo_hz, float hi_hz) {
+    if (!begin_search(epoch, prn, lo_hz, hi_hz)) return false;
     if (prn != cached_prn_) {
         Code code;
         ca_code(prn, code);
@@ -258,10 +267,105 @@ bool Acquisition::start(const Epoch& epoch, unsigned prn, float lo_hz, float hi_
     }
     bin_ = int(std::floor(lo_hz/bin_hz));
     last_bin_ = int(std::ceil(hi_hz/bin_hz));
-    best_.prn = prn;
-    best_.first_sample = epoch.first_sample;
     return add_dwell(epoch);
 }
+
+#ifdef EPHEMERIS_COMPACT_SURVEY
+namespace {
+constexpr unsigned survey_length = 1024;
+constexpr float survey_spacing_hz = 500.f;
+constexpr float survey_threshold = 14.f;
+static_assert(survey_length == code_length + 1);
+}
+
+// Integrate each 1 ms C/A period into 1024 cells. Cell n overlaps chips
+// n-1 and n for n/1023 and (1023-n)/1023 of its width, respectively.
+bool Acquisition::start_survey(const Epoch& epoch, unsigned prn, float lo_hz, float hi_hz) {
+    if (!begin_search(epoch, prn, lo_hz, hi_hz)) return false;
+    cached_prn_ = 0; // The full-size replica shares this storage.
+    scanning_ = true;
+    dwells_ = 1;
+    bin_ = int(std::floor(lo_hz/survey_spacing_hz));
+    last_bin_ = int(std::ceil(hi_hz/survey_spacing_hz));
+    Code code;
+    ca_code(prn, code);
+    for (int n = 0; n < int(survey_length); ++n) {
+        const int left = code[(n + code_length - 1) % code_length];
+        const int right = code[n % code_length];
+        replica_[n] = {float(n*left + (code_length - n)*right)/code_length, 0};
+    }
+    forward_fft<survey_length>(replica_);
+
+    // Integer cycles per millisecond shift FFT indices. The second spectrum
+    // removes half a cycle first to interleave the 500 Hz hypotheses.
+    for (unsigned bank = 0; bank < 2; ++bank) {
+        for (unsigned n = 0; n < survey_length; ++n) {
+            const unsigned first = (n*samples_per_ms + survey_length/2)/survey_length;
+            const unsigned end = ((n+1)*samples_per_ms + survey_length/2)/survey_length;
+            int i = 0, q = 0;
+            for (unsigned j = first; j < end; ++j) {
+                i += epoch.samples[j].i;
+                q += epoch.samples[j].q;
+            }
+            IQf value{float(i),float(q)};
+            if (bank) value = rotated(value, twiddle(fft_length - n*(fft_length/(2*survey_length))));
+            work_[n] = value;
+        }
+        forward_fft<survey_length>(work_);
+        float peak = 1;
+        for (unsigned n = 0; n < survey_length; ++n)
+            peak = std::max({peak, std::abs(work_[n].i), std::abs(work_[n].q)});
+        const float scale = 32766/peak;
+        for (unsigned n = 0; n < survey_length; ++n)
+            data_[bank][n] = {static_cast<std::int16_t>(std::lround(work_[n].i*scale)),
+                              static_cast<std::int16_t>(std::lround(work_[n].q*scale))};
+    }
+    return true;
+}
+
+bool Acquisition::step_survey(unsigned work_units) {
+    // Four short transforms per full-size work unit. A zero budget polls.
+    for (; work_units && bin_ <= last_bin_; --work_units) {
+        for (unsigned part = 0; part < 4 && bin_ <= last_bin_; ++part, ++bin_) {
+            const unsigned bank = static_cast<unsigned>(bin_) & 1u;
+            const int shift = (bin_ - int(bank))/2;
+            inverse_fft<survey_length>(work_, [&](unsigned k) -> IQf {
+                const auto a = data_[bank][(k + shift) & (survey_length-1)];
+                const auto b = replica_[k];
+                return {a.i*b.i + a.q*b.q, a.q*b.i - a.i*b.q};
+            });
+            float total = 0, peak = 0;
+            unsigned index = 0;
+            for (unsigned n = 0; n < survey_length; ++n) {
+                const auto cell = work_[n];
+                const float power = cell.i*cell.i + cell.q*cell.q;
+                total += power;
+                if (power > peak) { peak = power; index = n; }
+            }
+            if (total > 0 && peak*survey_length > best_.metric*total) {
+                best_.metric = peak*survey_length/total;
+                best_.doppler_hz = bin_*survey_spacing_hz;
+                // The short radix-four transform has one fewer base-four digit.
+                const unsigned delay = time_index(index)/(fft_length/survey_length);
+                best_.code_phase_chips = wrap_chips(-double(delay)*code_length/survey_length);
+            }
+        }
+    }
+    const bool done = bin_ > last_bin_;
+    best_.detected = done && best_.metric >= survey_threshold;
+    return done;
+}
+#else
+bool Acquisition::start_survey(const Epoch& epoch, unsigned prn, float lo_hz, float hi_hz) {
+    return start(epoch, prn, lo_hz, hi_hz);
+}
+
+bool Acquisition::step_survey(unsigned work_units) {
+    const bool done = step(work_units);
+    best_.detected = done && best_.metric >= 18.f;
+    return done;
+}
+#endif
 
 bool Acquisition::add_dwell(const Epoch& epoch) {
     if (!best_.prn || scanning_ || dwells_ >= max_dwells || !valid_epoch(epoch.first_sample)) return false;
@@ -715,6 +819,20 @@ TrackingResult Tracker::update(const Epoch& epoch) {
     return out;
 }
 
+// The half-chip and bitplane kernels are bounded by the epoch sample count.
+// ARMv8-M VCVTA gives exactly lroundf's nearest integer, ties away from zero.
+static int prompt_q7(float sum) {
+    const float scaled = 127.f*sum;
+#if defined(__ARM_ARCH_8M_MAIN__) && defined(__ARM_FP)
+    float rounded;
+    int out;
+    __asm__("vcvta.s32.f32 %1, %2\n\tvmov %0, %1"
+            : "=r"(out), "=t"(rounded) : "t"(scaled));
+    return out;
+#else
+    return static_cast<int>(std::lround(scaled));
+#endif
+}
 template<class Input>
 TrackingResult Tracker::update_words(const Input& epoch) {
     TrackingResult out{};
@@ -745,9 +863,9 @@ TrackingResult Tracker::update_words(const Input& epoch) {
         r=bitplane::track_interval(epoch,code_,4*group,4*groups,phase,rate,carrier_hz,turns);
         // Match the scalar kernel's Q7 oscillator scale before running the
         // common locked-loop discriminators, carrier smoother, and bit clock.
-        ei_+=static_cast<int>(std::lround(127.f*r.early.i)); eq_+=static_cast<int>(std::lround(127.f*r.early.q));
-        pi_+=static_cast<int>(std::lround(127.f*r.prompt.i)); pq_+=static_cast<int>(std::lround(127.f*r.prompt.q));
-        li_+=static_cast<int>(std::lround(127.f*r.late.i)); lq_+=static_cast<int>(std::lround(127.f*r.late.q));
+        ei_+=prompt_q7(r.early.i); eq_+=prompt_q7(r.early.q);
+        pi_+=prompt_q7(r.prompt.i); pq_+=prompt_q7(r.prompt.q);
+        li_+=prompt_q7(r.late.i); lq_+=prompt_q7(r.late.q);
         energy_+=r.energy;
         integrated_+=groups;
         carrier_phase_+=groups*carrier_step_;

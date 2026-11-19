@@ -4,6 +4,9 @@
 #include <algorithm>
 #include <cmath>
 #include <cstring>
+#if defined(__ARM_FEATURE_SIMD32)
+#include <arm_acle.h>
+#endif
 
 namespace eph::signal::coarse {
 namespace {
@@ -110,23 +113,22 @@ IQf phasor(std::uint32_t phase) {
     return {a.i+f*(b.i-a.i), a.q+f*(b.q-a.q)};
 }
 
-inline int ones(std::uint32_t x) {
-#if defined(__ARM_ARCH_8M_MAIN__)
-    // Cortex-M33 has no scalar POPCNT. Keep the SWAR reduction inline.
-    x -= (x>>1)&0x55555555u;
-    x = (x&0x33333333u) + ((x>>2)&0x33333333u);
-    x = (x+(x>>4))&0x0f0f0f0fu;
-    return static_cast<int>((x*0x01010101u)>>24);
+inline int add_ones(unsigned bits, int total) {
+#if defined(__ARM_FEATURE_SIMD32)
+    bits -= (bits >> 1) & 0x55555555u;
+    bits = (bits & 0x33333333u) + ((bits >> 2) & 0x33333333u);
+    const unsigned counts = (bits + (bits >> 4)) & 0x0f0f0f0fu;
+    // Each byte contains 0..8. Sum across lanes directly into the counter.
+    return static_cast<int>(__usada8(counts, 0, static_cast<unsigned>(total)));
 #else
-    return __builtin_popcount(x);
+    return total + __builtin_popcount(bits);
 #endif
 }
-
 struct Counts { int i{}, q{}; };
-inline void add_mismatches(Counts& sum, std::uint32_t i, std::uint32_t q,
+[[gnu::always_inline]] inline void add_mismatches(Counts& sum, std::uint32_t i, std::uint32_t q,
                            std::uint32_t replica, std::uint32_t valid) {
-    sum.i += ones((i^replica)&valid);
-    sum.q += ones((q^replica)&valid);
+    sum.i = add_ones((i^replica)&valid, sum.i);
+    sum.q = add_ones((q^replica)&valid, sum.q);
 }
 IQf signed_sum(Counts n,unsigned count) {
     return {float(int(count)-2*n.i), float(int(count)-2*n.q)};
@@ -217,7 +219,7 @@ static Sums interval(const Epoch& epoch, const Replica& code, unsigned first, un
                 const unsigned n=stop-bucket_start;
                 const unsigned half_samples=(bucket_start-first)+(stop-first)-1;
                 const auto lo=phasor(first_phase+half_step*half_samples);
-                auto rotate_sum=[&](IQf& out,Counts v) {
+                auto rotate_sum=[&](IQf& out,Counts v) __attribute__((always_inline)) {
                     const auto x=signed_sum(v,n);
                     out.i+=lo.i*x.i+lo.q*x.q; out.q+=lo.i*x.q-lo.q*x.i;
                 };

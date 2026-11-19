@@ -120,12 +120,12 @@ void parallel_tracking() {
     unsigned jobs = 0;
     // The physical doorbell can interrupt a transform at any instruction.
     // Exercise overlapping search and tracking calls under native TSan. Stay
-    // below the first PRN's four-dwell ±12 kHz ground search so acquisition
-    // cannot seed a channel on the dual receiver alone.
+    // below a single compact survey (at least 46 work units for ±45 kHz)
+    // so acquisition cannot seed a channel on the dual receiver alone.
     std::atomic<bool> search_done{false};
     std::thread search([&] {
         unsigned steps = 0;
-        while (steps < 128 && !search_done.load(std::memory_order_acquire)) {
+        while (steps < 32 && !search_done.load(std::memory_order_acquire)) {
             if (dual->work_acquisition()) ++steps;
             else std::this_thread::yield();
         }

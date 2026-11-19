@@ -14,6 +14,39 @@ namespace nav = eph::nav;
 namespace {
 constexpr uint64_t report_samples = nav::PositionSmoother::interval_samples;
 uint32_t mask(unsigned prn) { return uint32_t{1} << (prn - 1); }
+
+struct ColdSearch {
+    unsigned prn;
+    float span_hz;
+    bool survey;
+};
+
+constexpr ColdSearch cold_search(unsigned index) {
+#ifdef EPHEMERIS_COMPACT_SURVEY
+    // Survey all 32 codes in the inner band, then all 32 across the full band.
+    // Thereafter, give each four-dwell search four quick revisits in between.
+    if (index < 64)
+        return {1u + index % 32, index < 32 ? 45000.f : 70000.f, true};
+    const unsigned slot = index - 64;
+    const unsigned group = slot / 5, offset = slot % 5;
+    if (!offset) return {1u + group % 32, 70000.f, false};
+    const unsigned quick = 4 * group + offset - 1;
+    return {1u + quick % 32, quick & 32u ? 70000.f : 45000.f, true};
+#else
+    ColdSearch search{1u + index % 32, 70000.f, false};
+#ifdef EPHEMERIS_GROUND_SEARCH
+    if (!(index & 32u)) search.span_hz = 12000.f;
+#endif
+#ifdef EPHEMERIS_FLIGHT_SURVEY
+#ifdef EPHEMERIS_GROUND_SEARCH
+    search.survey = (index & 96u) == 32u;
+#else
+    search.survey = !(index & 32u);
+#endif
+#endif
+    return search;
+#endif
+}
 }
 
 namespace {
@@ -121,9 +154,8 @@ bool Receiver::work_acquisition() {
     }
     if (offer_ready_.load(std::memory_order_acquire)) return false;
     if (stage_ == Search::scanning || stage_ == Search::survey) {
-        if (acquisition_.step(1)) {
+        if (stage_ == Search::survey ? acquisition_.step_survey(1) : acquisition_.step(1)) {
             candidate_ = acquisition_.best();
-            if (stage_ == Search::survey && candidate_.metric < 18.f) candidate_.detected = false;
             stage_ = candidate_.detected ? Search::confirm : Search::select;
             if (candidate_.detected) confirmation_.start(candidate_);
             slot_.store(Slot::need_epoch, std::memory_order_release);
@@ -199,21 +231,10 @@ bool Receiver::work_acquisition() {
         priority_mask_ &= ~mask(prn);
     } else {
         do {
-#ifdef EPHEMERIS_GROUND_SEARCH
-            // Try all unoccupied codes near L1 first. A complete wide pass
-            // follows even if the receiver oscillator is outside this window.
-            span = (search_index_ & 32u) ? 70000.f : 12000.f;
-#endif
-#ifdef EPHEMERIS_FLIGHT_SURVEY
-            // Alternate full-band surveys and four-dwell passes. Ground mode
-            // inserts a normal narrow pass before each of those wide passes.
-#ifdef EPHEMERIS_GROUND_SEARCH
-            survey = (search_index_ & 96u) == 32u;
-#else
-            survey = !(search_index_ & 32u);
-#endif
-#endif
-            prn = 1u + (search_index_++ & 31u);
+            const auto search = cold_search(search_index_++);
+            prn = search.prn;
+            survey = search.survey;
+            span = search.span_hz;
         } while (skip & mask(prn));
     }
     float low = -span, high = span;
@@ -223,7 +244,9 @@ bool Receiver::work_acquisition() {
         high = last_carrier_[prn - 1] + 2500;
         warm_mask_ &= ~mask(prn); // Rejoin normal cold search after one cached attempt.
     }
-    if (!acquisition_.start(snapshot_, prn, low, high)) {
+    const bool started = survey ? acquisition_.start_survey(snapshot_, prn, low, high)
+                                : acquisition_.start(snapshot_, prn, low, high);
+    if (!started) {
         slot_.store(Slot::need_epoch, std::memory_order_release);
         return false;
     }

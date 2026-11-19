@@ -67,8 +67,9 @@ class ClockedReplay(unittest.TestCase):
 
 
 class FakePort:
-    def __init__(self, defect=None):
+    def __init__(self, defect=None, used=4):
         self.defect = defect
+        self.used = used
         self.lines = queue.Queue()
         self.received = bytearray()
         self.epochs = 600
@@ -91,9 +92,9 @@ class FakePort:
         if len(self.received) == self.epochs*COMPACT_BYTES:
             for n in (1, 2, 3):
                 sample = (n + (self.defect == "sample" and n == 2)) * (RATE//5)
-                mask = 1 if n == 1 else 15
-                row = [n, sample, 0, mask, mask, 15 if n == 3 else 0, int(n == 3), 1, 0,
-                       1, 2, 3, 0, 0, 0, 0, 0, 4 if n == 3 else 0, 1]
+                mask = 1 if n == 1 else (1 << self.used) - 1
+                row = [n, sample, 0, mask, mask, mask if n == 3 else 0, int(n == 3), 1, 0,
+                       1, 2, 3, 0, 0, 0, 0, 0, self.used if n == 3 else 0, 1]
                 time_us = 200000*n + (10000 if self.defect == "cadence" and n == 2 else 0)
                 self.lines.put(f"S {time_us} " + ",".join(map(str, row)))
             crc = zlib.crc32(self.received) ^ (self.defect == "crc")
@@ -117,6 +118,17 @@ class ClockedSerial(unittest.TestCase):
             self.assertEqual(result["events"]["first_lock"]["device_s"], .2)
             self.assertEqual(result["events"]["four_locks"]["sample_s"], .4)
             self.assertEqual(result["events"]["first_valid"]["device_s"], .6)
+            self.assertIsNone(result["events"]["six_used"])
+            self.assertIsNone(result["events"]["seven_used"])
+
+    def test_usable_requires_a_fix(self):
+        for used in (6, 7):
+            with self.subTest(used=used), tempfile.TemporaryFile() as f:
+                f.write(bytes(COMPACT_BYTES) * 600)
+                f.seek(0)
+                events = run(FakePort(used=used), f, io.StringIO())["events"]
+                self.assertEqual(events["six_used"], events["first_valid"])
+                self.assertEqual(events["seven_used"], events["first_valid"] if used == 7 else None)
 
     def test_corrupt_status_or_device_checksum(self):
         for defect in ("sample", "cadence", "crc"):
