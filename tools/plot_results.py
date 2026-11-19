@@ -318,6 +318,30 @@ def acquisition_figure(pico, replay, destination):
     plt.close(fig)
 
 
+def flight_search_figure(data, destination):
+    orbits = sorted(data["orbits"], key=lambda run: run["altitude_km"])
+    metrics = (("four_locks_s", "Four channels locked"), ("eight_locks_s", "Eight channels locked"),
+               ("first_fix_s", "First position"))
+    latest = max(run[build][key] for run in orbits for build in ("baseline", "survey") for key, _ in metrics)
+    ticks = np.arange(0, latest + 1, 30)
+    fig, axes = plt.subplots(1, 3, sharey=True, sharex=True, figsize=(8.4, 2.9), layout="constrained")
+    y = np.arange(len(orbits))
+    for ax, (key, title) in zip(axes, metrics):
+        before = [run["baseline"][key] for run in orbits]
+        after = [run["survey"][key] for run in orbits]
+        ax.hlines(y, after, before, color="#909090", linewidth=1)
+        ax.scatter(before, y, facecolors="none", edgecolors="#d8d8d8", s=56, label="Four-dwell search")
+        ax.scatter(after, y, marker="s", color=PALETTE[2], s=21, label="Strong-signal survey")
+        ax.set(title=title, xticks=ticks, xlim=(-2, latest + 8), ylim=(-0.45, len(y)-0.55))
+        ax.grid(axis="x", linewidth=0.45, alpha=0.55)
+    axes[0].set_yticks(y, [f"{run['altitude_km']} km" for run in orbits])
+    axes[0].invert_yaxis()
+    axes[1].set_xlabel("Seconds of recorded I/Q from cold start", fontsize=10)
+    fig.legend(*axes[0].get_legend_handles_labels(), loc="outside lower center", ncol=2, frameon=False)
+    fig.savefig(destination / "flight-search.png", dpi=180)
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--results", type=Path, default=BASE / "baseline.json")
@@ -340,3 +364,6 @@ if __name__ == "__main__":
     replay = a.results.with_name("cold-replay.json")
     if pico.exists() and replay.exists():
         acquisition_figure(json.loads(pico.read_text()), json.loads(replay.read_text()), a.out)
+    survey = a.results.with_name("flight-survey.json")
+    if survey.exists():
+        flight_search_figure(json.loads(survey.read_text()), a.out)

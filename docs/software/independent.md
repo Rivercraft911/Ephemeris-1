@@ -41,6 +41,20 @@ Enabling the fit adds 112 bytes to the RP2350 receiver object. The velocity upda
 
 Both builds used `--work 1141/5706` on the same I/Q for each pair. The 400 km run missed the 0.2 m/s velocity threshold. Its first 90 fixes used four satellites with mean PDOP 24.63. Its final 180 fixes used eight satellites with mean PDOP 2.58 and fitted velocity error of 0.153 m/s at the 95th percentile. To regenerate the held-out arcs, pass `--altitude-km 400 --phase-deg 103` or `--altitude-km 800 --phase-deg 211` to the motion exporter and scorer. Use import seeds 7411 and 9203, respectively. [Paired hashes, geometry and numerical checks](measurements/velocity-fit.json)
 
+### Full-band strong-signal survey
+
+`-DEPHEMERIS_FLIGHT_SURVEY=ON` tests each unoccupied PRN across ±70 kHz with one millisecond of data. A correlation peak at least 18 times the mean code-cell power goes to the usual independent confirmation. The next pass uses four dwells for every remaining PRN while a tracking slot is available. This option defaults to off. Cached Doppler searches and fresh searches around an old detection use four dwells in both builds.
+
+| Orbit | Eight tracking locks, baseline → survey | First position, baseline → survey | Survey position / velocity error, p95 |
+| --- | ---: | ---: | ---: |
+| 400 km | 109.8 → 35.0 s | 99.2 → 57.2 s | 2.539 m / 0.239 m/s |
+| 550 km | 127.6 → 52.2 s | 69.2 → 69.2 s | 1.124 m / 0.121 m/s |
+| 800 km | 75.6 → 36.4 s | 69.2 → 39.2 s | 1.755 m / 0.150 m/s |
+
+Each pair replayed the same 165 seconds of I/Q on the host with the five-report velocity fit and `--work 1141/5706`. At 400 km the survey missed the 0.2 m/s velocity target. PRN 22 delivered 21 valid navigation subframes and broadcast health 63. The receiver correctly excluded it from position, leaving seven usable satellites in eight occupied slots. [Recordings, work counts, transmitted-PRN checks and output hashes](measurements/flight-survey.json)
+
+The first pass favors strong signals. At 38, 40 and 45 dB-Hz it confirmed 0, 0 and 43 of 64 trials. The four-dwell search confirmed 14, 49 and 64. Run `signal_test --sweep` and `signal_test --cross-code` from a survey build to reproduce the native sensitivity and single-transmitter controls. The normal test suite also checks a weak PRN recovered on the second pass, a vanished strong signal, and two simultaneous signals 18 dB apart.
+
 ### Replay the recording
 
 The adapter accepts interleaved signed 8-bit I followed by Q, sampled at 16.368 MHz in complex baseband. Input length must be an integral number of milliseconds. Amplitude is expressed in ADC threshold units per input count. The published run used gain 0.012 and Gaussian noise with standard deviation 0.8 on each axis.

@@ -114,9 +114,10 @@ bool Receiver::work_acquisition() {
         slot_.store(Slot::need_epoch, std::memory_order_release);
     }
     if (offer_ready_.load(std::memory_order_acquire)) return false;
-    if (stage_ == Search::scanning) {
+    if (stage_ == Search::scanning || stage_ == Search::survey) {
         if (acquisition_.step(1)) {
             candidate_ = acquisition_.best();
+            if (stage_ == Search::survey && candidate_.metric < 18.f) candidate_.detected = false;
             stage_ = candidate_.detected ? Search::confirm : Search::select;
             if (candidate_.detected) confirmation_.start(candidate_);
             slot_.store(Slot::need_epoch, std::memory_order_release);
@@ -181,6 +182,7 @@ bool Receiver::work_acquisition() {
         return false;
     }
     unsigned prn;
+    bool survey = false;
     float span = 70000;
     if (const auto preferred = priority_mask_ & ~used) {
         prn = 1u + static_cast<unsigned>(__builtin_ctz(preferred));
@@ -192,11 +194,21 @@ bool Receiver::work_acquisition() {
             // follows even if the receiver oscillator is outside this window.
             span = (search_index_ & 32u) ? 70000.f : 12000.f;
 #endif
+#ifdef EPHEMERIS_FLIGHT_SURVEY
+            // Alternate full-band surveys and four-dwell passes. Ground mode
+            // inserts a normal narrow pass before each of those wide passes.
+#ifdef EPHEMERIS_GROUND_SEARCH
+            survey = (search_index_ & 96u) == 32u;
+#else
+            survey = !(search_index_ & 32u);
+#endif
+#endif
             prn = 1u + (search_index_++ & 31u);
         } while (used & mask(prn));
     }
     float low = -span, high = span;
     if (warm_mask_ & mask(prn)) {
+        survey = false;
         low = last_carrier_[prn - 1] - 2500;
         high = last_carrier_[prn - 1] + 2500;
         warm_mask_ &= ~mask(prn); // Rejoin normal cold search after one cached attempt.
@@ -206,8 +218,8 @@ bool Receiver::work_acquisition() {
         return false;
     }
     may_refresh_ = true;
-    stage_ = Search::collect;
-    slot_.store(Slot::need_epoch, std::memory_order_release);
+    stage_ = survey ? Search::survey : Search::collect;
+    slot_.store(survey ? Slot::idle : Slot::need_epoch, std::memory_order_release);
     return true;
 }
 

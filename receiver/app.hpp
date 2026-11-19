@@ -60,7 +60,7 @@ private:
     std::atomic<bool> tracking_pending_{false};
     void track_alternating(unsigned first);
     enum class Slot : unsigned { need_epoch, ready, idle };
-    enum class Search : unsigned { select, collect, scanning, confirm };
+    enum class Search : unsigned { select, collect, scanning, survey, confirm };
     std::array<eph::signal::Tracker, channels> trackers_{};
     std::array<eph::signal::TrackingResult, channels> results_{};
     std::array<eph::nav::LnavDecoder, channels> decoders_{};
